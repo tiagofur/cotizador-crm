@@ -1,0 +1,862 @@
+     1→'use client';
+     2→
+     3→/* ============================================================
+     4→ * QuoterTab — Cotizador en vivo
+     5→ * Izquierda: selector de muebles (búsqueda/categoría, carrito)
+     6→ * Derecha: panel de cotización (cliente, acabado, cubierta,
+     7→ * ajustes, partidas, totales en vivo y guardado)
+     8→ * ============================================================ */
+     9→
+    10→import { useEffect, useMemo, useRef, useState } from 'react';
+    11→import type { TabProps } from '@/app/page';
+    12→import {
+    13→  useAppStore,
+    14→  settingsLike,
+    15→  maderadoMaterial,
+    16→  toFurnitureLike,
+    17→  priceOf,
+    18→  computeQuoteTotals,
+    19→} from '@/lib/store';
+    20→import type { Finish, FurnitureDTO, QuotationInput } from '@/lib/types';
+    21→import { money, num } from '@/lib/format';
+    22→import { toast } from 'sonner';
+    23→import {
+    24→  Armchair,
+    25→  Calculator,
+    26→  ChevronDown,
+    27→  Loader2,
+    28→  Minus,
+    29→  Plus,
+    30→  Search,
+    31→  ShoppingCart,
+    32→  Trash2,
+    33→} from 'lucide-react';
+    34→import { Button } from '@/components/ui/button';
+    35→import { Input } from '@/components/ui/input';
+    36→import { Label } from '@/components/ui/label';
+    37→import { Textarea } from '@/components/ui/textarea';
+    38→import { Badge } from '@/components/ui/badge';
+    39→import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+    40→import {
+    41→  Select,
+    42→  SelectContent,
+    43→  SelectItem,
+    44→  SelectTrigger,
+    45→  SelectValue,
+    46→} from '@/components/ui/select';
+    47→import { Separator } from '@/components/ui/separator';
+    48→import { Switch } from '@/components/ui/switch';
+    49→import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
+    50→import {
+    51→  Collapsible,
+    52→  CollapsibleContent,
+    53→  CollapsibleTrigger,
+    54→} from '@/components/ui/collapsible';
+    55→import { cn } from '@/lib/utils';
+    56→
+    57→/** Normaliza texto para búsqueda (minúsculas y sin acentos) */
+    58→function norm(s: string): string {
+    59→  return s
+    60→    .toLowerCase()
+    61→    .normalize('NFD')
+    62→    .replace(/[\u0300-\u036f]/g, '');
+    63→}
+    64→
+    65→interface CartLine {
+    66→  furnitureId: string;
+    67→  qty: number;
+    68→}
+    69→
+    70→const SCROLL_XS =
+    71→  '[&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-stone-300 hover:[&::-webkit-scrollbar-thumb]:bg-stone-400';
+    72→
+    73→export default function QuoterTab({ onNavigate }: TabProps) {
+    74→  const catalog = useAppStore((s) => s.catalog);
+    75→  const fetchQuotations = useAppStore((s) => s.fetchQuotations);
+    76→
+    77→  /* ----- filtros del catálogo ----- */
+    78→  const [search, setSearch] = useState('');
+    79→  const [category, setCategory] = useState<string>('all');
+    80→
+    81→  /* ----- carrito ----- */
+    82→  const [cart, setCart] = useState<CartLine[]>([]);
+    83→
+    84→  /* ----- configuración de la cotización ----- */
+    85→  const [finish, setFinish] = useState<Finish>('BLANCO');
+    86→  const [countertopId, setCountertopId] = useState<string>('none');
+    87→  const [overrideStr, setOverrideStr] = useState('');
+    88→  const [factorStr, setFactorStr] = useState('');
+    89→  const [laborStr, setLaborStr] = useState('');
+    90→  const [applyDistributor, setApplyDistributor] = useState(false);
+    91→
+    92→  /* ----- cliente ----- */
+    93→  const [clientName, setClientName] = useState('');
+    94→  const [clientPhone, setClientPhone] = useState('');
+    95→  const [clientEmail, setClientEmail] = useState('');
+    96→  const [notes, setNotes] = useState('');
+    97→  const [extraOpen, setExtraOpen] = useState(false);
+    98→
+    99→  const [saving, setSaving] = useState(false);
+   100→
+   101→  /* Inicializa factor / mano de obra con los valores de configuración (una sola vez) */
+   102→  const initialized = useRef(false);
+   103→  useEffect(() => {
+   104→    if (catalog && !initialized.current) {
+   105→      initialized.current = true;
+   106→      setFactorStr(String(catalog.settings.saleFactor));
+   107→      setLaborStr(String(catalog.settings.laborPerUnit));
+   108→    }
+   109→  }, [catalog]);
+   110→
+   111→  const furnitureById = useMemo(() => {
+   112→    const map: Record<string, FurnitureDTO> = {};
+   113→    for (const f of catalog?.furniture ?? []) map[f.id] = f;
+   114→    return map;
+   115→  }, [catalog]);
+   116→
+   117→  const categories = useMemo(() => {
+   118→    const set = new Set<string>();
+   119→    for (const f of catalog?.furniture ?? []) set.add(f.category);
+   120→    return Array.from(set).sort((a, b) => a.localeCompare(b, 'es'));
+   121→  }, [catalog]);
+   122→
+   123→  const filtered = useMemo(() => {
+   124→    const list = catalog?.furniture ?? [];
+   125→    const q = norm(search.trim());
+   126→    return list.filter((f) => {
+   127→      if (category !== 'all' && f.category !== category) return false;
+   128→      if (!q) return true;
+   129→      return norm(f.code).includes(q) || norm(f.name).includes(q);
+   130→    });
+   131→  }, [catalog, search, category]);
+   132→
+   133→  const countertopOptions = useMemo(
+   134→    () =>
+   135→      (catalog?.materials ?? []).filter(
+   136→        (m) => m.type === 'CUBIERTA' && (m.costPerMl || 0) > 0
+   137→      ),
+   138→    [catalog]
+   139→  );
+   140→
+   141→  /* ----- totales en vivo ----- */
+   142→  const totals = useMemo(() => {
+   143→    const settings = settingsLike(catalog);
+   144→    const madMat = maderadoMaterial(catalog);
+   145→    const countertop =
+   146→      countertopId !== 'none'
+   147→        ? (catalog?.materials.find((m) => m.id === countertopId) ?? null)
+   148→        : null;
+   149→    const parsed = Number(overrideStr);
+   150→    const override = overrideStr.trim() !== '' && Number.isFinite(parsed) && parsed > 0 ? parsed : null;
+   151→    const factorNum = Number(factorStr);
+   152→    const laborNum = Number(laborStr);
+   153→    return computeQuoteTotals({
+   154→      items: cart
+   155→        .filter((c) => furnitureById[c.furnitureId])
+   156→        .map((c) => ({ furniture: toFurnitureLike(furnitureById[c.furnitureId]), qty: c.qty })),
+   157→      finish,
+   158→      countertop,
+   159→      countertopMlOverride: override,
+   160→      factor: Number.isFinite(factorNum) && factorNum > 0 ? factorNum : settings.saleFactor,
+   161→      laborPerUnit: Number.isFinite(laborNum) && laborNum >= 0 ? laborNum : settings.laborPerUnit,
+   162→      ivaRate: settings.ivaRate,
+   163→      distributorDiscount: settings.distributorDiscount,
+   164→      countertopFactor: settings.countertopFactor,
+   165→      countertopMultipleM: settings.countertopMultipleM,
+   166→      maderadoMat: madMat,
+   167→    });
+   168→  }, [catalog, cart, furnitureById, finish, countertopId, overrideStr, factorStr, laborStr]);
+   169→
+   170→  const countertop = useMemo(
+   171→    () =>
+   172→      countertopId !== 'none'
+   173→        ? (catalog?.materials.find((m) => m.id === countertopId) ?? null)
+   174→        : null,
+   175→    [catalog, countertopId]
+   176→  );
+   177→
+   178→  /** Largo auto calculado (sin considerar el override del usuario) */
+   179→  const autoMl = useMemo(
+   180→    () =>
+   181→      cart.reduce((acc, c) => {
+   182→        const f = furnitureById[c.furnitureId];
+   183→        return acc + (f && f.appliesCountertop ? f.countertopWidthM * c.qty : 0);
+   184→      }, 0),
+   185→    [cart, furnitureById]
+   186→  );
+   187→
+   188→  const countertopItemsInCart = useMemo(
+   189→    () => cart.filter((c) => furnitureById[c.furnitureId]?.appliesCountertop).length,
+   190→    [cart, furnitureById]
+   191→  );
+   192→
+   193→  const settings = settingsLike(catalog);
+   194→  const ivaPct = settings.ivaRate * 100;
+   195→  const distPct = settings.distributorDiscount * 100;
+   196→  const pctLabel = (v: number) => `${v % 1 === 0 ? v : v.toFixed(1)}%`;
+   197→
+   198→  const canSave = clientName.trim().length > 0 && cart.length > 0 && !saving;
+   199→
+   200→  /* ----- operaciones del carrito ----- */
+   201→  function addToCart(id: string) {
+   202→    setCart((prev) =>
+   203→      prev.some((c) => c.furnitureId === id) ? prev : [...prev, { furnitureId: id, qty: 1 }]
+   204→    );
+   205→  }
+   206→  function changeQty(id: string, delta: number) {
+   207→    setCart((prev) =>
+   208→      prev
+   209→        .map((c) => (c.furnitureId === id ? { ...c, qty: c.qty + delta } : c))
+   210→        .filter((c) => c.qty > 0)
+   211→    );
+   212→  }
+   213→  function removeFromCart(id: string) {
+   214→    setCart((prev) => prev.filter((c) => c.furnitureId !== id));
+   215→  }
+   216→  function resetForm() {
+   217→    setCart([]);
+   218→    setClientName('');
+   219→    setClientPhone('');
+   220→    setClientEmail('');
+   221→    setNotes('');
+   222→    setCountertopId('none');
+   223→    setOverrideStr('');
+   224→    setApplyDistributor(false);
+   225→    setExtraOpen(false);
+   226→  }
+   227→
+   228→  async function handleSave() {
+   229→    if (!canSave) return;
+   230→    setSaving(true);
+   231→    try {
+   232→      const parsedOverride = Number(overrideStr);
+   233→      const parsedFactor = Number(factorStr);
+   234→      const parsedLabor = Number(laborStr);
+   235→      const payload: QuotationInput = {
+   236→        clientName: clientName.trim(),
+   237→        clientPhone: clientPhone.trim() || null,
+   238→        clientEmail: clientEmail.trim() || null,
+   239→        notes: notes.trim() || null,
+   240→        finish,
+   241→        countertopMaterialId: countertopId !== 'none' ? countertopId : null,
+   242→        countertopMlOverride:
+   243→          overrideStr.trim() !== '' && Number.isFinite(parsedOverride) && parsedOverride > 0
+   244→            ? parsedOverride
+   245→            : null,
+   246→        applyDistributor,
+   247→        factor:
+   248→          Number.isFinite(parsedFactor) && parsedFactor > 0 ? parsedFactor : undefined,
+   249→        laborPerUnit:
+   250→          Number.isFinite(parsedLabor) && parsedLabor >= 0 ? parsedLabor : undefined,
+   251→        items: cart.map((c) => ({ furnitureId: c.furnitureId, qty: c.qty })),
+   252→      };
+   253→      const res = await fetch('/api/quotations', {
+   254→        method: 'POST',
+   255→        headers: { 'Content-Type': 'application/json' },
+   256→        body: JSON.stringify(payload),
+   257→      });
+   258→      const data = await res.json();
+   259→      if (!res.ok) throw new Error(data?.error || 'Error al guardar la cotización');
+   260→      toast.success(`Cotización ${data.folio} guardada`);
+   261→      resetForm();
+   262→      await fetchQuotations();
+   263→      onNavigate?.('cotizaciones');
+   264→    } catch (e) {
+   265→      toast.error(e instanceof Error ? e.message : 'Error al guardar la cotización');
+   266→    } finally {
+   267→      setSaving(false);
+   268→    }
+   269→  }
+   270→
+   271→  if (!catalog) {
+   272→    return (
+   273→      <Card className="bg-white rounded-xl border border-stone-200 shadow-sm">
+   274→        <CardContent className="flex flex-col items-center justify-center gap-3 py-20 text-stone-500">
+   275→          <Loader2 className="w-8 h-8 animate-spin text-amber-600" aria-hidden />
+   276→          <p className="text-sm">Cargando catálogo…</p>
+   277→        </CardContent>
+   278→      </Card>
+   279→    );
+   280→  }
+   281→
+   282→  return (
+   283→    <div className="grid gap-6 lg:grid-cols-[1fr_400px] items-start">
+   284→      {/* ================= Columna izquierda: selector de muebles ================= */}
+   285→      <Card className="bg-white rounded-xl border border-stone-200 shadow-sm">
+   286→        <CardHeader className="pb-3">
+   287→          <div className="flex items-center justify-between gap-3">
+   288→            <div className="min-w-0">
+   289→              <CardTitle className="text-base flex items-center gap-2">
+   290→                <Armchair className="w-4 h-4 text-amber-600" aria-hidden />
+   291→                Catálogo de muebles
+   292→              </CardTitle>
+   293→              <CardDescription className="text-xs">
+   294→                Toca «+» para agregar muebles a la cotización
+   295→              </CardDescription>
+   296→            </div>
+   297→            <Badge variant="secondary" className="bg-stone-100 text-stone-600 border border-stone-200 shrink-0">
+   298→              {filtered.length} de {catalog.furniture.length}
+   299→            </Badge>
+   300→          </div>
+   301→
+   302→          <div className="flex flex-col sm:flex-row gap-2 pt-2">
+   303→            <div className="relative flex-1">
+   304→              <Search
+   305→                className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400 pointer-events-none"
+   306→                aria-hidden
+   307→              />
+   308→              <Input
+   309→                value={search}
+   310→                onChange={(e) => setSearch(e.target.value)}
+   311→                placeholder="Buscar por código o nombre…"
+   312→                aria-label="Buscar muebles por código o nombre"
+   313→                className="pl-8 h-9 bg-white border-stone-300"
+   314→              />
+   315→            </div>
+   316→            <Select value={category} onValueChange={setCategory}>
+   317→              <SelectTrigger
+   318→                size="sm"
+   319→                className="w-full sm:w-[210px] bg-white border-stone-300 h-9"
+   320→                aria-label="Filtrar por categoría"
+   321→              >
+   322→                <SelectValue placeholder="Categoría" />
+   323→              </SelectTrigger>
+   324→              <SelectContent>
+   325→                <SelectItem value="all">Todas las categorías</SelectItem>
+   326→                {categories.map((c) => (
+   327→                  <SelectItem key={c} value={c}>
+   328→                    {c}
+   329→                  </SelectItem>
+   330→                ))}
+   331→              </SelectContent>
+   332→            </Select>
+   333→          </div>
+   334→        </CardHeader>
+   335→
+   336→        <CardContent className="pt-0">
+   337→          <div
+   338→            className={cn('max-h-[70vh] overflow-y-auto -mx-1 px-1 space-y-1', SCROLL_XS)}
+   339→            role="list"
+   340→            aria-label="Lista de muebles del catálogo"
+   341→          >
+   342→            {filtered.length === 0 && (
+   343→              <div className="flex flex-col items-center justify-center gap-2 py-14 text-center">
+   344→                <Search className="w-8 h-8 text-stone-300" aria-hidden />
+   345→                <p className="text-sm text-stone-500">
+   346→                  Sin resultados para «{search.trim()}»
+   347→                </p>
+   348→                <Button
+   349→                  variant="ghost"
+   350→                  size="sm"
+   351→                  onClick={() => {
+   352→                    setSearch('');
+   353→                    setCategory('all');
+   354→                  }}
+   355→                >
+   356→                  Limpiar filtros
+   357→                </Button>
+   358→              </div>
+   359→            )}
+   360→
+   361→            {filtered.map((f) => {
+   362→              const inCart = cart.find((c) => c.furnitureId === f.id);
+   363→              return (
+   364→                <div
+   365→                  key={f.id}
+   366→                  role="listitem"
+   367→                  className="flex items-center gap-3 p-2 rounded-lg border border-transparent hover:border-stone-200 hover:bg-stone-50 transition-colors"
+   368→                >
+   369→                  {/* Miniatura */}
+   370→                  <div className="w-12 h-12 shrink-0 rounded-lg bg-stone-100 border border-stone-200 overflow-hidden flex items-center justify-center">
+   371→                    {f.imageUrl ? (
+   372→                      <img
+   373→                        src={f.imageUrl}
+   374→                        alt={`Imagen de ${f.name}`}
+   375→                        className="w-full h-full object-cover"
+   376→                      />
+   377→                    ) : (
+   378→                      <Armchair className="w-6 h-6 text-stone-400" aria-hidden />
+   379→                    )}
+   380→                  </div>
+   381→
+   382→                  {/* Código + nombre + precio del acabado actual */}
+   383→                  <div className="min-w-0 flex-1">
+   384→                    <p className="font-mono text-[11px] text-stone-500 leading-tight">{f.code}</p>
+   385→                    <p className="text-sm font-medium leading-snug line-clamp-1" title={f.name}>
+   386→                      {f.name}
+   387→                    </p>
+   388→                    <p className="text-xs font-semibold text-amber-700 tabular-nums">
+   389→                      {money(priceOf(catalog, f, finish))}
+   390→                      <span className="font-normal text-stone-400"> / unidad</span>
+   391→                    </p>
+   392→                  </div>
+   393→
+   394→                  {/* Agregar / stepper */}
+   395→                  {!inCart ? (
+   396→                    <Button
+   397→                      size="icon"
+   398→                      aria-label={`Agregar ${f.name}`}
+   399→                      title="Agregar a la cotización"
+   400→                      onClick={() => addToCart(f.id)}
+   401→                      className="h-8 w-8 shrink-0 bg-amber-600 hover:bg-amber-700 text-white rounded-lg"
+   402→                    >
+   403→                      <Plus className="w-4 h-4" aria-hidden />
+   404→                    </Button>
+   405→                  ) : (
+   406→                    <div
+   407→                      className="flex items-center shrink-0 rounded-lg border border-stone-300 bg-white overflow-hidden"
+   408→                      role="group"
+   409→                      aria-label={`Cantidad de ${f.name}`}
+   410→                    >
+   411→                      <button
+   412→                        type="button"
+   413→                        onClick={() => changeQty(f.id, -1)}
+   414→                        disabled={inCart.qty <= 1}
+   415→                        aria-label={`Quitar una unidad de ${f.name}`}
+   416→                        className="h-8 w-8 flex items-center justify-center text-stone-600 hover:bg-stone-100 disabled:opacity-30 disabled:cursor-not-allowed outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
+   417→                      >
+   418→                        <Minus className="w-3.5 h-3.5" aria-hidden />
+   419→                      </button>
+   420→                      <span className="w-7 text-center text-sm font-bold tabular-nums">
+   421→                        {inCart.qty}
+   422→                      </span>
+   423→                      <button
+   424→                        type="button"
+   425→                        onClick={() => changeQty(f.id, 1)}
+   426→                        aria-label={`Agregar una unidad más de ${f.name}`}
+   427→                        className="h-8 w-8 flex items-center justify-center text-stone-600 hover:bg-stone-100 outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
+   428→                      >
+   429→                        <Plus className="w-3.5 h-3.5" aria-hidden />
+   430→                      </button>
+   431→                    </div>
+   432→                  )}
+   433→                </div>
+   434→              );
+   435→            })}
+   436→          </div>
+   437→        </CardContent>
+   438→      </Card>
+   439→
+   440→      {/* ================= Columna derecha: panel de cotización ================= */}
+   441→      <Card className="bg-white rounded-xl border border-stone-200 shadow-sm lg:sticky lg:top-20 lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto">
+   442→        <CardHeader className="pb-3">
+   443→          <CardTitle className="text-base flex items-center gap-2">
+   444→            <Calculator className="w-4 h-4 text-amber-600" aria-hidden />
+   445→            Nueva cotización
+   446→          </CardTitle>
+   447→          <CardDescription className="text-xs">
+   448→            Los totales se recalculan en vivo
+   449→          </CardDescription>
+   450→        </CardHeader>
+   451→
+   452→        <CardContent className="space-y-5">
+   453→          {/* Cliente */}
+   454→          <section className="space-y-2" aria-label="Datos del cliente">
+   455→            <div className="space-y-1.5">
+   456→              <Label htmlFor="client-name" className="text-xs text-stone-600">
+   457→                Cliente <span className="text-red-600" aria-hidden>*</span>
+   458→              </Label>
+   459→              <Input
+   460→                id="client-name"
+   461→                value={clientName}
+   462→                onChange={(e) => setClientName(e.target.value)}
+   463→                placeholder="Nombre del cliente"
+   464→                required
+   465→                aria-required="true"
+   466→                className="h-9 border-stone-300"
+   467→              />
+   468→            </div>
+   469→
+   470→            <Collapsible open={extraOpen} onOpenChange={setExtraOpen}>
+   471→              <CollapsibleTrigger asChild>
+   472→                <button
+   473→                  type="button"
+   474→                  className="flex items-center gap-1 text-xs text-stone-500 hover:text-stone-800 outline-none focus-visible:ring-2 focus-visible:ring-amber-500 rounded"
+   475→                  aria-expanded={extraOpen}
+   476→                >
+   477→                  <ChevronDown
+   478→                    className={cn('w-3.5 h-3.5 transition-transform', extraOpen && 'rotate-180')}
+   479→                    aria-hidden
+   480→                  />
+   481→                  Teléfono, correo y notas (opcional)
+   482→                </button>
+   483→              </CollapsibleTrigger>
+   484→              <CollapsibleContent className="space-y-2.5 pt-2.5">
+   485→                <div className="space-y-1.5">
+   486→                  <Label htmlFor="client-phone" className="text-xs text-stone-600">
+   487→                    Teléfono
+   488→                  </Label>
+   489→                  <Input
+   490→                    id="client-phone"
+   491→                    value={clientPhone}
+   492→                    onChange={(e) => setClientPhone(e.target.value)}
+   493→                    placeholder="Ej. 55 1234 5678"
+   494→                    type="tel"
+   495→                    className="h-9 border-stone-300"
+   496→                  />
+   497→                </div>
+   498→                <div className="space-y-1.5">
+   499→                  <Label htmlFor="client-email" className="text-xs text-stone-600">
+   500→                    Correo electrónico
+   501→                  </Label>
+   502→                  <Input
+   503→                    id="client-email"
+   504→                    value={clientEmail}
+   505→                    onChange={(e) => setClientEmail(e.target.value)}
+   506→                    placeholder="cliente@correo.com"
+   507→                    type="email"
+   508→                    className="h-9 border-stone-300"
+   509→                  />
+   510→                </div>
+   511→                <div className="space-y-1.5">
+   512→                  <Label htmlFor="quote-notes" className="text-xs text-stone-600">
+   513→                    Notas
+   514→                  </Label>
+   515→                  <Textarea
+   516→                    id="quote-notes"
+   517→                    value={notes}
+   518→                    onChange={(e) => setNotes(e.target.value)}
+   519→                    placeholder="Observaciones para esta cotización…"
+   520→                    rows={2}
+   521→                    className="border-stone-300 min-h-0"
+   522→                  />
+   523→                </div>
+   524→              </CollapsibleContent>
+   525→            </Collapsible>
+   526→          </section>
+   527→
+   528→          <Separator />
+   529→
+   530→          {/* Acabado */}
+   531→          <section className="space-y-2" aria-label="Acabado">
+   532→            <Label className="text-xs text-stone-600">Acabado</Label>
+   533→            <ToggleGroup
+   534→              type="single"
+   535→              variant="outline"
+   536→              className="w-full"
+   537→              value={finish}
+   538→              onValueChange={(v) => {
+   539→                if (v) setFinish(v as Finish);
+   540→              }}
+   541→              aria-label="Seleccionar acabado"
+   542→            >
+   543→              <ToggleGroupItem
+   544→                value="BLANCO"
+   545→                aria-label="Acabado blanco"
+   546→                className="flex-1 data-[state=on]:bg-stone-800 data-[state=on]:text-white data-[state=on]:border-stone-800"
+   547→              >
+   548→                <span
+   549→                  className="h-2.5 w-2.5 rounded-full bg-stone-300 border border-stone-400"
+   550→                  aria-hidden
+   551→                />
+   552→                Blanco
+   553→              </ToggleGroupItem>
+   554→              <ToggleGroupItem
+   555→                value="MADERADO"
+   556→                aria-label="Acabado maderado"
+   557→                className="flex-1 data-[state=on]:bg-amber-600 data-[state=on]:text-white data-[state=on]:border-amber-600"
+   558→              >
+   559→                <span className="h-2.5 w-2.5 rounded-full bg-amber-700" aria-hidden />
+   560→                Maderado
+   561→              </ToggleGroupItem>
+   562→            </ToggleGroup>
+   563→          </section>
+   564→
+   565→          {/* Cubierta */}
+   566→          <section className="space-y-2" aria-label="Cubierta">
+   567→            <Label htmlFor="countertop-select" className="text-xs text-stone-600">
+   568→              Cubierta
+   569→            </Label>
+   570→            <Select value={countertopId} onValueChange={setCountertopId}>
+   571→              <SelectTrigger
+   572→                id="countertop-select"
+   573→                size="sm"
+   574→                className="w-full bg-white border-stone-300"
+   575→                aria-label="Seleccionar material de cubierta"
+   576→              >
+   577→                <SelectValue placeholder="Sin cubierta" />
+   578→              </SelectTrigger>
+   579→              <SelectContent>
+   580→                <SelectItem value="none">SIN CUBIERTA</SelectItem>
+   581→                {countertopOptions.map((m) => (
+   582→                  <SelectItem key={m.id} value={m.id}>
+   583→                    {m.name} — {money(m.costPerMl || 0)}/ML
+   584→                  </SelectItem>
+   585→                ))}
+   586→              </SelectContent>
+   587→            </Select>
+   588→
+   589→            {countertop && (
+   590→              <div className="rounded-lg bg-stone-50 border border-stone-200 p-2.5 space-y-2">
+   591→                {autoMl > 0 ? (
+   592→                  <p className="text-xs text-stone-600 leading-relaxed">
+   593→                    Largo calculado: <span className="font-semibold">{num(autoMl)} m</span> →
+   594→                    cobrable: <span className="font-semibold text-amber-700">{num(totals.countertopMlBillable)} m</span>{' '}
+   595→                    <span className="text-stone-400">
+   596→                      (múltiplos de {num(catalog.settings.countertopMultipleM)} m)
+   597→                    </span>
+   598→                  </p>
+   599→                ) : (
+   600→                  <p className="text-xs text-stone-500">
+   601→                    Ninguno de los muebles seleccionados aplica cubierta.
+   602→                  </p>
+   603→                )}
+   604→                <div className="space-y-1">
+   605→                  <Label htmlFor="ml-override" className="text-xs text-stone-600">
+   606→                    Sobrescribir ML (opcional)
+   607→                  </Label>
+   608→                  <Input
+   609→                    id="ml-override"
+   610→                    type="number"
+   611→                    inputMode="decimal"
+   612→                    min={0}
+   613→                    step={0.1}
+   614→                    value={overrideStr}
+   615→                    onChange={(e) => setOverrideStr(e.target.value)}
+   616→                    placeholder="Automático"
+   617→                    aria-label="Sobrescribir metros lineales de cubierta"
+   618→                    className="h-8 border-stone-300"
+   619→                  />
+   620→                </div>
+   621→              </div>
+   622→            )}
+   623→            {!countertop && countertopItemsInCart > 0 && (
+   624→              <p className="text-xs text-stone-500">
+   625→                {countertopItemsInCart}{' '}
+   626→                {countertopItemsInCart === 1 ? 'mueble aplica' : 'muebles aplican'} cubierta en tu
+   627→                selección.
+   628→              </p>
+   629→            )}
+   630→          </section>
+   631→
+   632→          <Separator />
+   633→
+   634→          {/* Ajustes de precios */}
+   635→          <section className="space-y-3" aria-label="Ajustes de precios">
+   636→            <div className="grid grid-cols-2 gap-3">
+   637→              <div className="space-y-1.5">
+   638→                <Label htmlFor="factor-input" className="text-xs text-stone-600">
+   639→                  Factor de venta
+   640→                </Label>
+   641→                <Input
+   642→                  id="factor-input"
+   643→                  type="number"
+   644→                  inputMode="decimal"
+   645→                  min={0}
+   646→                  step={0.1}
+   647→                  value={factorStr}
+   648→                  onChange={(e) => setFactorStr(e.target.value)}
+   649→                  className="h-9 border-stone-300"
+   650→                />
+   651→              </div>
+   652→              <div className="space-y-1.5">
+   653→                <Label htmlFor="labor-input" className="text-xs text-stone-600">
+   654→                  Mano de obra / unidad
+   655→                </Label>
+   656→                <Input
+   657→                  id="labor-input"
+   658→                  type="number"
+   659→                  inputMode="decimal"
+   660→                  min={0}
+   661→                  step={0.01}
+   662→                  value={laborStr}
+   663→                  onChange={(e) => setLaborStr(e.target.value)}
+   664→                  className="h-9 border-stone-300"
+   665→                />
+   666→              </div>
+   667→            </div>
+   668→            <div className="flex items-center justify-between gap-3 rounded-lg border border-stone-200 bg-stone-50 px-3 py-2.5">
+   669→              <div className="min-w-0">
+   670→                <Label htmlFor="dist-switch" className="text-sm font-medium cursor-pointer">
+   671→                  Precio distribuidor (−{pctLabel(distPct)})
+   672→                </Label>
+   673→                <p className="text-[11px] text-stone-500">Aplica descuento a venta e IVA</p>
+   674→              </div>
+   675→              <Switch
+   676→                id="dist-switch"
+   677→                checked={applyDistributor}
+   678→                onCheckedChange={setApplyDistributor}
+   679→                aria-label="Aplicar precio distribuidor"
+   680→                className="data-[state=checked]:bg-amber-600"
+   681→              />
+   682→            </div>
+   683→          </section>
+   684→
+   685→          <Separator />
+   686→
+   687→          {/* Partidas del carrito */}
+   688→          <section className="space-y-1" aria-label="Partidas de la cotización">
+   689→            <div className="flex items-center justify-between">
+   690→              <Label className="text-xs text-stone-600">Partidas</Label>
+   691→              <Badge variant="secondary" className="bg-stone-100 text-stone-600 border border-stone-200">
+   692→                {cart.length} {cart.length === 1 ? 'línea' : 'líneas'}
+   693→              </Badge>
+   694→            </div>
+   695→
+   696→            {cart.length === 0 ? (
+   697→              <div className="flex flex-col items-center justify-center gap-2 py-8 text-center">
+   698→                <ShoppingCart className="w-8 h-8 text-stone-300" aria-hidden />
+   699→                <p className="text-sm text-stone-500">Selecciona muebles del catálogo</p>
+   700→              </div>
+   701→            ) : (
+   702→              <div className={cn('max-h-56 overflow-y-auto divide-y divide-stone-100', SCROLL_XS)}>
+   703→                {cart.map((c, idx) => {
+   704→                  const f = furnitureById[c.furnitureId];
+   705→                  const per = totals.perItem[idx];
+   706→                  if (!f || !per) return null;
+   707→                  return (
+   708→                    <div key={c.furnitureId} className="flex items-center gap-2 py-2">
+   709→                      <div className="min-w-0 flex-1">
+   710→                        <p className="text-sm font-medium leading-tight line-clamp-1" title={f.name}>
+   711→                          {f.name}
+   712→                        </p>
+   713→                        <p className="font-mono text-[11px] text-stone-500">
+   714→                          {f.code} · {money(per.unitPrice)} c/u
+   715→                        </p>
+   716→                      </div>
+   717→                      <div
+   718→                        className="flex items-center shrink-0 rounded-md border border-stone-300 bg-white overflow-hidden"
+   719→                        role="group"
+   720→                        aria-label={`Cantidad de ${f.name}`}
+   721→                      >
+   722→                        <button
+   723→                          type="button"
+   724→                          onClick={() => changeQty(c.furnitureId, -1)}
+   725→                          disabled={c.qty <= 1}
+   726→                          aria-label={`Quitar una unidad de ${f.name}`}
+   727→                          className="h-7 w-7 flex items-center justify-center text-stone-600 hover:bg-stone-100 disabled:opacity-30 disabled:cursor-not-allowed outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
+   728→                        >
+   729→                          <Minus className="w-3 h-3" aria-hidden />
+   730→                        </button>
+   731→                        <span className="w-6 text-center text-xs font-bold tabular-nums">
+   732→                          {c.qty}
+   733→                        </span>
+   734→                        <button
+   735→                          type="button"
+   736→                          onClick={() => changeQty(c.furnitureId, 1)}
+   737→                          aria-label={`Agregar una unidad más de ${f.name}`}
+   738→                          className="h-7 w-7 flex items-center justify-center text-stone-600 hover:bg-stone-100 outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
+   739→                        >
+   740→                          <Plus className="w-3 h-3" aria-hidden />
+   741→                        </button>
+   742→                      </div>
+   743→                      <span className="w-24 text-right text-sm font-semibold tabular-nums shrink-0">
+   744→                        {money(per.total)}
+   745→                      </span>
+   746→                      <Button
+   747→                        variant="ghost"
+   748→                        size="icon"
+   749→                        onClick={() => removeFromCart(c.furnitureId)}
+   750→                        aria-label={`Eliminar ${f.name} de la cotización`}
+   751→                        className="h-7 w-7 shrink-0 text-stone-400 hover:text-red-600 hover:bg-red-50"
+   752→                      >
+   753→                        <Trash2 className="w-3.5 h-3.5" aria-hidden />
+   754→                      </Button>
+   755→                    </div>
+   756→                  );
+   757→                })}
+   758→              </div>
+   759→            )}
+   760→          </section>
+   761→
+   762→          <Separator />
+   763→
+   764→          {/* Totales en vivo */}
+   765→          <section className="space-y-1" aria-label="Totales de la cotización" aria-live="polite">
+   766→            <div className="flex justify-between text-sm py-1">
+   767→              <span className="text-stone-500">Costo directo</span>
+   768→              <span className="tabular-nums">{money(totals.furnitureCost)}</span>
+   769→            </div>
+   770→            <div className="flex justify-between text-sm py-1">
+   771→              <span className="text-stone-500">Unidades</span>
+   772→              <span className="tabular-nums">{num(totals.totalUnits, 0)}</span>
+   773→            </div>
+   774→            <div className="flex justify-between text-sm py-1">
+   775→              <span className="text-stone-500">Mano de obra</span>
+   776→              <span className="tabular-nums">{money(totals.laborTotal)}</span>
+   777→            </div>
+   778→            <div className="flex justify-between text-sm font-bold text-stone-900 py-1">
+   779→              <span>Venta de muebles</span>
+   780→              <span className="tabular-nums">{money(totals.furnitureSale)}</span>
+   781→            </div>
+   782→
+   783→            {countertop && totals.countertopSale > 0 && (
+   784→              <div className="flex justify-between text-sm py-1">
+   785→                <span className="text-stone-500 truncate mr-2" title={countertop.name}>
+   786→                  Cubierta {countertop.name} · {num(totals.countertopMlBillable)} m ×{' '}
+   787→                  {money(countertop.costPerMl || 0)}
+   788→                </span>
+   789→                <span className="tabular-nums shrink-0 font-semibold">
+   790→                  {money(totals.countertopSale)}
+   791→                </span>
+   792→              </div>
+   793→            )}
+   794→
+   795→            <Separator className="my-1.5" />
+   796→            <div className="flex justify-between text-sm py-1">
+   797→              <span className="text-stone-500">Subtotal</span>
+   798→              <span className="tabular-nums">{money(totals.subtotalSale)}</span>
+   799→            </div>
+   800→            <div className="flex justify-between text-sm py-1">
+   801→              <span className="text-stone-500">IVA ({pctLabel(ivaPct)})</span>
+   802→              <span className="tabular-nums">{money(totals.ivaAmount)}</span>
+   803→            </div>
+   804→            <div className="flex justify-between items-baseline py-1.5">
+   805→              <span className="text-sm font-bold text-stone-900">TOTAL (CON IVA)</span>
+   806→              <span className="text-xl font-bold text-amber-700 tabular-nums">
+   807→                {money(totals.totalWithIva)}
+   808→              </span>
+   809→            </div>
+   810→
+   811→            {applyDistributor && (
+   812→              <div className="mt-2 rounded-lg border border-emerald-200 bg-emerald-50 p-3 space-y-1">
+   813→                <p className="text-[11px] font-semibold uppercase tracking-wide text-emerald-700">
+   814→                  Precio distribuidor (−{pctLabel(distPct)})
+   815→                </p>
+   816→                <div className="flex justify-between text-sm">
+   817→                  <span className="text-stone-600">Venta distribuidor</span>
+   818→                  <span className="tabular-nums">{money(totals.distributorFurniture)}</span>
+   819→                </div>
+   820→                <div className="flex justify-between text-sm">
+   821→                  <span className="text-stone-600">IVA ({pctLabel(ivaPct)})</span>
+   822→                  <span className="tabular-nums">{money(totals.distributorIva)}</span>
+   823→                </div>
+   824→                <Separator className="bg-emerald-200" />
+   825→                <div className="flex justify-between text-sm font-bold text-emerald-700">
+   826→                  <span>Total distribuidor</span>
+   827→                  <span className="tabular-nums">{money(totals.distributorTotal)}</span>
+   828→                </div>
+   829→              </div>
+   830→            )}
+   831→          </section>
+   832→
+   833→          {/* Guardar */}
+   834→          <Button
+   835→            onClick={handleSave}
+   836→            disabled={!canSave}
+   837→            aria-label="Guardar cotización"
+   838→            className="w-full h-11 text-sm font-semibold bg-amber-600 hover:bg-amber-700 text-white"
+   839→          >
+   840→            {saving ? (
+   841→              <>
+   842→                <Loader2 className="w-4 h-4 animate-spin" aria-hidden />
+   843→                Guardando…
+   844→              </>
+   845→            ) : (
+   846→              <>
+   847→                <Calculator className="w-4 h-4" aria-hidden />
+   848→                Guardar cotización
+   849→              </>
+   850→            )}
+   851→          </Button>
+   852→          {!clientName.trim() && (
+   853→            <p className="text-[11px] text-center text-stone-400">
+   854→              Escribe el nombre del cliente para habilitar el guardado
+   855→            </p>
+   856→          )}
+   857→        </CardContent>
+   858→      </Card>
+   859→    </div>
+   860→  );
+   861→}
+   862→

@@ -165,3 +165,19 @@ Work Log (continuación Task 7):
 
 Stage Summary:
 - APP COMPLETA Y VERIFICADA. El usuario puede: administrar muebles/despieces/materiales/herrajes, cotizar en vivo con cubierta y distribuidor, y exportar PDF con precios, PDF sin precios y Excel de producción.
+
+---
+Task ID: 8
+Agent: orchestrator (Z.ai Code)
+Task: Fix — eliminar muebles del cotizador (mínimo qty=1 no permitía quitar partidas)
+
+Work Log:
+- Reporte del usuario: al agregar un mueble al cotizador no podía eliminarlo; el «−» se deshabilitaba en qty=1 y no encontraba cómo quitar la partida.
+- Causa en src/components/tabs/QuoterTab.tsx: ambos steppers (lista de catálogo y panel Partidas) tenían `disabled={qty <= 1}`; la basurita del carrito existía pero era gris (text-stone-400) y estaba al fondo del panel derecho → no descubrible.
+- Fix 1: «−» siempre habilitado en ambos steppers; en qty=1 elimina la partida (changeQty ya filtraba qty>0). En qty=1 se pinta rojo (text-red-500, hover rojo) y el aria-label/title cambian a "Eliminar … de la cotización"; con qty>1 se mantiene gris con "Quitar una unidad".
+- Fix 2: basurita del carrito ahora roja (text-red-500) con title "Eliminar de la cotización".
+- Fix 3: botón "Vaciar" (Trash2 + texto, ghost) junto al badge de partidas para quitar todos los muebles de un golpe.
+- Verificado E2E con agent-browser: agregar → − en qty=1 elimina; qty 2→1 con − normal; basurita elimina la línea correcta; Vaciar limpia todo; el mueble vuelve al estado «Agregar». Capturas visuales OK (− rojo en lista y carrito, Vaciar visible). Lint 0/0, dev.log sin errores.
+
+Stage Summary:
+- El usuario ahora tiene 3 formas de quitar un mueble de la cotización: «−» hasta eliminar (rojo en qty=1), basurita por línea, y "Vaciar" para todo.

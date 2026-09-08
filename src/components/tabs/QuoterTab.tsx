@@ -411,9 +411,18 @@ export default function QuoterTab({ onNavigate }: TabProps) {
                       <button
                         type="button"
                         onClick={() => changeQty(f.id, -1)}
-                        disabled={inCart.qty <= 1}
-                        aria-label={`Quitar una unidad de ${f.name}`}
-                        className="h-8 w-8 flex items-center justify-center text-stone-600 hover:bg-stone-100 disabled:opacity-30 disabled:cursor-not-allowed outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
+                        aria-label={
+                          inCart.qty <= 1
+                            ? `Eliminar ${f.name} de la cotización`
+                            : `Quitar una unidad de ${f.name}`
+                        }
+                        title={inCart.qty <= 1 ? 'Eliminar de la cotización' : 'Quitar una unidad'}
+                        className={cn(
+                          'h-8 w-8 flex items-center justify-center outline-none focus-visible:ring-2 focus-visible:ring-amber-500',
+                          inCart.qty <= 1
+                            ? 'text-red-500 hover:bg-red-50 hover:text-red-600'
+                            : 'text-stone-600 hover:bg-stone-100'
+                        )}
                       >
                         <Minus className="w-3.5 h-3.5" aria-hidden />
                       </button>
@@ -688,9 +697,24 @@ export default function QuoterTab({ onNavigate }: TabProps) {
           <section className="space-y-1" aria-label="Partidas de la cotización">
             <div className="flex items-center justify-between">
               <Label className="text-xs text-stone-600">Partidas</Label>
-              <Badge variant="secondary" className="bg-stone-100 text-stone-600 border border-stone-200">
-                {cart.length} {cart.length === 1 ? 'línea' : 'líneas'}
-              </Badge>
+              <div className="flex items-center gap-1">
+                <Badge variant="secondary" className="bg-stone-100 text-stone-600 border border-stone-200">
+                  {cart.length} {cart.length === 1 ? 'línea' : 'líneas'}
+                </Badge>
+                {cart.length > 0 && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setCart([])}
+                    aria-label="Vaciar todas las partidas"
+                    title="Quitar todos los muebles"
+                    className="h-7 px-2 text-xs text-stone-500 hover:text-red-600 hover:bg-red-50"
+                  >
+                    <Trash2 className="w-3 h-3 mr-1" aria-hidden />
+                    Vaciar
+                  </Button>
+                )}
+              </div>
             </div>
 
             {cart.length === 0 ? (
@@ -722,9 +746,18 @@ export default function QuoterTab({ onNavigate }: TabProps) {
                         <button
                           type="button"
                           onClick={() => changeQty(c.furnitureId, -1)}
-                          disabled={c.qty <= 1}
-                          aria-label={`Quitar una unidad de ${f.name}`}
-                          className="h-7 w-7 flex items-center justify-center text-stone-600 hover:bg-stone-100 disabled:opacity-30 disabled:cursor-not-allowed outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
+                          aria-label={
+                            c.qty <= 1
+                              ? `Eliminar ${f.name} de la cotización`
+                              : `Quitar una unidad de ${f.name}`
+                          }
+                          title={c.qty <= 1 ? 'Eliminar de la cotización' : 'Quitar una unidad'}
+                          className={cn(
+                            'h-7 w-7 flex items-center justify-center outline-none focus-visible:ring-2 focus-visible:ring-amber-500',
+                            c.qty <= 1
+                              ? 'text-red-500 hover:bg-red-50 hover:text-red-600'
+                              : 'text-stone-600 hover:bg-stone-100'
+                          )}
                         >
                           <Minus className="w-3 h-3" aria-hidden />
                         </button>
@@ -748,7 +781,8 @@ export default function QuoterTab({ onNavigate }: TabProps) {
                         size="icon"
                         onClick={() => removeFromCart(c.furnitureId)}
                         aria-label={`Eliminar ${f.name} de la cotización`}
-                        className="h-7 w-7 shrink-0 text-stone-400 hover:text-red-600 hover:bg-red-50"
+                        title="Eliminar de la cotización"
+                        className="h-7 w-7 shrink-0 text-red-500 hover:text-red-600 hover:bg-red-50"
                       >
                         <Trash2 className="w-3.5 h-3.5" aria-hidden />
                       </Button>

@@ -1,0 +1,7326 @@
+{
+  "settings": {
+    "companyName": "Cotizador de Muebles",
+    "saleFactor": 6.7,
+    "ivaRate": 0.16,
+    "distributorDiscount": 0.35,
+    "laborPerUnit": 0,
+    "countertopMultipleM": 1.2,
+    "countertopFactor": 4,
+    "currency": "MXN"
+  },
+  "materials": [
+    {
+      "name": "ARAUCO BLANCO",
+      "type": "TABLERO",
+      "costPerM2": 239.8426229508197,
+      "edgeBandCostMl": 6,
+      "edgeBandName": "Canto PVC 1mm Blanco",
+      "sheetWidth": 2500,
+      "sheetLength": 1830,
+      "sheetCost": 1016,
+      "thickness": null,
+      "notes": "Melamina blanca estándar 15/18mm",
+      "isMaderado": false,
+      "active": true
+    },
+    {
+      "name": "VESTO NOUGAT",
+      "type": "TABLERO",
+      "costPerM2": 332.8524590163935,
+      "edgeBandCostMl": 9.5,
+      "edgeBandName": "Canto PVC 1mm Maderado",
+      "sheetWidth": 2500,
+      "sheetLength": 1830,
+      "sheetCost": 1410,
+      "thickness": null,
+      "notes": "Melamina de diseño texturizado",
+      "isMaderado": true,
+      "active": true
+    },
+    {
+      "name": "BLANCO HIDROFUGO",
+      "type": "TABLERO",
+      "costPerM2": 218.93,
+      "edgeBandCostMl": null,
+      "edgeBandName": null,
+      "sheetWidth": 2440,
+      "sheetLength": 1220,
+      "sheetCost": 651.7,
+      "thickness": "16mm",
+      "notes": "Tablero para cubiertas de melamina (combinado con lámina)",
+      "isMaderado": false,
+      "active": true
+    },
+    {
+      "name": "LAMINA MERINO",
+      "type": "TABLERO",
+      "costPerM2": 209.1,
+      "edgeBandCostMl": null,
+      "edgeBandName": null,
+      "sheetWidth": 2440,
+      "sheetLength": 1220,
+      "sheetCost": 622.44,
+      "thickness": "15mm",
+      "notes": "Tablero para cubiertas de melamina (combinado con lámina)",
+      "isMaderado": false,
+      "active": true
+    },
+    {
+      "name": "CUBIERTA LAMINADO",
+      "type": "TABLERO",
+      "costPerM2": 0,
+      "edgeBandCostMl": null,
+      "edgeBandName": null,
+      "sheetWidth": 2400,
+      "sheetLength": 600,
+      "sheetCost": 0,
+      "thickness": "15mm",
+      "notes": "Tablero para cubiertas de melamina (combinado con lámina)",
+      "isMaderado": false,
+      "active": true
+    },
+    {
+      "name": "GRANITO",
+      "type": "CUBIERTA",
+      "costPerM2": null,
+      "costPerMl": 1200,
+      "edgeBandCostMl": null,
+      "edgeBandName": null,
+      "sheetWidth": null,
+      "sheetLength": null,
+      "sheetCost": null,
+      "thickness": null,
+      "notes": "Cubierta de granito natural - precio de prueba. NEGRO SAN GABRIEL POLIDO = 3 piezas de 2m | 12400 pesos la hoja",
+      "isMaderado": false,
+      "active": true
+    },
+    {
+      "name": "MELAMINA",
+      "type": "CUBIERTA",
+      "costPerM2": null,
+      "costPerMl": 405.3591507659232,
+      "edgeBandCostMl": null,
+      "edgeBandName": null,
+      "sheetWidth": null,
+      "sheetLength": null,
+      "sheetCost": null,
+      "thickness": null,
+      "notes": "Blanco Hidrófugo + Lámina Merino; 0.60 m² de cada material por ML",
+      "isMaderado": false,
+      "active": true
+    },
+    {
+      "name": "SIN CUBIERTA",
+      "type": "CUBIERTA",
+      "costPerM2": null,
+      "costPerMl": 0,
+      "edgeBandCostMl": null,
+      "edgeBandName": null,
+      "sheetWidth": null,
+      "sheetLength": null,
+      "sheetCost": null,
+      "thickness": null,
+      "notes": "Opción predeterminada; no agrega costo al mueble",
+      "isMaderado": false,
+      "active": true
+    }
+  ],
+  "hardware": [
+    {
+      "name": "ARAUCO BLANCO",
+      "unitCost": 239.8426229508197,
+      "unit": "Melamina blanca estándar 15/18mm",
+      "active": true,
+      "notes": null
+    },
+    {
+      "name": "VESTO NOUGAT",
+      "unitCost": 332.8524590163935,
+      "unit": "Melamina de diseño texturizado",
+      "active": true,
+      "notes": null
+    },
+    {
+      "name": "Bisagra Cierre Lento",
+      "unitCost": 20,
+      "unit": "Pieza",
+      "active": true,
+      "notes": null
+    },
+    {
+      "name": "Jaladera Acero Inox",
+      "unitCost": 15,
+      "unit": "Pieza",
+      "active": true,
+      "notes": null
+    },
+    {
+      "name": "Pata Regulable Plastica",
+      "unitCost": 15,
+      "unit": "Pieza",
+      "active": true,
+      "notes": null
+    },
+    {
+      "name": "Tornillo 4x50 mm",
+      "unitCost": 1.5,
+      "unit": "Pieza",
+      "active": true,
+      "notes": null
+    },
+    {
+      "name": "Kit Minifixx 15mm",
+      "unitCost": 3,
+      "unit": "Pieza",
+      "active": true,
+      "notes": null
+    },
+    {
+      "name": "Taquetes de Madera 8x30mm",
+      "unitCost": 1,
+      "unit": "Pieza",
+      "active": true,
+      "notes": null
+    },
+    {
+      "name": "Corredera Telescópica 500mm",
+      "unitCost": 125,
+      "unit": "Juego",
+      "active": true,
+      "notes": null
+    },
+    {
+      "name": "Soporte de Entrepaño",
+      "unitCost": 2,
+      "unit": "Pieza",
+      "active": true,
+      "notes": null
+    },
+    {
+      "name": "Piston a Gas",
+      "unitCost": 40,
+      "unit": "Pieza",
+      "active": true,
+      "notes": null
+    },
+    {
+      "name": "Accesorio Toallero",
+      "unitCost": 120,
+      "unit": "Pieza",
+      "active": true,
+      "notes": null
+    },
+    {
+      "name": "Bisagra",
+      "unitCost": 9.9,
+      "unit": "Par",
+      "active": true,
+      "notes": null
+    },
+    {
+      "name": "Bisagra Clip",
+      "unitCost": 23.04,
+      "unit": "Par",
+      "active": true,
+      "notes": null
+    },
+    {
+      "name": "Bisagra Eko Line",
+      "unitCost": 12.9,
+      "unit": "Par",
+      "active": true,
+      "notes": null
+    },
+    {
+      "name": "Bisagra Eko Line Cierre Lento",
+      "unitCost": 28.9,
+      "unit": "Par",
+      "active": true,
+      "notes": null
+    },
+    {
+      "name": "Corredera Telescópica 500mm CS",
+      "unitCost": 109.9,
+      "unit": "Juego",
+      "active": true,
+      "notes": null
+    },
+    {
+      "name": "taquete par abisagra",
+      "unitCost": 0.7,
+      "unit": "Pieza",
+      "active": true,
+      "notes": null
+    },
+    {
+      "name": "Jaladera Tubular 128mm",
+      "unitCost": 0,
+      "unit": "Pieza",
+      "active": false,
+      "notes": "Referencia proveedor (no activo)"
+    }
+  ],
+  "furniture": [
+    {
+      "order": 0,
+      "code": "ALA-RIN-656832",
+      "name": "Alacena Rinconera 650 x 680 x 320 mm",
+      "category": "Alacena",
+      "width": 650,
+      "height": 680,
+      "depth": 320,
+      "appliesCountertop": false,
+      "countertopWidthM": 0,
+      "imageUrl": null,
+      "notes": null,
+      "pieces": [
+        {
+          "name": "Lateral Derecho",
+          "code": "LAT-ALA-6832-D",
+          "qty": 1,
+          "length": 680,
+          "width": 320,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 0
+        },
+        {
+          "name": "Lateral Izquierdo",
+          "code": "LAT-ALA-6832-I",
+          "qty": 1,
+          "length": 680,
+          "width": 320,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 1
+        },
+        {
+          "name": "Respaldo Alacena",
+          "code": "RES-ALA-6865",
+          "qty": 1,
+          "length": 649,
+          "width": 619,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": false,
+          "bandLong2": false,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 2
+        },
+        {
+          "name": "Base Alacena",
+          "code": "BAS-ALA-6532",
+          "qty": 1,
+          "length": 619,
+          "width": 320,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 3
+        },
+        {
+          "name": "Techo Alacena",
+          "code": "TEC-ALA-6532",
+          "qty": 1,
+          "length": 619,
+          "width": 320,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 4
+        },
+        {
+          "name": "Tapa Ciega",
+          "code": "TAP-ALA-6534",
+          "qty": 1,
+          "length": 649,
+          "width": 339,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": false,
+          "bandLong2": false,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 5
+        },
+        {
+          "name": "Entrepano Alacena",
+          "code": "ENT-ALA-6526",
+          "qty": 1,
+          "length": 619,
+          "width": 256,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": false,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 6
+        },
+        {
+          "name": "Refuerzo Bisagra",
+          "code": "REF-BIS-ALA-657",
+          "qty": 1,
+          "length": 649,
+          "width": 70,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 7
+        },
+        {
+          "name": "Ajuste Inferior",
+          "code": "AJU-INF-ALA-325",
+          "qty": 1,
+          "length": 320,
+          "width": 50,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": false,
+          "bandLong2": false,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 8
+        },
+        {
+          "name": "Ajuste superior",
+          "code": "AJU-SUP-ALA-325",
+          "qty": 1,
+          "length": 320,
+          "width": 50,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": false,
+          "bandLong2": false,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 9
+        },
+        {
+          "name": "Puerta Alacena",
+          "code": "PUE-ALA-6829",
+          "qty": 1,
+          "length": 677,
+          "width": 292,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 10
+        },
+        {
+          "name": "Ajuste 1 Rinconero",
+          "code": "AJU-RIN-ALA-687",
+          "qty": 1,
+          "length": 677,
+          "width": 70,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 11
+        },
+        {
+          "name": "Ajuste 1 Rinconero",
+          "code": "AJU-RIN-ALA-685",
+          "qty": 1,
+          "length": 677,
+          "width": 50,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 12
+        }
+      ],
+      "hardware": [
+        {
+          "name": "Bisagra Cierre Lento",
+          "qty": 2
+        },
+        {
+          "name": "Jaladera Acero Inox",
+          "qty": 1
+        },
+        {
+          "name": "Soporte de Entrepaño",
+          "qty": 4
+        },
+        {
+          "name": "Tornillo 4x50 mm",
+          "qty": 30
+        },
+        {
+          "name": "Kit Minifixx 15mm",
+          "qty": 18
+        },
+        {
+          "name": "Taquetes de Madera 8x30mm",
+          "qty": 22
+        }
+      ]
+    },
+    {
+      "order": 1,
+      "code": "ALA-1PU-306832",
+      "name": "Alacena 1 Puerta 300 x 680 x 320 mm",
+      "category": "Alacena",
+      "width": 300,
+      "height": 680,
+      "depth": 320,
+      "appliesCountertop": false,
+      "countertopWidthM": 0,
+      "imageUrl": null,
+      "notes": null,
+      "pieces": [
+        {
+          "name": "Lateral Derecho",
+          "code": "LAT-ALA-6832-D",
+          "qty": 1,
+          "length": 680,
+          "width": 320,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 0
+        },
+        {
+          "name": "Lateral Izquierdo",
+          "code": "LAT-ALA-6832-I",
+          "qty": 1,
+          "length": 680,
+          "width": 320,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 1
+        },
+        {
+          "name": "Respaldo Alacena",
+          "code": "RES-ALA-6830",
+          "qty": 1,
+          "length": 649,
+          "width": 269,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": false,
+          "bandLong2": false,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 2
+        },
+        {
+          "name": "Base Alacena",
+          "code": "BAS-ALA-3027",
+          "qty": 1,
+          "length": 269,
+          "width": 320,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": false,
+          "bandLong2": false,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 3
+        },
+        {
+          "name": "Techo Alacena",
+          "code": "TEC-ALA-3027",
+          "qty": 1,
+          "length": 269,
+          "width": 320,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": false,
+          "bandLong2": false,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 4
+        },
+        {
+          "name": "Entrepano Alacena",
+          "code": "ENT-ALA-3026",
+          "qty": 1,
+          "length": 269,
+          "width": 256,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 5
+        },
+        {
+          "name": "Puerta Alacena",
+          "code": "PUE-ALA-6830",
+          "qty": 1,
+          "length": 677,
+          "width": 297,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 6
+        }
+      ],
+      "hardware": [
+        {
+          "name": "Bisagra Cierre Lento",
+          "qty": 2
+        },
+        {
+          "name": "Jaladera Acero Inox",
+          "qty": 1
+        },
+        {
+          "name": "Soporte de Entrepaño",
+          "qty": 4
+        },
+        {
+          "name": "Tornillo 4x50 mm",
+          "qty": 24
+        },
+        {
+          "name": "Kit Minifixx 15mm",
+          "qty": 18
+        },
+        {
+          "name": "Taquetes de Madera 8x30mm",
+          "qty": 22
+        }
+      ]
+    },
+    {
+      "order": 2,
+      "code": "ALA-1PU-406832",
+      "name": "Alacena 1 Puerta 400 x 680 x 320 mm",
+      "category": "Alacena",
+      "width": 400,
+      "height": 680,
+      "depth": 320,
+      "appliesCountertop": false,
+      "countertopWidthM": 0,
+      "imageUrl": null,
+      "notes": null,
+      "pieces": [
+        {
+          "name": "Lateral Derecho",
+          "code": "LAT-ALA-6832-D",
+          "qty": 1,
+          "length": 680,
+          "width": 320,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 0
+        },
+        {
+          "name": "Lateral Izquierdo",
+          "code": "LAT-ALA-6832-I",
+          "qty": 1,
+          "length": 680,
+          "width": 320,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 1
+        },
+        {
+          "name": "Respaldo Alacena",
+          "code": "RES-ALA-6840",
+          "qty": 1,
+          "length": 649,
+          "width": 369,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": false,
+          "bandLong2": false,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 2
+        },
+        {
+          "name": "Base Alacena",
+          "code": "BAS-ALA-4032",
+          "qty": 1,
+          "length": 369,
+          "width": 320,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 3
+        },
+        {
+          "name": "Techo Alacena",
+          "code": "TEC-ALA-4032",
+          "qty": 1,
+          "length": 369,
+          "width": 320,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 4
+        },
+        {
+          "name": "Entrepano Alacena",
+          "code": "ENT-ALA-4026",
+          "qty": 1,
+          "length": 369,
+          "width": 256,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 5
+        },
+        {
+          "name": "Puerta Alacena",
+          "code": "PUE-ALA-6840",
+          "qty": 1,
+          "length": 677,
+          "width": 397,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 6
+        }
+      ],
+      "hardware": [
+        {
+          "name": "Bisagra Cierre Lento",
+          "qty": 2
+        },
+        {
+          "name": "Jaladera Acero Inox",
+          "qty": 1
+        },
+        {
+          "name": "Soporte de Entrepaño",
+          "qty": 4
+        },
+        {
+          "name": "Tornillo 4x50 mm",
+          "qty": 24
+        },
+        {
+          "name": "Kit Minifixx 15mm",
+          "qty": 18
+        },
+        {
+          "name": "Taquetes de Madera 8x30mm",
+          "qty": 22
+        }
+      ]
+    },
+    {
+      "order": 3,
+      "code": "ALA-1PU-506832",
+      "name": "Alacena 1 Puerta 500 x 680 x 320 mm",
+      "category": "Alacena",
+      "width": 500,
+      "height": 680,
+      "depth": 320,
+      "appliesCountertop": false,
+      "countertopWidthM": 0,
+      "imageUrl": null,
+      "notes": null,
+      "pieces": [
+        {
+          "name": "Lateral Derecho",
+          "code": "LAT-ALA-6832-D",
+          "qty": 1,
+          "length": 680,
+          "width": 320,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 0
+        },
+        {
+          "name": "Lateral Izquierdo",
+          "code": "LAT-ALA-6832-I",
+          "qty": 1,
+          "length": 680,
+          "width": 320,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 1
+        },
+        {
+          "name": "Respaldo Alacena",
+          "code": "RES-ALA-6850",
+          "qty": 1,
+          "length": 649,
+          "width": 469,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": false,
+          "bandLong2": false,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 2
+        },
+        {
+          "name": "Base Alacena",
+          "code": "BAS-ALA-5032",
+          "qty": 1,
+          "length": 469,
+          "width": 320,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 3
+        },
+        {
+          "name": "Techo Alacena",
+          "code": "TEC-ALA-5032",
+          "qty": 1,
+          "length": 469,
+          "width": 320,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 4
+        },
+        {
+          "name": "Entrepano Alacena",
+          "code": "ENT-ALA-5026",
+          "qty": 1,
+          "length": 469,
+          "width": 256,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 5
+        },
+        {
+          "name": "Puerta Alacena",
+          "code": "PUE-ALA-6850",
+          "qty": 1,
+          "length": 677,
+          "width": 497,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 6
+        }
+      ],
+      "hardware": [
+        {
+          "name": "Bisagra Cierre Lento",
+          "qty": 2
+        },
+        {
+          "name": "Jaladera Acero Inox",
+          "qty": 1
+        },
+        {
+          "name": "Soporte de Entrepaño",
+          "qty": 4
+        },
+        {
+          "name": "Tornillo 4x50 mm",
+          "qty": 24
+        },
+        {
+          "name": "Kit Minifixx 15mm",
+          "qty": 18
+        },
+        {
+          "name": "Taquetes de Madera 8x30mm",
+          "qty": 22
+        }
+      ]
+    },
+    {
+      "order": 4,
+      "code": "ALA-1PU-606832",
+      "name": "Alacena 1 Puerta 600 x 680 x 320 mm",
+      "category": "Alacena",
+      "width": 600,
+      "height": 680,
+      "depth": 320,
+      "appliesCountertop": false,
+      "countertopWidthM": 0,
+      "imageUrl": null,
+      "notes": null,
+      "pieces": [
+        {
+          "name": "Lateral Derecho",
+          "code": "LAT-ALA-6832-D",
+          "qty": 1,
+          "length": 680,
+          "width": 320,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 0
+        },
+        {
+          "name": "Lateral Izquierdo",
+          "code": "LAT-ALA-6832-I",
+          "qty": 1,
+          "length": 680,
+          "width": 320,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 1
+        },
+        {
+          "name": "Respaldo Alacena",
+          "code": "RES-ALA-6860",
+          "qty": 1,
+          "length": 649,
+          "width": 569,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": false,
+          "bandLong2": false,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 2
+        },
+        {
+          "name": "Base Alacena",
+          "code": "BAS-ALA-6032",
+          "qty": 1,
+          "length": 569,
+          "width": 320,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 3
+        },
+        {
+          "name": "Techo Alacena",
+          "code": "TEC-ALA-6032",
+          "qty": 1,
+          "length": 569,
+          "width": 320,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 4
+        },
+        {
+          "name": "Entrepano Alacena",
+          "code": "ENT-ALA-6026",
+          "qty": 1,
+          "length": 569,
+          "width": 256,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 5
+        },
+        {
+          "name": "Puerta Alacena",
+          "code": "PUE-ALA-6860",
+          "qty": 1,
+          "length": 677,
+          "width": 597,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 6
+        }
+      ],
+      "hardware": [
+        {
+          "name": "Bisagra Cierre Lento",
+          "qty": 2
+        },
+        {
+          "name": "Jaladera Acero Inox",
+          "qty": 1
+        },
+        {
+          "name": "Soporte de Entrepaño",
+          "qty": 4
+        },
+        {
+          "name": "Tornillo 4x50 mm",
+          "qty": 24
+        },
+        {
+          "name": "Kit Minifixx 15mm",
+          "qty": 18
+        },
+        {
+          "name": "Taquetes de Madera 8x30mm",
+          "qty": 22
+        }
+      ]
+    },
+    {
+      "order": 5,
+      "code": "ALA-2PU-706832",
+      "name": "Alacena 2 Puertas 700 x 680 x 320 mm",
+      "category": "Alacena",
+      "width": 700,
+      "height": 680,
+      "depth": 320,
+      "appliesCountertop": false,
+      "countertopWidthM": 0,
+      "imageUrl": null,
+      "notes": null,
+      "pieces": [
+        {
+          "name": "Lateral Derecho",
+          "code": "LAT-ALA-6832-D",
+          "qty": 1,
+          "length": 680,
+          "width": 320,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 0
+        },
+        {
+          "name": "Lateral Izquierdo",
+          "code": "LAT-ALA-6832-I",
+          "qty": 1,
+          "length": 680,
+          "width": 320,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 1
+        },
+        {
+          "name": "Respaldo Alacena",
+          "code": "RES-ALA-6880",
+          "qty": 1,
+          "length": 669,
+          "width": 649,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": false,
+          "bandLong2": false,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 2
+        },
+        {
+          "name": "Base Alacena",
+          "code": "BAS-ALA-8032",
+          "qty": 1,
+          "length": 669,
+          "width": 320,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 3
+        },
+        {
+          "name": "Techo Alacena",
+          "code": "TEC-ALA-8032",
+          "qty": 1,
+          "length": 669,
+          "width": 320,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 4
+        },
+        {
+          "name": "Entrepano Alacena",
+          "code": "ENT-ALA-8026",
+          "qty": 1,
+          "length": 669,
+          "width": 256,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 5
+        },
+        {
+          "name": "Puerta Der Alacena",
+          "code": "PUE-DER-ALA-6840",
+          "qty": 1,
+          "length": 677,
+          "width": 347,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 6
+        },
+        {
+          "name": "Puerta Izq Alacena",
+          "code": "PUE-IZQ-ALA-6840",
+          "qty": 1,
+          "length": 677,
+          "width": 347,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 7
+        }
+      ],
+      "hardware": [
+        {
+          "name": "Bisagra Cierre Lento",
+          "qty": 4
+        },
+        {
+          "name": "Jaladera Acero Inox",
+          "qty": 2
+        },
+        {
+          "name": "Soporte de Entrepaño",
+          "qty": 4
+        },
+        {
+          "name": "Tornillo 4x50 mm",
+          "qty": 40
+        },
+        {
+          "name": "Kit Minifixx 15mm",
+          "qty": 18
+        },
+        {
+          "name": "Taquetes de Madera 8x30mm",
+          "qty": 22
+        }
+      ]
+    },
+    {
+      "order": 6,
+      "code": "ALA-2PU-806832",
+      "name": "Alacena 2 Puertas 800 x 680 x 320 mm",
+      "category": "Alacena",
+      "width": 800,
+      "height": 680,
+      "depth": 320,
+      "appliesCountertop": false,
+      "countertopWidthM": 0,
+      "imageUrl": null,
+      "notes": null,
+      "pieces": [
+        {
+          "name": "Lateral Derecho",
+          "code": "LAT-ALA-6832-D",
+          "qty": 1,
+          "length": 680,
+          "width": 320,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 0
+        },
+        {
+          "name": "Lateral Izquierdo",
+          "code": "LAT-ALA-6832-I",
+          "qty": 1,
+          "length": 680,
+          "width": 320,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 1
+        },
+        {
+          "name": "Respaldo Alacena",
+          "code": "RES-ALA-6880",
+          "qty": 1,
+          "length": 769,
+          "width": 649,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": false,
+          "bandLong2": false,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 2
+        },
+        {
+          "name": "Base Alacena",
+          "code": "BAS-ALA-8032",
+          "qty": 1,
+          "length": 769,
+          "width": 320,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 3
+        },
+        {
+          "name": "Techo Alacena",
+          "code": "TEC-ALA-8032",
+          "qty": 1,
+          "length": 769,
+          "width": 320,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 4
+        },
+        {
+          "name": "Entrepano Alacena",
+          "code": "ENT-ALA-8026",
+          "qty": 1,
+          "length": 769,
+          "width": 256,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 5
+        },
+        {
+          "name": "Puerta Der Alacena",
+          "code": "PUE-DER-ALA-6840",
+          "qty": 1,
+          "length": 677,
+          "width": 397,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 6
+        },
+        {
+          "name": "Puerta Izq Alacena",
+          "code": "PUE-IZQ-ALA-6840",
+          "qty": 1,
+          "length": 677,
+          "width": 397,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 7
+        }
+      ],
+      "hardware": [
+        {
+          "name": "Bisagra Cierre Lento",
+          "qty": 4
+        },
+        {
+          "name": "Jaladera Acero Inox",
+          "qty": 2
+        },
+        {
+          "name": "Soporte de Entrepaño",
+          "qty": 4
+        },
+        {
+          "name": "Tornillo 4x50 mm",
+          "qty": 40
+        },
+        {
+          "name": "Kit Minifixx 15mm",
+          "qty": 18
+        },
+        {
+          "name": "Taquetes de Madera 8x30mm",
+          "qty": 22
+        }
+      ]
+    },
+    {
+      "order": 7,
+      "code": "ALA-2PU-906832",
+      "name": "Alacena 2 Puertas 900 x 680 x 320 mm",
+      "category": "Alacena",
+      "width": 900,
+      "height": 680,
+      "depth": 320,
+      "appliesCountertop": false,
+      "countertopWidthM": 0,
+      "imageUrl": null,
+      "notes": null,
+      "pieces": [
+        {
+          "name": "Lateral Derecho",
+          "code": "LAT-ALA-6832-D",
+          "qty": 1,
+          "length": 680,
+          "width": 320,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 0
+        },
+        {
+          "name": "Lateral Izquierdo",
+          "code": "LAT-ALA-6832-I",
+          "qty": 1,
+          "length": 680,
+          "width": 320,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 1
+        },
+        {
+          "name": "Respaldo Alacena",
+          "code": "RES-ALA-6890",
+          "qty": 1,
+          "length": 869,
+          "width": 649,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": false,
+          "bandLong2": false,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 2
+        },
+        {
+          "name": "Base Alacena",
+          "code": "BAS-ALA-9032",
+          "qty": 1,
+          "length": 869,
+          "width": 320,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 3
+        },
+        {
+          "name": "Techo Alacena",
+          "code": "TEC-ALA-9032",
+          "qty": 1,
+          "length": 869,
+          "width": 320,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 4
+        },
+        {
+          "name": "Entrepano Alacena",
+          "code": "ENT-ALA-9026",
+          "qty": 1,
+          "length": 869,
+          "width": 256,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 5
+        },
+        {
+          "name": "Puerta Izq Alacena",
+          "code": "PUE-IZQ-ALA-6845",
+          "qty": 1,
+          "length": 676,
+          "width": 447,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 6
+        },
+        {
+          "name": "Puerta Der Alacena",
+          "code": "PUE-DER-ALA-6845",
+          "qty": 1,
+          "length": 676,
+          "width": 447,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 7
+        }
+      ],
+      "hardware": [
+        {
+          "name": "Bisagra Cierre Lento",
+          "qty": 4
+        },
+        {
+          "name": "Jaladera Acero Inox",
+          "qty": 2
+        },
+        {
+          "name": "Soporte de Entrepaño",
+          "qty": 4
+        },
+        {
+          "name": "Tornillo 4x50 mm",
+          "qty": 40
+        },
+        {
+          "name": "Kit Minifixx 15mm",
+          "qty": 18
+        },
+        {
+          "name": "Taquetes de Madera 8x30mm",
+          "qty": 22
+        }
+      ]
+    },
+    {
+      "order": 8,
+      "code": "ALA-BAS-503432",
+      "name": "Alacena Basculante 500 x 340 x 320 mm",
+      "category": "Alacena",
+      "width": 500,
+      "height": 340,
+      "depth": 320,
+      "appliesCountertop": false,
+      "countertopWidthM": 0,
+      "imageUrl": null,
+      "notes": null,
+      "pieces": [
+        {
+          "name": "Lateral Derecho",
+          "code": "LAT-ALA-3432-D",
+          "qty": 1,
+          "length": 340,
+          "width": 320,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 0
+        },
+        {
+          "name": "Lateral Izquierdo",
+          "code": "LAT-ALA-3432-I",
+          "qty": 1,
+          "length": 340,
+          "width": 320,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 1
+        },
+        {
+          "name": "Respaldo Alacena",
+          "code": "RES-ALA-3450",
+          "qty": 1,
+          "length": 469,
+          "width": 309,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": false,
+          "bandLong2": false,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 2
+        },
+        {
+          "name": "Base Alacena",
+          "code": "BAS-ALA-5032",
+          "qty": 1,
+          "length": 469,
+          "width": 320,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 3
+        },
+        {
+          "name": "Techo Alacena",
+          "code": "TEC-ALA-5032",
+          "qty": 1,
+          "length": 469,
+          "width": 320,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 4
+        },
+        {
+          "name": "Puerta Alacena",
+          "code": "PUE-ALA-5034",
+          "qty": 1,
+          "length": 497,
+          "width": 337,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 5
+        }
+      ],
+      "hardware": [
+        {
+          "name": "Bisagra Cierre Lento",
+          "qty": 2
+        },
+        {
+          "name": "Piston a Gas",
+          "qty": 1
+        },
+        {
+          "name": "Jaladera Acero Inox",
+          "qty": 1
+        },
+        {
+          "name": "Tornillo 4x50 mm",
+          "qty": 24
+        },
+        {
+          "name": "Kit Minifixx 15mm",
+          "qty": 18
+        },
+        {
+          "name": "Taquetes de Madera 8x30mm",
+          "qty": 22
+        }
+      ]
+    },
+    {
+      "order": 9,
+      "code": "ALA-BAS-603432",
+      "name": "Alacena Basculante 600 x 340 x 320 mm",
+      "category": "Alacena",
+      "width": 600,
+      "height": 340,
+      "depth": 320,
+      "appliesCountertop": false,
+      "countertopWidthM": 0,
+      "imageUrl": null,
+      "notes": null,
+      "pieces": [
+        {
+          "name": "Lateral Derecho",
+          "code": "LAT-ALA-3432-D",
+          "qty": 1,
+          "length": 340,
+          "width": 320,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 0
+        },
+        {
+          "name": "Lateral Izquierdo",
+          "code": "LAT-ALA-3432-I",
+          "qty": 1,
+          "length": 340,
+          "width": 320,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 1
+        },
+        {
+          "name": "Respaldo Alacena",
+          "code": "RES-ALA-3460",
+          "qty": 1,
+          "length": 569,
+          "width": 309,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": false,
+          "bandLong2": false,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 2
+        },
+        {
+          "name": "Base Alacena",
+          "code": "BAS-ALA-6032",
+          "qty": 1,
+          "length": 569,
+          "width": 320,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 3
+        },
+        {
+          "name": "Techo Alacena",
+          "code": "TEC-ALA-6032",
+          "qty": 1,
+          "length": 569,
+          "width": 320,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 4
+        },
+        {
+          "name": "Puerta Alacena",
+          "code": "PUE-ALA-6034",
+          "qty": 1,
+          "length": 597,
+          "width": 337,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 5
+        }
+      ],
+      "hardware": [
+        {
+          "name": "Bisagra Cierre Lento",
+          "qty": 2
+        },
+        {
+          "name": "Piston a Gas",
+          "qty": 1
+        },
+        {
+          "name": "Jaladera Acero Inox",
+          "qty": 1
+        },
+        {
+          "name": "Tornillo 4x50 mm",
+          "qty": 24
+        },
+        {
+          "name": "Kit Minifixx 15mm",
+          "qty": 18
+        },
+        {
+          "name": "Taquetes de Madera 8x30mm",
+          "qty": 22
+        }
+      ]
+    },
+    {
+      "order": 10,
+      "code": "ALA-BAS-703432",
+      "name": "Alacena Basculante 700 x 340 x 320 mm",
+      "category": "Alacena",
+      "width": 700,
+      "height": 340,
+      "depth": 320,
+      "appliesCountertop": false,
+      "countertopWidthM": 0,
+      "imageUrl": null,
+      "notes": null,
+      "pieces": [
+        {
+          "name": "Lateral Derecho",
+          "code": "LAT-ALA-3432-D",
+          "qty": 1,
+          "length": 340,
+          "width": 320,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 0
+        },
+        {
+          "name": "Lateral Izquierdo",
+          "code": "LAT-ALA-3432-I",
+          "qty": 1,
+          "length": 340,
+          "width": 320,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 1
+        },
+        {
+          "name": "Respaldo Alacena",
+          "code": "RES-ALA-3470",
+          "qty": 1,
+          "length": 669,
+          "width": 309,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": false,
+          "bandLong2": false,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 2
+        },
+        {
+          "name": "Base Alacena",
+          "code": "BAS-ALA-7032",
+          "qty": 1,
+          "length": 669,
+          "width": 320,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 3
+        },
+        {
+          "name": "Techo Alacena",
+          "code": "TEC-ALA-7032",
+          "qty": 1,
+          "length": 669,
+          "width": 320,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 4
+        },
+        {
+          "name": "Puerta Alacena",
+          "code": "PUE-ALA-7034",
+          "qty": 1,
+          "length": 697,
+          "width": 337,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 5
+        }
+      ],
+      "hardware": [
+        {
+          "name": "Bisagra Cierre Lento",
+          "qty": 2
+        },
+        {
+          "name": "Piston a Gas",
+          "qty": 1
+        },
+        {
+          "name": "Jaladera Acero Inox",
+          "qty": 1
+        },
+        {
+          "name": "Tornillo 4x50 mm",
+          "qty": 24
+        },
+        {
+          "name": "Kit Minifixx 15mm",
+          "qty": 18
+        },
+        {
+          "name": "Taquetes de Madera 8x30mm",
+          "qty": 22
+        }
+      ]
+    },
+    {
+      "order": 11,
+      "code": "ALA-BAS-803432",
+      "name": "Alacena Basculante 800 x 340 x 320 mm",
+      "category": "Alacena",
+      "width": 800,
+      "height": 340,
+      "depth": 320,
+      "appliesCountertop": false,
+      "countertopWidthM": 0,
+      "imageUrl": null,
+      "notes": null,
+      "pieces": [
+        {
+          "name": "Lateral Derecho",
+          "code": "LAT-ALA-3432-D",
+          "qty": 1,
+          "length": 340,
+          "width": 320,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 0
+        },
+        {
+          "name": "Lateral Izquierdo",
+          "code": "LAT-ALA-3432-I",
+          "qty": 1,
+          "length": 340,
+          "width": 320,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 1
+        },
+        {
+          "name": "Respaldo Alacena",
+          "code": "RES-ALA-3480",
+          "qty": 1,
+          "length": 769,
+          "width": 309,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": false,
+          "bandLong2": false,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 2
+        },
+        {
+          "name": "Base Alacena",
+          "code": "BAS-ALA-8032",
+          "qty": 1,
+          "length": 769,
+          "width": 320,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 3
+        },
+        {
+          "name": "Techo Alacena",
+          "code": "TEC-ALA-8032",
+          "qty": 1,
+          "length": 769,
+          "width": 320,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 4
+        },
+        {
+          "name": "Puerta Alacena",
+          "code": "PUE-ALA-8034",
+          "qty": 1,
+          "length": 797,
+          "width": 337,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 5
+        }
+      ],
+      "hardware": [
+        {
+          "name": "Bisagra Cierre Lento",
+          "qty": 2
+        },
+        {
+          "name": "Piston a Gas",
+          "qty": 1
+        },
+        {
+          "name": "Jaladera Acero Inox",
+          "qty": 1
+        },
+        {
+          "name": "Tornillo 4x50 mm",
+          "qty": 24
+        },
+        {
+          "name": "Kit Minifixx 15mm",
+          "qty": 18
+        },
+        {
+          "name": "Taquetes de Madera 8x30mm",
+          "qty": 22
+        }
+      ]
+    },
+    {
+      "order": 12,
+      "code": "ALA-NIC-276832",
+      "name": "Alacena Nicho Abierto 270 x 680 x 320 mm",
+      "category": "Alacena",
+      "width": 270,
+      "height": 680,
+      "depth": 320,
+      "appliesCountertop": false,
+      "countertopWidthM": 0,
+      "imageUrl": null,
+      "notes": null,
+      "pieces": [
+        {
+          "name": "Lateral Derecho",
+          "code": "LAT-NIC-6834-D",
+          "qty": 1,
+          "length": 680,
+          "width": 340,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 0
+        },
+        {
+          "name": "Lateral Izquierdo",
+          "code": "LAT-NIC-6834-I",
+          "qty": 1,
+          "length": 680,
+          "width": 340,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 1
+        },
+        {
+          "name": "Respaldo Alacena",
+          "code": "RES-NIC-6524",
+          "qty": 1,
+          "length": 649,
+          "width": 239,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": false,
+          "bandLong2": false,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 2
+        },
+        {
+          "name": "Base Alacena",
+          "code": "BAS-NIC-3424",
+          "qty": 1,
+          "length": 239,
+          "width": 340,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": false,
+          "bandLong2": false,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 3
+        },
+        {
+          "name": "Techo Alacena",
+          "code": "TEC-NIC-3424",
+          "qty": 1,
+          "length": 239,
+          "width": 340,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": false,
+          "bandLong2": false,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 4
+        },
+        {
+          "name": "Entrepano Alacena",
+          "code": "ENT-NIC-2428",
+          "qty": 1,
+          "length": 239,
+          "width": 276,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": false,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 5
+        }
+      ],
+      "hardware": [
+        {
+          "name": "Soporte de Entrepaño",
+          "qty": 4
+        },
+        {
+          "name": "Tornillo 4x50 mm",
+          "qty": 24
+        },
+        {
+          "name": "Kit Minifixx 15mm",
+          "qty": 18
+        },
+        {
+          "name": "Taquetes de Madera 8x30mm",
+          "qty": 22
+        }
+      ]
+    },
+    {
+      "order": 13,
+      "code": "ALA-MIC-503432",
+      "name": "Alacena Nicho Microondas 500 x 340 x 320 mm",
+      "category": "Alacena",
+      "width": 500,
+      "height": 340,
+      "depth": 320,
+      "appliesCountertop": false,
+      "countertopWidthM": 0,
+      "imageUrl": null,
+      "notes": null,
+      "pieces": [
+        {
+          "name": "Lateral Derecho",
+          "code": "LAT-NIC-6834-D",
+          "qty": 1,
+          "length": 340,
+          "width": 340,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 0
+        },
+        {
+          "name": "Lateral Izquierdo",
+          "code": "LAT-NIC-6834-I",
+          "qty": 1,
+          "length": 340,
+          "width": 340,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 1
+        },
+        {
+          "name": "Respaldo Alacena",
+          "code": "RES-NIC-3450",
+          "qty": 1,
+          "length": 309,
+          "width": 469,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": false,
+          "bandLong2": false,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 2
+        },
+        {
+          "name": "Base Alacena",
+          "code": "BAS-NIC-5040",
+          "qty": 1,
+          "length": 469,
+          "width": 400,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": false,
+          "bandLong2": false,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 3
+        },
+        {
+          "name": "Techo Alacena",
+          "code": "TEC-NIC-5034",
+          "qty": 1,
+          "length": 469,
+          "width": 340,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": false,
+          "bandLong2": false,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 4
+        }
+      ],
+      "hardware": [
+        {
+          "name": "Tornillo 4x50 mm",
+          "qty": 24
+        },
+        {
+          "name": "Kit Minifixx 15mm",
+          "qty": 18
+        },
+        {
+          "name": "Taquetes de Madera 8x30mm",
+          "qty": 22
+        }
+      ]
+    },
+    {
+      "order": 14,
+      "code": "ALA-MIC-603432",
+      "name": "Alacena Nicho Microondas 600 x 340 x 320 mm",
+      "category": "Alacena",
+      "width": 600,
+      "height": 340,
+      "depth": 320,
+      "appliesCountertop": false,
+      "countertopWidthM": 0,
+      "imageUrl": null,
+      "notes": null,
+      "pieces": [
+        {
+          "name": "Lateral Derecho",
+          "code": "LAT-NIC-6834-D",
+          "qty": 1,
+          "length": 340,
+          "width": 340,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 0
+        },
+        {
+          "name": "Lateral Izquierdo",
+          "code": "LAT-NIC-6834-I",
+          "qty": 1,
+          "length": 340,
+          "width": 340,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 1
+        },
+        {
+          "name": "Respaldo Alacena",
+          "code": "RES-NIC-6524",
+          "qty": 1,
+          "length": 309,
+          "width": 569,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": false,
+          "bandLong2": false,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 2
+        },
+        {
+          "name": "Base Alacena",
+          "code": "BAS-NIC-3424",
+          "qty": 1,
+          "length": 569,
+          "width": 400,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": false,
+          "bandLong2": false,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 3
+        },
+        {
+          "name": "Techo Alacena",
+          "code": "TEC-NIC-3424",
+          "qty": 1,
+          "length": 569,
+          "width": 340,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": false,
+          "bandLong2": false,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 4
+        }
+      ],
+      "hardware": [
+        {
+          "name": "Tornillo 4x50 mm",
+          "qty": 24
+        },
+        {
+          "name": "Kit Minifixx 15mm",
+          "qty": 18
+        },
+        {
+          "name": "Taquetes de Madera 8x30mm",
+          "qty": 22
+        }
+      ]
+    },
+    {
+      "order": 15,
+      "code": "GAB-RIN-1057258",
+      "name": "Gabinete Rinconero 1050 x 720 x 580 mm",
+      "category": "Gabinete",
+      "width": 1050,
+      "height": 720,
+      "depth": 580,
+      "appliesCountertop": true,
+      "countertopWidthM": 1.05,
+      "imageUrl": null,
+      "notes": null,
+      "pieces": [
+        {
+          "name": "Costado Derecho Gabinete",
+          "code": "COS-DER-GAB-7258",
+          "qty": 1,
+          "length": 720,
+          "width": 580,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 0
+        },
+        {
+          "name": "Costado Izquierdo Gabinete",
+          "code": "COS-IZQ-GAB-7258",
+          "qty": 1,
+          "length": 720,
+          "width": 580,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 1
+        },
+        {
+          "name": "Respaldo Gabinete",
+          "code": "RES-GAB-72105",
+          "qty": 1,
+          "length": 689,
+          "width": 969,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": false,
+          "bandLong2": false,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 2
+        },
+        {
+          "name": "Piso Gabinete",
+          "code": "PIS-GAB-10587",
+          "qty": 1,
+          "length": 969,
+          "width": 580,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 3
+        },
+        {
+          "name": "Manguete Techo Frontal",
+          "code": "MAN-TEC-FR-GAB-9712",
+          "qty": 1,
+          "length": 969,
+          "width": 120,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 4
+        },
+        {
+          "name": "Manguete Techo Posterior",
+          "code": "MAN-TEC-PO-GAB-9712",
+          "qty": 1,
+          "length": 969,
+          "width": 120,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 5
+        },
+        {
+          "name": "Tapa Ciega",
+          "code": "TAP-CIE-GAB-1-6957",
+          "qty": 1,
+          "length": 689,
+          "width": 574.5,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": false,
+          "bandLong2": false,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 6
+        },
+        {
+          "name": "Refuerzo Bisagra",
+          "code": "REF-BIS-GAB-697",
+          "qty": 1,
+          "length": 689,
+          "width": 70,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 7
+        },
+        {
+          "name": "Entrepano Gabinete",
+          "code": "ENT-GAB-2-10597",
+          "qty": 1,
+          "length": 969,
+          "width": 490,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": false,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 8
+        },
+        {
+          "name": "Puerta Der Gabinete",
+          "code": "PUE-DER-GAB-1-7241",
+          "qty": 1,
+          "length": 717,
+          "width": 407,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 9
+        },
+        {
+          "name": "Ajuste 1 Rinconero",
+          "code": "AJU-RIN-GAB-1-727",
+          "qty": 1,
+          "length": 717,
+          "width": 70,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 10
+        },
+        {
+          "name": "Ajuste 2 Rinconero",
+          "code": "AJU-RIN-GAB-2-727",
+          "qty": 1,
+          "length": 717,
+          "width": 70,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 11
+        }
+      ],
+      "hardware": [
+        {
+          "name": "Jaladera Acero Inox",
+          "qty": 1
+        },
+        {
+          "name": "Pata Regulable Plastica",
+          "qty": 4
+        },
+        {
+          "name": "Soporte de Entrepaño",
+          "qty": 4
+        },
+        {
+          "name": "Tornillo 4x50 mm",
+          "qty": 30
+        },
+        {
+          "name": "Kit Minifixx 15mm",
+          "qty": 18
+        },
+        {
+          "name": "Taquetes de Madera 8x30mm",
+          "qty": 24
+        }
+      ]
+    },
+    {
+      "order": 16,
+      "code": "GAB-1PU-307258",
+      "name": "Gabinete 1 Puerta 300 x 720 x 580 mm",
+      "category": "Gabinete",
+      "width": 300,
+      "height": 720,
+      "depth": 580,
+      "appliesCountertop": true,
+      "countertopWidthM": 0.3,
+      "imageUrl": null,
+      "notes": null,
+      "pieces": [
+        {
+          "name": "Lateral Derecho",
+          "code": "LAT-GAB-7258-D",
+          "qty": 1,
+          "length": 720,
+          "width": 580,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 0
+        },
+        {
+          "name": "Lateral Izquierdo",
+          "code": "LAT-GAB-7258-I",
+          "qty": 1,
+          "length": 720,
+          "width": 580,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 1
+        },
+        {
+          "name": "Respaldo Gabinete",
+          "code": "RES-GAB-7230",
+          "qty": 1,
+          "length": 689,
+          "width": 269,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": false,
+          "bandLong2": false,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 2
+        },
+        {
+          "name": "Piso Gabinete",
+          "code": "PIS-GAB-3058",
+          "qty": 1,
+          "length": 269,
+          "width": 580,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": false,
+          "bandLong2": false,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 3
+        },
+        {
+          "name": "Manguete Techo",
+          "code": "MAN-TEC-GAB-3027",
+          "qty": 1,
+          "length": 269,
+          "width": 120,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 4
+        },
+        {
+          "name": "Manguete Techo",
+          "code": "MAN-TEC-GAB-3027",
+          "qty": 1,
+          "length": 269,
+          "width": 120,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 5
+        },
+        {
+          "name": "Entrepano Gabinete",
+          "code": "ENT-GAB-3050",
+          "qty": 1,
+          "length": 269,
+          "width": 490,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": false,
+          "bandLong2": false,
+          "bandShort1": false,
+          "bandShort2": true,
+          "order": 6
+        },
+        {
+          "name": "Puerta Gabinete",
+          "code": "PUE-GAB-7230",
+          "qty": 1,
+          "length": 717,
+          "width": 297,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 7
+        }
+      ],
+      "hardware": [
+        {
+          "name": "Bisagra Cierre Lento",
+          "qty": 2
+        },
+        {
+          "name": "Jaladera Acero Inox",
+          "qty": 1
+        },
+        {
+          "name": "Pata Regulable Plastica",
+          "qty": 4
+        },
+        {
+          "name": "Soporte de Entrepaño",
+          "qty": 4
+        },
+        {
+          "name": "Tornillo 4x50 mm",
+          "qty": 24
+        },
+        {
+          "name": "Kit Minifixx 15mm",
+          "qty": 18
+        },
+        {
+          "name": "Taquetes de Madera 8x30mm",
+          "qty": 24
+        }
+      ]
+    },
+    {
+      "order": 17,
+      "code": "GAB-1PU-407258",
+      "name": "Gabinete 1 Puerta 400 x 720 x 580 mm",
+      "category": "Gabinete",
+      "width": 400,
+      "height": 720,
+      "depth": 580,
+      "appliesCountertop": true,
+      "countertopWidthM": 0.4,
+      "imageUrl": null,
+      "notes": null,
+      "pieces": [
+        {
+          "name": "Lateral Derecho",
+          "code": "LAT-GAB-7258-D",
+          "qty": 1,
+          "length": 720,
+          "width": 580,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 0
+        },
+        {
+          "name": "Lateral Izquierdo",
+          "code": "LAT-GAB-7258-I",
+          "qty": 1,
+          "length": 720,
+          "width": 580,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 1
+        },
+        {
+          "name": "Respaldo Gabinete",
+          "code": "RES-GAB-7240",
+          "qty": 1,
+          "length": 689,
+          "width": 369,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": false,
+          "bandLong2": false,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 2
+        },
+        {
+          "name": "Piso Gabinete",
+          "code": "PIS-GAB-4058",
+          "qty": 1,
+          "length": 369,
+          "width": 580,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": false,
+          "bandLong2": false,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 3
+        },
+        {
+          "name": "Manguete Techo",
+          "code": "MAN-TEC-GAB-4037",
+          "qty": 1,
+          "length": 369,
+          "width": 120,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 4
+        },
+        {
+          "name": "Manguete Techo",
+          "code": "MAN-TEC-GAB-4037",
+          "qty": 1,
+          "length": 369,
+          "width": 120,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 5
+        },
+        {
+          "name": "Entrepano Gabinete",
+          "code": "ENT-GAB-4052",
+          "qty": 1,
+          "length": 369,
+          "width": 490,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": false,
+          "bandLong2": false,
+          "bandShort1": false,
+          "bandShort2": true,
+          "order": 6
+        },
+        {
+          "name": "Puerta Gabinete",
+          "code": "PUE-GAB-7240",
+          "qty": 1,
+          "length": 717,
+          "width": 397,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 7
+        }
+      ],
+      "hardware": [
+        {
+          "name": "Bisagra Cierre Lento",
+          "qty": 2
+        },
+        {
+          "name": "Jaladera Acero Inox",
+          "qty": 1
+        },
+        {
+          "name": "Pata Regulable Plastica",
+          "qty": 4
+        },
+        {
+          "name": "Soporte de Entrepaño",
+          "qty": 4
+        },
+        {
+          "name": "Tornillo 4x50 mm",
+          "qty": 24
+        },
+        {
+          "name": "Kit Minifixx 15mm",
+          "qty": 18
+        },
+        {
+          "name": "Taquetes de Madera 8x30mm",
+          "qty": 24
+        }
+      ]
+    },
+    {
+      "order": 18,
+      "code": "GAB-1PU-507258",
+      "name": "Gabinete 1 Puerta 500 x 720 x 580 mm",
+      "category": "Gabinete",
+      "width": 500,
+      "height": 720,
+      "depth": 580,
+      "appliesCountertop": true,
+      "countertopWidthM": 0.5,
+      "imageUrl": null,
+      "notes": null,
+      "pieces": [
+        {
+          "name": "Lateral Derecho",
+          "code": "LAT-GAB-7258-D",
+          "qty": 1,
+          "length": 720,
+          "width": 580,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 0
+        },
+        {
+          "name": "Lateral Izquierdo",
+          "code": "LAT-GAB-7258-I",
+          "qty": 1,
+          "length": 720,
+          "width": 580,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 1
+        },
+        {
+          "name": "Respaldo Gabinete",
+          "code": "RES-GAB-7250",
+          "qty": 1,
+          "length": 689,
+          "width": 469,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": false,
+          "bandLong2": false,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 2
+        },
+        {
+          "name": "Piso Gabinete",
+          "code": "PIS-GAB-5058",
+          "qty": 1,
+          "length": 469,
+          "width": 580,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": false,
+          "bandLong2": false,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 3
+        },
+        {
+          "name": "Manguete Techo",
+          "code": "MAN-TEC-GAB-5047",
+          "qty": 1,
+          "length": 469,
+          "width": 120,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 4
+        },
+        {
+          "name": "Manguete Techo",
+          "code": "MAN-TEC-GAB-5047",
+          "qty": 1,
+          "length": 469,
+          "width": 120,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 5
+        },
+        {
+          "name": "Entrepano Gabinete",
+          "code": "ENT-GAB-5052",
+          "qty": 1,
+          "length": 469,
+          "width": 490,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": false,
+          "bandLong2": false,
+          "bandShort1": false,
+          "bandShort2": true,
+          "order": 6
+        },
+        {
+          "name": "Puerta Gabinete",
+          "code": "PUE-GAB-7250",
+          "qty": 1,
+          "length": 717,
+          "width": 497,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 7
+        }
+      ],
+      "hardware": [
+        {
+          "name": "Bisagra Cierre Lento",
+          "qty": 2
+        },
+        {
+          "name": "Jaladera Acero Inox",
+          "qty": 1
+        },
+        {
+          "name": "Pata Regulable Plastica",
+          "qty": 4
+        },
+        {
+          "name": "Soporte de Entrepaño",
+          "qty": 4
+        },
+        {
+          "name": "Tornillo 4x50 mm",
+          "qty": 24
+        },
+        {
+          "name": "Kit Minifixx 15mm",
+          "qty": 18
+        },
+        {
+          "name": "Taquetes de Madera 8x30mm",
+          "qty": 24
+        }
+      ]
+    },
+    {
+      "order": 19,
+      "code": "GAB-1PU-607258",
+      "name": "Gabinete 1 Puerta 600 x 720 x 580 mm",
+      "category": "Gabinete",
+      "width": 600,
+      "height": 720,
+      "depth": 580,
+      "appliesCountertop": true,
+      "countertopWidthM": 0.6,
+      "imageUrl": null,
+      "notes": null,
+      "pieces": [
+        {
+          "name": "Lateral Derecho",
+          "code": "LAT-GAB-7258-D",
+          "qty": 1,
+          "length": 720,
+          "width": 580,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 0
+        },
+        {
+          "name": "Lateral Izquierdo",
+          "code": "LAT-GAB-7258-I",
+          "qty": 1,
+          "length": 720,
+          "width": 580,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 1
+        },
+        {
+          "name": "Respaldo Gabinete",
+          "code": "RES-GAB-7260",
+          "qty": 1,
+          "length": 689,
+          "width": 569,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": false,
+          "bandLong2": false,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 2
+        },
+        {
+          "name": "Piso Gabinete",
+          "code": "PIS-GAB-6058",
+          "qty": 1,
+          "length": 569,
+          "width": 580,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": false,
+          "bandLong2": false,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 3
+        },
+        {
+          "name": "Manguete Techo",
+          "code": "MAN-TEC-GAB-6057",
+          "qty": 1,
+          "length": 569,
+          "width": 120,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 4
+        },
+        {
+          "name": "Manguete Techo",
+          "code": "MAN-TEC-GAB-6057",
+          "qty": 1,
+          "length": 569,
+          "width": 120,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 5
+        },
+        {
+          "name": "Entrepano Gabinete",
+          "code": "ENT-GAB-6057",
+          "qty": 1,
+          "length": 569,
+          "width": 490,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": false,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 6
+        },
+        {
+          "name": "Puerta Gabinete",
+          "code": "PUE-GAB-7260",
+          "qty": 1,
+          "length": 717,
+          "width": 597,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 7
+        }
+      ],
+      "hardware": [
+        {
+          "name": "Bisagra Cierre Lento",
+          "qty": 2
+        },
+        {
+          "name": "Jaladera Acero Inox",
+          "qty": 1
+        },
+        {
+          "name": "Pata Regulable Plastica",
+          "qty": 4
+        },
+        {
+          "name": "Soporte de Entrepaño",
+          "qty": 4
+        },
+        {
+          "name": "Tornillo 4x50 mm",
+          "qty": 24
+        },
+        {
+          "name": "Kit Minifixx 15mm",
+          "qty": 18
+        },
+        {
+          "name": "Taquetes de Madera 8x30mm",
+          "qty": 24
+        }
+      ]
+    },
+    {
+      "order": 20,
+      "code": "GAB-2PU-707258",
+      "name": "Gabinete 2 Puertas 700 x 720 x 580 mm",
+      "category": "Gabinete",
+      "width": 700,
+      "height": 720,
+      "depth": 580,
+      "appliesCountertop": true,
+      "countertopWidthM": 0.7,
+      "imageUrl": null,
+      "notes": null,
+      "pieces": [
+        {
+          "name": "Lateral Derecho",
+          "code": "LAT-GAB-7258-D",
+          "qty": 1,
+          "length": 720,
+          "width": 580,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 0
+        },
+        {
+          "name": "Lateral Izquierdo",
+          "code": "LAT-GAB-7258-I",
+          "qty": 1,
+          "length": 720,
+          "width": 580,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 1
+        },
+        {
+          "name": "Respaldo Gabinete",
+          "code": "RES-GAB-7270",
+          "qty": 1,
+          "length": 689,
+          "width": 669,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": false,
+          "bandLong2": false,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 2
+        },
+        {
+          "name": "Piso Gabinete",
+          "code": "PIS-GAB-7058",
+          "qty": 1,
+          "length": 669,
+          "width": 580,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 3
+        },
+        {
+          "name": "Manguete Techo",
+          "code": "MAN-TEC-GAB-7059",
+          "qty": 1,
+          "length": 669,
+          "width": 120,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 4
+        },
+        {
+          "name": "Manguete Techo",
+          "code": "MAN-TEC-GAB-7059",
+          "qty": 1,
+          "length": 669,
+          "width": 120,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 5
+        },
+        {
+          "name": "Entrepano Gabinete",
+          "code": "ENT-GAB-7059",
+          "qty": 1,
+          "length": 669,
+          "width": 490,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": false,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 6
+        },
+        {
+          "name": "Puerta Der Gabinete",
+          "code": "PUE-DER-GAB-7235",
+          "qty": 1,
+          "length": 717,
+          "width": 347,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 7
+        },
+        {
+          "name": "Puerta Izq Gabinete",
+          "code": "PUE-IZQ-GAB-7235",
+          "qty": 1,
+          "length": 717,
+          "width": 347,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 8
+        }
+      ],
+      "hardware": [
+        {
+          "name": "Bisagra Cierre Lento",
+          "qty": 4
+        },
+        {
+          "name": "Jaladera Acero Inox",
+          "qty": 2
+        },
+        {
+          "name": "Pata Regulable Plastica",
+          "qty": 4
+        },
+        {
+          "name": "Soporte de Entrepaño",
+          "qty": 4
+        },
+        {
+          "name": "Tornillo 4x50 mm",
+          "qty": 40
+        },
+        {
+          "name": "Kit Minifixx 15mm",
+          "qty": 18
+        },
+        {
+          "name": "Taquetes de Madera 8x30mm",
+          "qty": 24
+        }
+      ]
+    },
+    {
+      "order": 21,
+      "code": "GAB-2PU-807258",
+      "name": "Gabinete 2 Puertas 800 x 720 x 580 mm",
+      "category": "Gabinete",
+      "width": 800,
+      "height": 720,
+      "depth": 580,
+      "appliesCountertop": true,
+      "countertopWidthM": 0.8,
+      "imageUrl": null,
+      "notes": null,
+      "pieces": [
+        {
+          "name": "Lateral Derecho",
+          "code": "LAT-GAB-7258-D",
+          "qty": 1,
+          "length": 720,
+          "width": 580,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 0
+        },
+        {
+          "name": "Lateral Izquierdo",
+          "code": "LAT-GAB-7258-I",
+          "qty": 1,
+          "length": 720,
+          "width": 580,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 1
+        },
+        {
+          "name": "Respaldo Gabinete",
+          "code": "RES-GAB-7280",
+          "qty": 1,
+          "length": 689,
+          "width": 769,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": false,
+          "bandLong2": false,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 2
+        },
+        {
+          "name": "Piso Gabinete",
+          "code": "PIS-GAB-8058",
+          "qty": 1,
+          "length": 769,
+          "width": 580,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 3
+        },
+        {
+          "name": "Manguete Techo",
+          "code": "MAN-TEC-GAB-8059",
+          "qty": 1,
+          "length": 769,
+          "width": 120,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 4
+        },
+        {
+          "name": "Manguete Techo",
+          "code": "MAN-TEC-GAB-8059",
+          "qty": 1,
+          "length": 769,
+          "width": 120,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 5
+        },
+        {
+          "name": "Entrepano Gabinete",
+          "code": "ENT-GAB-8059",
+          "qty": 1,
+          "length": 769,
+          "width": 490,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": false,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 6
+        },
+        {
+          "name": "Puerta Der Gabinete",
+          "code": "PUE-DER-GAB-7240",
+          "qty": 1,
+          "length": 717,
+          "width": 397,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 7
+        },
+        {
+          "name": "Puerta Izq Gabinete",
+          "code": "PUE-IZQ-GAB-7240",
+          "qty": 1,
+          "length": 717,
+          "width": 397,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 8
+        }
+      ],
+      "hardware": [
+        {
+          "name": "Bisagra Cierre Lento",
+          "qty": 4
+        },
+        {
+          "name": "Jaladera Acero Inox",
+          "qty": 2
+        },
+        {
+          "name": "Pata Regulable Plastica",
+          "qty": 4
+        },
+        {
+          "name": "Soporte de Entrepaño",
+          "qty": 4
+        },
+        {
+          "name": "Tornillo 4x50 mm",
+          "qty": 40
+        },
+        {
+          "name": "Kit Minifixx 15mm",
+          "qty": 18
+        },
+        {
+          "name": "Taquetes de Madera 8x30mm",
+          "qty": 24
+        }
+      ]
+    },
+    {
+      "order": 22,
+      "code": "GAB-2PU-907258",
+      "name": "Gabinete 2 Puertas 900 x 720 x 580 mm",
+      "category": "Gabinete",
+      "width": 900,
+      "height": 720,
+      "depth": 580,
+      "appliesCountertop": true,
+      "countertopWidthM": 0.9,
+      "imageUrl": null,
+      "notes": null,
+      "pieces": [
+        {
+          "name": "Lateral Derecho",
+          "code": "LAT-GAB-7258-D",
+          "qty": 1,
+          "length": 720,
+          "width": 580,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 0
+        },
+        {
+          "name": "Lateral Izquierdo",
+          "code": "LAT-GAB-7258-I",
+          "qty": 1,
+          "length": 720,
+          "width": 580,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 1
+        },
+        {
+          "name": "Respaldo Gabinete",
+          "code": "RES-GAB-7290",
+          "qty": 1,
+          "length": 689,
+          "width": 869,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": false,
+          "bandLong2": false,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 2
+        },
+        {
+          "name": "Piso Gabinete",
+          "code": "PIS-GAB-9087",
+          "qty": 1,
+          "length": 869,
+          "width": 580,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 3
+        },
+        {
+          "name": "Manguete Techo",
+          "code": "MAN-TEC-GAB-9087",
+          "qty": 1,
+          "length": 869,
+          "width": 120,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 4
+        },
+        {
+          "name": "Manguete Techo",
+          "code": "MAN-TEC-GAB-9087",
+          "qty": 1,
+          "length": 869,
+          "width": 120,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 5
+        },
+        {
+          "name": "Entrepano Gabinete",
+          "code": "ENT-GAB-9087",
+          "qty": 1,
+          "length": 869,
+          "width": 490,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": false,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 6
+        },
+        {
+          "name": "Puerta Der Gabinete",
+          "code": "PUE-DER-GAB-7245",
+          "qty": 1,
+          "length": 717,
+          "width": 447,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 7
+        },
+        {
+          "name": "Puerta Izq Gabinete",
+          "code": "PUE-IZQ-GAB-7245",
+          "qty": 1,
+          "length": 717,
+          "width": 447,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 8
+        }
+      ],
+      "hardware": [
+        {
+          "name": "Bisagra Cierre Lento",
+          "qty": 4
+        },
+        {
+          "name": "Jaladera Acero Inox",
+          "qty": 2
+        },
+        {
+          "name": "Pata Regulable Plastica",
+          "qty": 4
+        },
+        {
+          "name": "Soporte de Entrepaño",
+          "qty": 4
+        },
+        {
+          "name": "Tornillo 4x50 mm",
+          "qty": 40
+        },
+        {
+          "name": "Kit Minifixx 15mm",
+          "qty": 18
+        },
+        {
+          "name": "Taquetes de Madera 8x30mm",
+          "qty": 24
+        }
+      ]
+    },
+    {
+      "order": 23,
+      "code": "GAB-3CA-407258",
+      "name": "Gabinete 3 Cajones 400 x 720 x 580 mm",
+      "category": "Gabinete",
+      "width": 400,
+      "height": 720,
+      "depth": 580,
+      "appliesCountertop": true,
+      "countertopWidthM": 0.4,
+      "imageUrl": null,
+      "notes": null,
+      "pieces": [
+        {
+          "name": "Lateral Derecho",
+          "code": "LAT-GAB-7258-D",
+          "qty": 1,
+          "length": 720,
+          "width": 580,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 0
+        },
+        {
+          "name": "Lateral Izquierdo",
+          "code": "LAT-GAB-7258-I",
+          "qty": 1,
+          "length": 720,
+          "width": 580,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 1
+        },
+        {
+          "name": "Manguete Respaldo",
+          "code": "MAN-RESP-GAB-3712",
+          "qty": 2,
+          "length": 369,
+          "width": 120,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 2
+        },
+        {
+          "name": "Piso Gabinete",
+          "code": "PIS-GAB-4058",
+          "qty": 1,
+          "length": 369,
+          "width": 580,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": false,
+          "bandLong2": false,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 3
+        },
+        {
+          "name": "Manguete Techo",
+          "code": "MAN-TEC-GAB-4037",
+          "qty": 2,
+          "length": 369,
+          "width": 120,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 4
+        },
+        {
+          "name": "Lateral Cajon",
+          "code": "LAT-CAJ-GAB-5023",
+          "qty": 2,
+          "length": 500,
+          "width": 230,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 5
+        },
+        {
+          "name": "Lateral Cajon",
+          "code": "LAT-CAJ-GAB-5010",
+          "qty": 4,
+          "length": 500,
+          "width": 100,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 6
+        },
+        {
+          "name": "Base Cajon",
+          "code": "BAS-CAJ-GAB-3147",
+          "qty": 3,
+          "length": 312,
+          "width": 469,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": false,
+          "bandLong2": false,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 7
+        },
+        {
+          "name": "Contra Frente Cajon",
+          "code": "CON-FRE-CAJ-GAB-3123",
+          "qty": 2,
+          "length": 312,
+          "width": 230,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 8
+        },
+        {
+          "name": "Contra Frente Cajon",
+          "code": "CON-FRE-CAJ-GAB-3110",
+          "qty": 4,
+          "length": 312,
+          "width": 100,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 9
+        },
+        {
+          "name": "Frente Inferior Alta",
+          "code": "FRE-INF-ALT-GAB-4036",
+          "qty": 1,
+          "length": 396,
+          "width": 356,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 10
+        },
+        {
+          "name": "Frente Central Baja",
+          "code": "FRE-CEN-BAJ-GAB-4018",
+          "qty": 1,
+          "length": 396,
+          "width": 176,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 11
+        },
+        {
+          "name": "Frente Superior Baja",
+          "code": "FRE-SUP-BAJ-GAB-4018",
+          "qty": 1,
+          "length": 396,
+          "width": 176,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 12
+        }
+      ],
+      "hardware": [
+        {
+          "name": "Corredera Telescópica 500mm",
+          "qty": 3
+        },
+        {
+          "name": "Jaladera Acero Inox",
+          "qty": 3
+        },
+        {
+          "name": "Pata Regulable Plastica",
+          "qty": 4
+        },
+        {
+          "name": "Tornillo 4x50 mm",
+          "qty": 50
+        },
+        {
+          "name": "Kit Minifixx 15mm",
+          "qty": 24
+        },
+        {
+          "name": "Taquetes de Madera 8x30mm",
+          "qty": 40
+        }
+      ]
+    },
+    {
+      "order": 24,
+      "code": "GAB-3CA-507258",
+      "name": "Gabinete 3 Cajones 500 x 720 x 580 mm",
+      "category": "Gabinete",
+      "width": 500,
+      "height": 720,
+      "depth": 580,
+      "appliesCountertop": true,
+      "countertopWidthM": 0.5,
+      "imageUrl": null,
+      "notes": null,
+      "pieces": [
+        {
+          "name": "Lateral Derecho",
+          "code": "LAT-GAB-7258-D",
+          "qty": 1,
+          "length": 720,
+          "width": 580,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 0
+        },
+        {
+          "name": "Lateral Izquierdo",
+          "code": "LAT-GAB-7258-I",
+          "qty": 1,
+          "length": 720,
+          "width": 580,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 1
+        },
+        {
+          "name": "Manguete Respaldo",
+          "code": "MAN-RESP-GAB-4712",
+          "qty": 2,
+          "length": 469,
+          "width": 120,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 2
+        },
+        {
+          "name": "Piso Gabinete",
+          "code": "PIS-GAB-5058",
+          "qty": 1,
+          "length": 469,
+          "width": 580,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": false,
+          "bandLong2": false,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 3
+        },
+        {
+          "name": "Manguete Techo",
+          "code": "MAN-TEC-GAB-5047",
+          "qty": 2,
+          "length": 469,
+          "width": 120,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 4
+        },
+        {
+          "name": "Lateral Cajon",
+          "code": "LAT-CAJ-GAB-5023",
+          "qty": 2,
+          "length": 500,
+          "width": 230,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 5
+        },
+        {
+          "name": "Lateral Cajon",
+          "code": "LAT-CAJ-GAB-5010",
+          "qty": 4,
+          "length": 500,
+          "width": 100,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 6
+        },
+        {
+          "name": "Base Cajon",
+          "code": "BAS-CAJ-GAB-4147",
+          "qty": 3,
+          "length": 412,
+          "width": 469,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": false,
+          "bandLong2": false,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 7
+        },
+        {
+          "name": "Fondo Cajon",
+          "code": "FON-CAJ-GAB-4123",
+          "qty": 2,
+          "length": 412,
+          "width": 230,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 8
+        },
+        {
+          "name": "Fondo Cajon",
+          "code": "FON-CAJ-GAB-4110",
+          "qty": 4,
+          "length": 412,
+          "width": 100,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 9
+        },
+        {
+          "name": "Frente Inferior Alta",
+          "code": "FRE-INF-ALT-GAB-5036",
+          "qty": 1,
+          "length": 496,
+          "width": 356,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 10
+        },
+        {
+          "name": "Frente Central Baja",
+          "code": "FRE-CEN-BAJ-GAB-5018",
+          "qty": 1,
+          "length": 496,
+          "width": 176,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 11
+        },
+        {
+          "name": "Frente Superior Baja",
+          "code": "FRE-SUP-BAJ-GAB-5018",
+          "qty": 1,
+          "length": 496,
+          "width": 176,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 12
+        }
+      ],
+      "hardware": [
+        {
+          "name": "Corredera Telescópica 500mm",
+          "qty": 3
+        },
+        {
+          "name": "Jaladera Acero Inox",
+          "qty": 3
+        },
+        {
+          "name": "Pata Regulable Plastica",
+          "qty": 4
+        },
+        {
+          "name": "Tornillo 4x50 mm",
+          "qty": 50
+        },
+        {
+          "name": "Kit Minifixx 15mm",
+          "qty": 24
+        },
+        {
+          "name": "Taquetes de Madera 8x30mm",
+          "qty": 40
+        }
+      ]
+    },
+    {
+      "order": 25,
+      "code": "GAB-3CA-607258",
+      "name": "Gabinete 3 Cajones 600 x 720 x 580 mm",
+      "category": "Gabinete",
+      "width": 600,
+      "height": 720,
+      "depth": 580,
+      "appliesCountertop": true,
+      "countertopWidthM": 0.6,
+      "imageUrl": null,
+      "notes": null,
+      "pieces": [
+        {
+          "name": "Lateral Derecho",
+          "code": "LAT-GAB-7258-D",
+          "qty": 1,
+          "length": 720,
+          "width": 580,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 0
+        },
+        {
+          "name": "Lateral Izquierdo",
+          "code": "LAT-GAB-7258-I",
+          "qty": 1,
+          "length": 720,
+          "width": 580,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 1
+        },
+        {
+          "name": "Manguete Techo",
+          "code": "MAN-TEC-GAB-6057",
+          "qty": 2,
+          "length": 569,
+          "width": 120,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 2
+        },
+        {
+          "name": "Piso Gabinete",
+          "code": "PIS-GAB-6058",
+          "qty": 1,
+          "length": 569,
+          "width": 580,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": false,
+          "bandLong2": false,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 3
+        },
+        {
+          "name": "Manguete Respaldo",
+          "code": "MAN-RESP-GAB-5712",
+          "qty": 2,
+          "length": 569,
+          "width": 120,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 4
+        },
+        {
+          "name": "Base Cajon",
+          "code": "BAS-CAJ-GAB-5147",
+          "qty": 3,
+          "length": 512,
+          "width": 469,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": false,
+          "bandLong2": false,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 5
+        },
+        {
+          "name": "Contra Frente Cajon",
+          "code": "CON-FRE-CAJ-GAB-5123",
+          "qty": 2,
+          "length": 512,
+          "width": 230,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 6
+        },
+        {
+          "name": "Contra Frente Cajon",
+          "code": "CON-FRE-CAJ-GAB-5110",
+          "qty": 4,
+          "length": 512,
+          "width": 100,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 7
+        },
+        {
+          "name": "Lateral Cajon",
+          "code": "LAT-CAJ-GAB-5023",
+          "qty": 2,
+          "length": 500,
+          "width": 230,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 8
+        },
+        {
+          "name": "Lateral Cajon",
+          "code": "LAT-CAJ-GAB-5010",
+          "qty": 4,
+          "length": 500,
+          "width": 100,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 9
+        },
+        {
+          "name": "Frente Inferior Alta",
+          "code": "FRE-INF-ALT-GAB-6036",
+          "qty": 1,
+          "length": 596,
+          "width": 356,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 10
+        },
+        {
+          "name": "Frente Central Baja",
+          "code": "FRE-CEN-BAJ-GAB-6018",
+          "qty": 1,
+          "length": 596,
+          "width": 176,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 11
+        },
+        {
+          "name": "Frente Superior Baja",
+          "code": "FRE-SUP-BAJ-GAB-6018",
+          "qty": 1,
+          "length": 596,
+          "width": 176,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 12
+        }
+      ],
+      "hardware": [
+        {
+          "name": "Corredera Telescópica 500mm",
+          "qty": 3
+        },
+        {
+          "name": "Jaladera Acero Inox",
+          "qty": 3
+        },
+        {
+          "name": "Pata Regulable Plastica",
+          "qty": 4
+        },
+        {
+          "name": "Tornillo 4x50 mm",
+          "qty": 50
+        },
+        {
+          "name": "Kit Minifixx 15mm",
+          "qty": 24
+        },
+        {
+          "name": "Taquetes de Madera 8x30mm",
+          "qty": 40
+        }
+      ]
+    },
+    {
+      "order": 26,
+      "code": "GAB-MIC-603658",
+      "name": "Gabinete Nicho Microondas 600 x 360 x 580 mm",
+      "category": "Gabinete",
+      "width": 600,
+      "height": 360,
+      "depth": 580,
+      "appliesCountertop": true,
+      "countertopWidthM": 0.6,
+      "imageUrl": null,
+      "notes": null,
+      "pieces": [
+        {
+          "name": "Lateral Derecho",
+          "code": "LAT-NIC-3658-D",
+          "qty": 1,
+          "length": 360,
+          "width": 580,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 0
+        },
+        {
+          "name": "Lateral Izquierdo",
+          "code": "LAT-NIC-3658-I",
+          "qty": 1,
+          "length": 360,
+          "width": 580,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 1
+        },
+        {
+          "name": "Respaldo Nicho",
+          "code": "RES-NIC-3357",
+          "qty": 1,
+          "length": 329,
+          "width": 569,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": false,
+          "bandLong2": false,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 2
+        },
+        {
+          "name": "Base Nicho",
+          "code": "BAS-NIC-5758",
+          "qty": 1,
+          "length": 569,
+          "width": 580,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": false,
+          "bandLong2": false,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 3
+        },
+        {
+          "name": "Techo Nicho",
+          "code": "TEC-NIC-5758",
+          "qty": 1,
+          "length": 569,
+          "width": 580,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": false,
+          "bandLong2": false,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 4
+        }
+      ],
+      "hardware": [
+        {
+          "name": "Tornillo 4x50 mm",
+          "qty": 24
+        },
+        {
+          "name": "Kit Minifixx 15mm",
+          "qty": 18
+        },
+        {
+          "name": "Taquetes de Madera 8x30mm",
+          "qty": 22
+        }
+      ]
+    },
+    {
+      "order": 27,
+      "code": "GAB-1CA-603658",
+      "name": "Gabinete 1 Cajon 600 x 360 x 580 mm",
+      "category": "Gabinete",
+      "width": 600,
+      "height": 360,
+      "depth": 580,
+      "appliesCountertop": true,
+      "countertopWidthM": 0.6,
+      "imageUrl": null,
+      "notes": null,
+      "pieces": [
+        {
+          "name": "Lateral Derecho",
+          "code": "LAT-GAB-3658-D",
+          "qty": 1,
+          "length": 360,
+          "width": 580,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 0
+        },
+        {
+          "name": "Lateral Izquierdo",
+          "code": "LAT-GAB-3658-I",
+          "qty": 1,
+          "length": 360,
+          "width": 580,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 1
+        },
+        {
+          "name": "Manguete Techo",
+          "code": "MAN-TEC-GAB-5712",
+          "qty": 2,
+          "length": 569,
+          "width": 120,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 2
+        },
+        {
+          "name": "Piso Gabinete",
+          "code": "PIS-GAB-5758",
+          "qty": 1,
+          "length": 569,
+          "width": 580,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": false,
+          "bandLong2": false,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 3
+        },
+        {
+          "name": "Manguete Respaldo",
+          "code": "MAN-RESP-GAB-5712",
+          "qty": 2,
+          "length": 569,
+          "width": 120,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 4
+        },
+        {
+          "name": "Base Cajon",
+          "code": "BAS-CAJ-GAB-5147",
+          "qty": 1,
+          "length": 512,
+          "width": 469,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": false,
+          "bandLong2": false,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 5
+        },
+        {
+          "name": "Contra Frente Cajon",
+          "code": "CON-FRE-CAJ-GAB-5123",
+          "qty": 2,
+          "length": 512,
+          "width": 230,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 6
+        },
+        {
+          "name": "Lateral Cajon",
+          "code": "LAT-CAJ-GAB-5023",
+          "qty": 2,
+          "length": 500,
+          "width": 230,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 7
+        },
+        {
+          "name": "Frente Cajon",
+          "code": "FRE-CAJ-GAB-6036",
+          "qty": 1,
+          "length": 596,
+          "width": 356,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 8
+        }
+      ],
+      "hardware": [
+        {
+          "name": "Corredera Telescópica 500mm",
+          "qty": 1
+        },
+        {
+          "name": "Jaladera Acero Inox",
+          "qty": 1
+        },
+        {
+          "name": "Pata Regulable Plastica",
+          "qty": 4
+        },
+        {
+          "name": "Tornillo 4x50 mm",
+          "qty": 30
+        },
+        {
+          "name": "Kit Minifixx 15mm",
+          "qty": 16
+        },
+        {
+          "name": "Taquetes de Madera 8x30mm",
+          "qty": 28
+        }
+      ]
+    },
+    {
+      "order": 28,
+      "code": "GAB-NIC-207258",
+      "name": "Gabinete Nicho 200 x 720 x 580 mm",
+      "category": "Gabinete",
+      "width": 200,
+      "height": 720,
+      "depth": 580,
+      "appliesCountertop": true,
+      "countertopWidthM": 0.2,
+      "imageUrl": null,
+      "notes": null,
+      "pieces": [
+        {
+          "name": "Lateral Derecha",
+          "code": "LAT-NIC-7258-D",
+          "qty": 1,
+          "length": 720,
+          "width": 580,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 0
+        },
+        {
+          "name": "Lateral Izquierdo",
+          "code": "LAT-NIC-7258-I",
+          "qty": 1,
+          "length": 720,
+          "width": 580,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 1
+        },
+        {
+          "name": "Respaldo Gabinete",
+          "code": "RES-NIC-6917",
+          "qty": 1,
+          "length": 689,
+          "width": 169,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": false,
+          "bandLong2": false,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 2
+        },
+        {
+          "name": "Piso Gabinete",
+          "code": "PIS-NIC-5817",
+          "qty": 1,
+          "length": 169,
+          "width": 580,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": false,
+          "bandLong2": false,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 3
+        },
+        {
+          "name": "Manguete Techo Frontal",
+          "code": "MAN-TEC-FR-NIC-1712",
+          "qty": 1,
+          "length": 169,
+          "width": 120,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 4
+        },
+        {
+          "name": "Manguete Techo Posterior",
+          "code": "MAN-TEC-PO-NIC-1712",
+          "qty": 1,
+          "length": 169,
+          "width": 120,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 5
+        },
+        {
+          "name": "Entrepano Gabinete",
+          "code": "ENT-NIC-5017",
+          "qty": 1,
+          "length": 169,
+          "width": 520,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": false,
+          "bandLong2": false,
+          "bandShort1": false,
+          "bandShort2": true,
+          "order": 6
+        }
+      ],
+      "hardware": [
+        {
+          "name": "Pata Regulable Plastica",
+          "qty": 4
+        },
+        {
+          "name": "Tornillo 4x50 mm",
+          "qty": 50
+        },
+        {
+          "name": "Kit Minifixx 15mm",
+          "qty": 18
+        },
+        {
+          "name": "Taquetes de Madera 8x30mm",
+          "qty": 24
+        }
+      ]
+    },
+    {
+      "order": 29,
+      "code": "GAB-NIC-TOA-207258",
+      "name": "Gabinete Nicho Toallero 200 x 720 x 580 mm",
+      "category": "Gabinete",
+      "width": 200,
+      "height": 720,
+      "depth": 580,
+      "appliesCountertop": true,
+      "countertopWidthM": 0.2,
+      "imageUrl": null,
+      "notes": null,
+      "pieces": [
+        {
+          "name": "Lateral Derecha",
+          "code": "LAT-NIC-7258-D",
+          "qty": 1,
+          "length": 720,
+          "width": 580,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 0
+        },
+        {
+          "name": "Lateral Izquierdo",
+          "code": "LAT-NIC-7258-I",
+          "qty": 1,
+          "length": 720,
+          "width": 580,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 1
+        },
+        {
+          "name": "Respaldo Gabinete",
+          "code": "RES-NIC-6917",
+          "qty": 1,
+          "length": 689,
+          "width": 169,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": false,
+          "bandLong2": false,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 2
+        },
+        {
+          "name": "Piso Gabinete",
+          "code": "PIS-NIC-5817",
+          "qty": 1,
+          "length": 580,
+          "width": 169,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": false,
+          "bandLong2": false,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 3
+        },
+        {
+          "name": "Manguete Techo Frontal",
+          "code": "MAN-TEC-FR-NIC-1712",
+          "qty": 1,
+          "length": 169,
+          "width": 120,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 4
+        },
+        {
+          "name": "Manguete Techo Posterior",
+          "code": "MAN-TEC-PO-NIC-1712",
+          "qty": 1,
+          "length": 169,
+          "width": 120,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 5
+        }
+      ],
+      "hardware": [
+        {
+          "name": "Accesorio Toallero",
+          "qty": 1
+        },
+        {
+          "name": "Pata Regulable Plastica",
+          "qty": 4
+        },
+        {
+          "name": "Tornillo 4x50 mm",
+          "qty": 50
+        },
+        {
+          "name": "Kit Minifixx 15mm",
+          "qty": 18
+        },
+        {
+          "name": "Taquetes de Madera 8x30mm",
+          "qty": 24
+        }
+      ]
+    },
+    {
+      "order": 30,
+      "code": "TAR-1PU-607258",
+      "name": "Gabinete Tarja 1 Puerta 600 x 720 x 580 mm",
+      "category": "Gabinete Tarja",
+      "width": 600,
+      "height": 720,
+      "depth": 580,
+      "appliesCountertop": true,
+      "countertopWidthM": 0.6,
+      "imageUrl": null,
+      "notes": null,
+      "pieces": [
+        {
+          "name": "Lateral Derecho",
+          "code": "LAT-GAB-7258-D",
+          "qty": 1,
+          "length": 720,
+          "width": 580,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 0
+        },
+        {
+          "name": "Lateral Izquierdo",
+          "code": "LAT-GAB-7258-I",
+          "qty": 1,
+          "length": 720,
+          "width": 580,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 1
+        },
+        {
+          "name": "Piso Gabinete",
+          "code": "PIS-GAB-6058",
+          "qty": 1,
+          "length": 569,
+          "width": 580,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": false,
+          "bandLong2": false,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 2
+        },
+        {
+          "name": "Manguete Respaldo",
+          "code": "MAN-RESP-GAB-5712",
+          "qty": 2,
+          "length": 569,
+          "width": 120,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 3
+        },
+        {
+          "name": "Manguete Techo",
+          "code": "MAN-TEC-GAB-6057",
+          "qty": 2,
+          "length": 569,
+          "width": 120,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 4
+        },
+        {
+          "name": "Puerta Gabinete",
+          "code": "PUE-GAB-7260",
+          "qty": 1,
+          "length": 717,
+          "width": 596,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 5
+        }
+      ],
+      "hardware": [
+        {
+          "name": "Bisagra Cierre Lento",
+          "qty": 2
+        },
+        {
+          "name": "Jaladera Acero Inox",
+          "qty": 1
+        },
+        {
+          "name": "Pata Regulable Plastica",
+          "qty": 4
+        },
+        {
+          "name": "Tornillo 4x50 mm",
+          "qty": 24
+        },
+        {
+          "name": "Kit Minifixx 15mm",
+          "qty": 12
+        },
+        {
+          "name": "Taquetes de Madera 8x30mm",
+          "qty": 22
+        }
+      ]
+    },
+    {
+      "order": 31,
+      "code": "TAR-2PU-707258",
+      "name": "Gabinete Tarja 2 Puertas 700 x 720 x 580 mm",
+      "category": "Gabinete Tarja",
+      "width": 700,
+      "height": 720,
+      "depth": 580,
+      "appliesCountertop": true,
+      "countertopWidthM": 0.7,
+      "imageUrl": null,
+      "notes": null,
+      "pieces": [
+        {
+          "name": "Lateral Derecho",
+          "code": "LAT-GAB-7258-D",
+          "qty": 1,
+          "length": 720,
+          "width": 580,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 0
+        },
+        {
+          "name": "Lateral Izquierdo",
+          "code": "LAT-GAB-7258-I",
+          "qty": 1,
+          "length": 720,
+          "width": 580,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 1
+        },
+        {
+          "name": "Piso Gabinete",
+          "code": "PIS-GAB-8077",
+          "qty": 1,
+          "length": 669,
+          "width": 580,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 2
+        },
+        {
+          "name": "Manguete Techo",
+          "code": "MAN-TEC-GAB-8077",
+          "qty": 2,
+          "length": 669,
+          "width": 120,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 3
+        },
+        {
+          "name": "Manguete Respaldo",
+          "code": "MAN-RESP-GAB-7712",
+          "qty": 2,
+          "length": 669,
+          "width": 120,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 4
+        },
+        {
+          "name": "Puerta Der Gabinete",
+          "code": "PUE-DER-GAB-7240",
+          "qty": 1,
+          "length": 717,
+          "width": 347,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 5
+        },
+        {
+          "name": "Puerta Izq Gabinete",
+          "code": "PUE-IZQ-GAB-7240",
+          "qty": 1,
+          "length": 717,
+          "width": 347,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 6
+        }
+      ],
+      "hardware": [
+        {
+          "name": "Bisagra Cierre Lento",
+          "qty": 4
+        },
+        {
+          "name": "Jaladera Acero Inox",
+          "qty": 2
+        },
+        {
+          "name": "Pata Regulable Plastica",
+          "qty": 4
+        },
+        {
+          "name": "Tornillo 4x50 mm",
+          "qty": 40
+        },
+        {
+          "name": "Kit Minifixx 15mm",
+          "qty": 12
+        },
+        {
+          "name": "Taquetes de Madera 8x30mm",
+          "qty": 22
+        }
+      ]
+    },
+    {
+      "order": 32,
+      "code": "TAR-2PU-807258",
+      "name": "Gabinete Tarja 2 Puertas 800 x 720 x 580 mm",
+      "category": "Gabinete Tarja",
+      "width": 800,
+      "height": 720,
+      "depth": 580,
+      "appliesCountertop": true,
+      "countertopWidthM": 0.8,
+      "imageUrl": null,
+      "notes": null,
+      "pieces": [
+        {
+          "name": "Lateral Derecho",
+          "code": "LAT-GAB-7258-D",
+          "qty": 1,
+          "length": 720,
+          "width": 580,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 0
+        },
+        {
+          "name": "Lateral Izquierdo",
+          "code": "LAT-GAB-7258-I",
+          "qty": 1,
+          "length": 720,
+          "width": 580,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 1
+        },
+        {
+          "name": "Piso Gabinete",
+          "code": "PIS-GAB-8077",
+          "qty": 1,
+          "length": 769,
+          "width": 580,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 2
+        },
+        {
+          "name": "Manguete Techo",
+          "code": "MAN-TEC-GAB-8077",
+          "qty": 2,
+          "length": 769,
+          "width": 120,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 3
+        },
+        {
+          "name": "Manguete Respaldo",
+          "code": "MAN-RESP-GAB-7712",
+          "qty": 2,
+          "length": 769,
+          "width": 120,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 4
+        },
+        {
+          "name": "Puerta Der Gabinete",
+          "code": "PUE-DER-GAB-7240",
+          "qty": 1,
+          "length": 717,
+          "width": 397,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 5
+        },
+        {
+          "name": "Puerta Izq Gabinete",
+          "code": "PUE-IZQ-GAB-7240",
+          "qty": 1,
+          "length": 717,
+          "width": 397,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 6
+        }
+      ],
+      "hardware": [
+        {
+          "name": "Bisagra Cierre Lento",
+          "qty": 4
+        },
+        {
+          "name": "Jaladera Acero Inox",
+          "qty": 2
+        },
+        {
+          "name": "Pata Regulable Plastica",
+          "qty": 4
+        },
+        {
+          "name": "Tornillo 4x50 mm",
+          "qty": 40
+        },
+        {
+          "name": "Kit Minifixx 15mm",
+          "qty": 12
+        },
+        {
+          "name": "Taquetes de Madera 8x30mm",
+          "qty": 22
+        }
+      ]
+    },
+    {
+      "order": 33,
+      "code": "TAR-2PU-907258",
+      "name": "Gabinete Tarja 2 Puertas 900 x 720 x 580 mm",
+      "category": "Gabinete Tarja",
+      "width": 900,
+      "height": 720,
+      "depth": 580,
+      "appliesCountertop": true,
+      "countertopWidthM": 0.9,
+      "imageUrl": null,
+      "notes": null,
+      "pieces": [
+        {
+          "name": "Lateral Derecho",
+          "code": "LAT-GAB-7258-D",
+          "qty": 1,
+          "length": 720,
+          "width": 580,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 0
+        },
+        {
+          "name": "Lateral Izquierdo",
+          "code": "LAT-GAB-7258-I",
+          "qty": 1,
+          "length": 720,
+          "width": 580,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 1
+        },
+        {
+          "name": "Piso Gabinete",
+          "code": "PIS-GAB-9087",
+          "qty": 1,
+          "length": 869,
+          "width": 580,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 2
+        },
+        {
+          "name": "Manguete Respaldo",
+          "code": "MAN-RESP-GAB-8712",
+          "qty": 2,
+          "length": 869,
+          "width": 120,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 3
+        },
+        {
+          "name": "Manguete Techo",
+          "code": "MAN-TEC-GAB-9087",
+          "qty": 2,
+          "length": 869,
+          "width": 120,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 4
+        },
+        {
+          "name": "Puerta Der Gabinete",
+          "code": "PUE-DER-GAB-7245",
+          "qty": 1,
+          "length": 717,
+          "width": 447,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 5
+        },
+        {
+          "name": "Puerta Izq Gabinete",
+          "code": "PUE-IZQ-GAB-7245",
+          "qty": 1,
+          "length": 717,
+          "width": 447,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 6
+        }
+      ],
+      "hardware": [
+        {
+          "name": "Bisagra Cierre Lento",
+          "qty": 4
+        },
+        {
+          "name": "Jaladera Acero Inox",
+          "qty": 2
+        },
+        {
+          "name": "Pata Regulable Plastica",
+          "qty": 4
+        },
+        {
+          "name": "Tornillo 4x50 mm",
+          "qty": 40
+        },
+        {
+          "name": "Kit Minifixx 15mm",
+          "qty": 12
+        },
+        {
+          "name": "Taquetes de Madera 8x30mm",
+          "qty": 22
+        }
+      ]
+    },
+    {
+      "order": 34,
+      "code": "DES-1PU-4021058",
+      "name": "Despensa 1 Puerta 400 x 2100 x 580 mm",
+      "category": "Despensa",
+      "width": 400,
+      "height": 2100,
+      "depth": 580,
+      "appliesCountertop": false,
+      "countertopWidthM": 0,
+      "imageUrl": null,
+      "notes": null,
+      "pieces": [
+        {
+          "name": "Lateral Derecho",
+          "code": "LAT-DES-21058-D",
+          "qty": 1,
+          "length": 2100,
+          "width": 580,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 0
+        },
+        {
+          "name": "Lateral Izquierdo",
+          "code": "LAT-DES-21058-I",
+          "qty": 1,
+          "length": 2100,
+          "width": 580,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 1
+        },
+        {
+          "name": "Respaldo Despensa",
+          "code": "RES-DES-21040",
+          "qty": 1,
+          "length": 2069,
+          "width": 369,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": false,
+          "bandLong2": false,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 2
+        },
+        {
+          "name": "Base Despensa",
+          "code": "BAS-DES-4058",
+          "qty": 1,
+          "length": 369,
+          "width": 580,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": false,
+          "bandLong2": false,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 3
+        },
+        {
+          "name": "Techo Despensa",
+          "code": "TEC-DES-4058",
+          "qty": 1,
+          "length": 369,
+          "width": 580,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": false,
+          "bandLong2": false,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 4
+        },
+        {
+          "name": "Entrepano Despensa",
+          "code": "ENT-DES-4037",
+          "qty": 4,
+          "length": 369,
+          "width": 490,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": false,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 5
+        },
+        {
+          "name": "Puerta Despensa",
+          "code": "PUE-DES-21040",
+          "qty": 1,
+          "length": 2096,
+          "width": 396,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 6
+        }
+      ],
+      "hardware": [
+        {
+          "name": "Bisagra Cierre Lento",
+          "qty": 6
+        },
+        {
+          "name": "Jaladera Acero Inox",
+          "qty": 2
+        },
+        {
+          "name": "Pata Regulable Plastica",
+          "qty": 4
+        },
+        {
+          "name": "Soporte de Entrepaño",
+          "qty": 16
+        },
+        {
+          "name": "Tornillo 4x50 mm",
+          "qty": 50
+        },
+        {
+          "name": "Kit Minifixx 15mm",
+          "qty": 18
+        },
+        {
+          "name": "Taquetes de Madera 8x30mm",
+          "qty": 22
+        }
+      ]
+    },
+    {
+      "order": 35,
+      "code": "DES-1PU-6021058",
+      "name": "Despensa 1 Puerta 600 x 2100 x 580 mm",
+      "category": "Despensa",
+      "width": 600,
+      "height": 2100,
+      "depth": 580,
+      "appliesCountertop": false,
+      "countertopWidthM": 0,
+      "imageUrl": null,
+      "notes": null,
+      "pieces": [
+        {
+          "name": "Lateral Derecho",
+          "code": "LAT-DES-21058-D",
+          "qty": 1,
+          "length": 2100,
+          "width": 580,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 0
+        },
+        {
+          "name": "Lateral Izquierdo",
+          "code": "LAT-DES-21058-I",
+          "qty": 1,
+          "length": 2100,
+          "width": 580,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 1
+        },
+        {
+          "name": "Respaldo Despensa",
+          "code": "RES-DES-21060",
+          "qty": 1,
+          "length": 2069,
+          "width": 569,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": false,
+          "bandLong2": false,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 2
+        },
+        {
+          "name": "Base Despensa",
+          "code": "BAS-DES-6058",
+          "qty": 1,
+          "length": 569,
+          "width": 580,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": false,
+          "bandLong2": false,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 3
+        },
+        {
+          "name": "Techo Despensa",
+          "code": "TEC-DES-6058",
+          "qty": 1,
+          "length": 569,
+          "width": 580,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": false,
+          "bandLong2": false,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 4
+        },
+        {
+          "name": "Entrepano Despensa",
+          "code": "ENT-DES-6057",
+          "qty": 4,
+          "length": 569,
+          "width": 490,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": false,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 5
+        },
+        {
+          "name": "Puerta Despensa",
+          "code": "PUE-DES-21060",
+          "qty": 1,
+          "length": 2096,
+          "width": 596,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 6
+        }
+      ],
+      "hardware": [
+        {
+          "name": "Bisagra Cierre Lento",
+          "qty": 6
+        },
+        {
+          "name": "Jaladera Acero Inox",
+          "qty": 2
+        },
+        {
+          "name": "Pata Regulable Plastica",
+          "qty": 4
+        },
+        {
+          "name": "Soporte de Entrepaño",
+          "qty": 16
+        },
+        {
+          "name": "Tornillo 4x50 mm",
+          "qty": 50
+        },
+        {
+          "name": "Kit Minifixx 15mm",
+          "qty": 18
+        },
+        {
+          "name": "Taquetes de Madera 8x30mm",
+          "qty": 22
+        }
+      ]
+    },
+    {
+      "order": 36,
+      "code": "DES-2PU-8021058",
+      "name": "Despensa 2 Puertas 800 x 2100 x 580 mm",
+      "category": "Despensa",
+      "width": 800,
+      "height": 2100,
+      "depth": 580,
+      "appliesCountertop": false,
+      "countertopWidthM": 0,
+      "imageUrl": null,
+      "notes": null,
+      "pieces": [
+        {
+          "name": "Lateral Derecho",
+          "code": "LAT-DES-21058-D",
+          "qty": 1,
+          "length": 2100,
+          "width": 580,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 0
+        },
+        {
+          "name": "Lateral Izquierdo",
+          "code": "LAT-DES-21058-I",
+          "qty": 1,
+          "length": 2100,
+          "width": 580,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 1
+        },
+        {
+          "name": "Respaldo Despensa",
+          "code": "RES-DES-21080",
+          "qty": 1,
+          "length": 2069,
+          "width": 769,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": false,
+          "bandLong2": false,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 2
+        },
+        {
+          "name": "Base Despensa",
+          "code": "BAS-DES-8077",
+          "qty": 1,
+          "length": 769,
+          "width": 580,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 3
+        },
+        {
+          "name": "Techo Despensa",
+          "code": "TEC-DES-8077",
+          "qty": 1,
+          "length": 769,
+          "width": 580,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 4
+        },
+        {
+          "name": "Entrepano Despensa",
+          "code": "ENT-DES-8077",
+          "qty": 4,
+          "length": 769,
+          "width": 490,
+          "materialName": "ARAUCO BLANCO",
+          "grain": false,
+          "bandLong1": true,
+          "bandLong2": false,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 5
+        },
+        {
+          "name": "Puerta Der Despensa",
+          "code": "PUE-DER-DES-21040",
+          "qty": 1,
+          "length": 2096,
+          "width": 396,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 6
+        },
+        {
+          "name": "Puerta Izq Despensa",
+          "code": "PUE-IZQ-DES-21040",
+          "qty": 1,
+          "length": 2096,
+          "width": 396,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 7
+        }
+      ],
+      "hardware": [
+        {
+          "name": "Bisagra Cierre Lento",
+          "qty": 8
+        },
+        {
+          "name": "Jaladera Acero Inox",
+          "qty": 2
+        },
+        {
+          "name": "Pata Regulable Plastica",
+          "qty": 4
+        },
+        {
+          "name": "Soporte de Entrepaño",
+          "qty": 16
+        },
+        {
+          "name": "Tornillo 4x50 mm",
+          "qty": 50
+        },
+        {
+          "name": "Kit Minifixx 15mm",
+          "qty": 18
+        },
+        {
+          "name": "Taquetes de Madera 8x30mm",
+          "qty": 22
+        }
+      ]
+    },
+    {
+      "order": 37,
+      "code": "DES-HOR-6021058",
+      "name": "Torre Horno y Micro  600 x 2100 x 580 mm",
+      "category": "Despensa",
+      "width": 600,
+      "height": 2100,
+      "depth": 580,
+      "appliesCountertop": false,
+      "countertopWidthM": 0,
+      "imageUrl": null,
+      "notes": null,
+      "pieces": [
+        {
+          "name": "Lateral Derecho",
+          "code": "LAT-DES-21058-D",
+          "qty": 1,
+          "length": 2100,
+          "width": 580,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 0
+        },
+        {
+          "name": "Lateral Izquierdo",
+          "code": "LAT-DES-21058-I",
+          "qty": 1,
+          "length": 2100,
+          "width": 580,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 1
+        },
+        {
+          "name": "Respaldo Despensa",
+          "code": "RES-DES-6072",
+          "qty": 1,
+          "length": 689,
+          "width": 569,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": false,
+          "bandLong2": false,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 2
+        },
+        {
+          "name": "Base Despensa",
+          "code": "BAS-DES-6058",
+          "qty": 1,
+          "length": 569,
+          "width": 580,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": false,
+          "bandLong2": false,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 3
+        },
+        {
+          "name": "Base Despensa",
+          "code": "BAS-DES-6058",
+          "qty": 1,
+          "length": 569,
+          "width": 580,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": false,
+          "bandLong2": false,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 4
+        },
+        {
+          "name": "Techo Despensa",
+          "code": "TEC-DES-6058",
+          "qty": 1,
+          "length": 569,
+          "width": 580,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": false,
+          "bandLong2": false,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 5
+        },
+        {
+          "name": "Techo Despensa",
+          "code": "TEC-DES-6058",
+          "qty": 1,
+          "length": 569,
+          "width": 580,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": false,
+          "bandLong2": false,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 6
+        },
+        {
+          "name": "Entrepano Despensa",
+          "code": "ENT-DES-8077",
+          "qty": 1,
+          "length": 569,
+          "width": 580,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 7
+        },
+        {
+          "name": "Respaldo Despensa",
+          "code": "RES-DES-6056",
+          "qty": 1,
+          "length": 569,
+          "width": 539,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": false,
+          "bandLong2": false,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 8
+        },
+        {
+          "name": "Entrepano Despensa",
+          "code": "ENT-DES-6055",
+          "qty": 1,
+          "length": 569,
+          "width": 526,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": false,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 9
+        },
+        {
+          "name": "Manguete",
+          "code": "MAN-DES-6015",
+          "qty": 1,
+          "length": 569,
+          "width": 120,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": false,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 10
+        },
+        {
+          "name": "Puerta Gabinete",
+          "code": "PUE-GAB-6072",
+          "qty": 1,
+          "length": 717,
+          "width": 597,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 11
+        },
+        {
+          "name": "Puerta Alacena",
+          "code": "PUE-IZQ-DES-21040",
+          "qty": 1,
+          "length": 566,
+          "width": 597,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 12
+        }
+      ],
+      "hardware": [
+        {
+          "name": "Bisagra Cierre Lento",
+          "qty": 4
+        },
+        {
+          "name": "Jaladera Acero Inox",
+          "qty": 2
+        },
+        {
+          "name": "Pata Regulable Plastica",
+          "qty": 4
+        },
+        {
+          "name": "Soporte de Entrepaño",
+          "qty": 4
+        },
+        {
+          "name": "Tornillo 4x50 mm",
+          "qty": 50
+        },
+        {
+          "name": "Kit Minifixx 15mm",
+          "qty": 38
+        },
+        {
+          "name": "Taquetes de Madera 8x30mm",
+          "qty": 48
+        }
+      ]
+    },
+    {
+      "order": 38,
+      "code": "DES-HOR-7021058",
+      "name": "Torre Horno y Micro  700 x 2100 x 580 mm",
+      "category": "Despensa",
+      "width": 700,
+      "height": 2100,
+      "depth": 580,
+      "appliesCountertop": false,
+      "countertopWidthM": 0,
+      "imageUrl": null,
+      "notes": null,
+      "pieces": [
+        {
+          "name": "Laretal Derecho",
+          "code": "LAT-DES-21058-D",
+          "qty": 1,
+          "length": 2100,
+          "width": 580,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 0
+        },
+        {
+          "name": "Larteral Izquierdo",
+          "code": "LAT-DES-21058-I",
+          "qty": 1,
+          "length": 2100,
+          "width": 580,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 1
+        },
+        {
+          "name": "Respaldo Despensa",
+          "code": "RES-DES-7270",
+          "qty": 1,
+          "length": 689,
+          "width": 669,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": false,
+          "bandLong2": false,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 2
+        },
+        {
+          "name": "Base Despensa",
+          "code": "BAS-DES-7058",
+          "qty": 1,
+          "length": 669,
+          "width": 580,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 3
+        },
+        {
+          "name": "Base Despensa",
+          "code": "BAS-DES-7058",
+          "qty": 1,
+          "length": 669,
+          "width": 580,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 4
+        },
+        {
+          "name": "Entrepano Despensa",
+          "code": "ENT-DES-7058",
+          "qty": 1,
+          "length": 669,
+          "width": 580,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 5
+        },
+        {
+          "name": "Techo Despensa",
+          "code": "TEC-DES-7058",
+          "qty": 1,
+          "length": 669,
+          "width": 580,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 6
+        },
+        {
+          "name": "Techo Despensa",
+          "code": "TEC-DES-7058",
+          "qty": 1,
+          "length": 669,
+          "width": 580,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 7
+        },
+        {
+          "name": "Respaldo Despensa",
+          "code": "LAT-DES-7057",
+          "qty": 1,
+          "length": 669,
+          "width": 539,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": false,
+          "bandLong2": false,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 8
+        },
+        {
+          "name": "Entrepano Despensa",
+          "code": "ENT-DES-7055",
+          "qty": 1,
+          "length": 669,
+          "width": 526.5,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": false,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 9
+        },
+        {
+          "name": "Pieza",
+          "code": "MAN-DES-7015",
+          "qty": 1,
+          "length": 669,
+          "width": 120,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": false,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 10
+        },
+        {
+          "name": "Puerta Alacena",
+          "code": "PUE-GAB-7235-D",
+          "qty": 1,
+          "length": 717,
+          "width": 346,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 11
+        },
+        {
+          "name": "Puerta Alacena",
+          "code": "PUE-GAB-7235-I",
+          "qty": 1,
+          "length": 717,
+          "width": 346,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 12
+        },
+        {
+          "name": "Puerta Alacena",
+          "code": "PUE-ALA-5735-D",
+          "qty": 1,
+          "length": 566,
+          "width": 346,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 13
+        },
+        {
+          "name": "Puerta Alacena",
+          "code": "PUE-GAB-5735-I",
+          "qty": 1,
+          "length": 566,
+          "width": 346,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 14
+        }
+      ],
+      "hardware": [
+        {
+          "name": "Bisagra Cierre Lento",
+          "qty": 8
+        },
+        {
+          "name": "Jaladera Acero Inox",
+          "qty": 4
+        },
+        {
+          "name": "Pata Regulable Plastica",
+          "qty": 6
+        },
+        {
+          "name": "Soporte de Entrepaño",
+          "qty": 4
+        },
+        {
+          "name": "Tornillo 4x50 mm",
+          "qty": 50
+        },
+        {
+          "name": "Kit Minifixx 15mm",
+          "qty": 28
+        },
+        {
+          "name": "Taquetes de Madera 8x30mm",
+          "qty": 38
+        }
+      ]
+    },
+    {
+      "order": 39,
+      "code": "DES-HOR-3CA-6021058",
+      "name": "Torre Horno y Micro c/Cajones  600 x 2100 x 580 mm",
+      "category": "Despensa",
+      "width": 600,
+      "height": 2100,
+      "depth": 580,
+      "appliesCountertop": false,
+      "countertopWidthM": 0,
+      "imageUrl": null,
+      "notes": null,
+      "pieces": [
+        {
+          "name": "Lateral Derecho",
+          "code": "LAT-DES-21058-D",
+          "qty": 1,
+          "length": 2100,
+          "width": 580,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 0
+        },
+        {
+          "name": "Lateral Izquierdo",
+          "code": "LAT-DES-21058-I",
+          "qty": 1,
+          "length": 2100,
+          "width": 580,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 1
+        },
+        {
+          "name": "Respaldo Despensa",
+          "code": "RES-DES-6072",
+          "qty": 1,
+          "length": 689,
+          "width": 569,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": false,
+          "bandLong2": false,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 2
+        },
+        {
+          "name": "Base Despensa",
+          "code": "BAS-DES-6058",
+          "qty": 1,
+          "length": 569,
+          "width": 580,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 3
+        },
+        {
+          "name": "Base Despensa",
+          "code": "BAS-DES-6058",
+          "qty": 1,
+          "length": 569,
+          "width": 580,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 4
+        },
+        {
+          "name": "Entrepaño Despensa",
+          "code": "ENT-DES-6059",
+          "qty": 1,
+          "length": 569,
+          "width": 490,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 5
+        },
+        {
+          "name": "Techo Despensa",
+          "code": "TEC-DES-6058",
+          "qty": 1,
+          "length": 569,
+          "width": 580,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 6
+        },
+        {
+          "name": "Techo Despensa",
+          "code": "TEC-DES-6058",
+          "qty": 1,
+          "length": 569,
+          "width": 580,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 7
+        },
+        {
+          "name": "Lateral Interior Despensa",
+          "code": "LAT-DES-6057",
+          "qty": 1,
+          "length": 569,
+          "width": 539,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": false,
+          "bandLong2": false,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 8
+        },
+        {
+          "name": "Entrepaño Despensa",
+          "code": "ENT-DES-6055",
+          "qty": 1,
+          "length": 569,
+          "width": 490,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": false,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 9
+        },
+        {
+          "name": "Manguete Despensa",
+          "code": "MAN-DES-6015",
+          "qty": 1,
+          "length": 569,
+          "width": 120,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": false,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 10
+        },
+        {
+          "name": "Base Cajón",
+          "code": "BAS-CAJ-GAB-5147",
+          "qty": 3,
+          "length": 512,
+          "width": 469,
+          "materialName": "ARAUCO BLANCO",
+          "grain": true,
+          "bandLong1": false,
+          "bandLong2": false,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 11
+        },
+        {
+          "name": "Contra Frente Cajón",
+          "code": "CON-FRE-CAJ-GAB-5123",
+          "qty": 2,
+          "length": 512,
+          "width": 230,
+          "materialName": "ARAUCO BLANCO",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 12
+        },
+        {
+          "name": "Contra Frente Cajón",
+          "code": "CON-FRE-CAJ-GAB-5110",
+          "qty": 4,
+          "length": 512,
+          "width": 100,
+          "materialName": "ARAUCO BLANCO",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 13
+        },
+        {
+          "name": "Lateral Cajón",
+          "code": "LAT-CAJ-GAB-5023",
+          "qty": 2,
+          "length": 500,
+          "width": 230,
+          "materialName": "ARAUCO BLANCO",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 14
+        },
+        {
+          "name": "Lateral Cajón",
+          "code": "LAT-CAJ-GAB-5010",
+          "qty": 4,
+          "length": 500,
+          "width": 100,
+          "materialName": "ARAUCO BLANCO",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 15
+        },
+        {
+          "name": "Puerta Alacena",
+          "code": "PUE-ALA-5760",
+          "qty": 1,
+          "length": 566,
+          "width": 596,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 16
+        },
+        {
+          "name": "Frente Inferior Alta",
+          "code": "FRE-INF-ALT-GAB-6036",
+          "qty": 1,
+          "length": 596,
+          "width": 356,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 17
+        },
+        {
+          "name": "Frente Central Baja",
+          "code": "FRE-CEN-BAJ-GAB-6018",
+          "qty": 1,
+          "length": 596,
+          "width": 176,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 18
+        },
+        {
+          "name": "Frente Superior Baja",
+          "code": "FRE-SUP-BAJ-GAB-6018",
+          "qty": 1,
+          "length": 596,
+          "width": 176,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 19
+        }
+      ],
+      "hardware": [
+        {
+          "name": "Corredera Telescópica 500mm",
+          "qty": 3
+        },
+        {
+          "name": "Bisagra Cierre Lento",
+          "qty": 2
+        },
+        {
+          "name": "Jaladera Acero Inox",
+          "qty": 4
+        },
+        {
+          "name": "Pata Regulable Plastica",
+          "qty": 6
+        },
+        {
+          "name": "Soporte de Entrepaño",
+          "qty": 4
+        },
+        {
+          "name": "Tornillo 4x50 mm",
+          "qty": 50
+        },
+        {
+          "name": "Kit Minifixx 15mm",
+          "qty": 26
+        },
+        {
+          "name": "Taquetes de Madera 8x30mm",
+          "qty": 34
+        }
+      ]
+    },
+    {
+      "order": 40,
+      "code": "DES-HOR-3CA-7021058",
+      "name": "Torre Horno y Micro c/Cajones  700 x 2100 x 580 mm",
+      "category": "Despensa",
+      "width": 700,
+      "height": 2100,
+      "depth": 580,
+      "appliesCountertop": false,
+      "countertopWidthM": 0,
+      "imageUrl": null,
+      "notes": null,
+      "pieces": [
+        {
+          "name": "Lateral Derecho",
+          "code": "LAT-DES-21059-D",
+          "qty": 1,
+          "length": 2100,
+          "width": 580,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 0
+        },
+        {
+          "name": "Lateral Izquierdo",
+          "code": "LAT-DES-21059-I",
+          "qty": 1,
+          "length": 2100,
+          "width": 580,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 1
+        },
+        {
+          "name": "Respaldo Despensa",
+          "code": "RES-DES-7270",
+          "qty": 1,
+          "length": 689,
+          "width": 669,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": false,
+          "bandLong2": false,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 2
+        },
+        {
+          "name": "Base Despensa",
+          "code": "BAS-DES-7059",
+          "qty": 1,
+          "length": 669,
+          "width": 580,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 3
+        },
+        {
+          "name": "Base Despensa",
+          "code": "BAS-DES-7059",
+          "qty": 1,
+          "length": 669,
+          "width": 580,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 4
+        },
+        {
+          "name": "Entrepaño Despensa",
+          "code": "ENT-DES-7059",
+          "qty": 1,
+          "length": 669,
+          "width": 490,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 5
+        },
+        {
+          "name": "Techo Despensa",
+          "code": "TEC-DES-7059",
+          "qty": 1,
+          "length": 669,
+          "width": 580,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 6
+        },
+        {
+          "name": "Techo Despensa",
+          "code": "TEC-DES-7059",
+          "qty": 1,
+          "length": 669,
+          "width": 580,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 7
+        },
+        {
+          "name": "Lateral Interior Despensa",
+          "code": "LAT-DES-7057",
+          "qty": 1,
+          "length": 669,
+          "width": 539,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": false,
+          "bandLong2": false,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 8
+        },
+        {
+          "name": "Entrepaño Despensa",
+          "code": "ENT-DES-7055",
+          "qty": 1,
+          "length": 669,
+          "width": 490,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": false,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 9
+        },
+        {
+          "name": "Manguete Despensa",
+          "code": "MAN-DES-7015",
+          "qty": 1,
+          "length": 669,
+          "width": 120,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": false,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 10
+        },
+        {
+          "name": "Base Cajón",
+          "code": "BAS-CAJ-GAB-5147",
+          "qty": 3,
+          "length": 612,
+          "width": 469,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": false,
+          "bandLong2": false,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 11
+        },
+        {
+          "name": "Contra Frente Cajón",
+          "code": "CON-FRE-CAJ-GAB-5123",
+          "qty": 2,
+          "length": 612,
+          "width": 230,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 12
+        },
+        {
+          "name": "Contra Frente Cajón",
+          "code": "CON-FRE-CAJ-GAB-5110",
+          "qty": 4,
+          "length": 612,
+          "width": 100,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 13
+        },
+        {
+          "name": "Lateral Cajón",
+          "code": "LAT-CAJ-GAB-5023",
+          "qty": 2,
+          "length": 500,
+          "width": 230,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 14
+        },
+        {
+          "name": "Lateral Cajón",
+          "code": "LAT-CAJ-GAB-5010",
+          "qty": 4,
+          "length": 500,
+          "width": 100,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 15
+        },
+        {
+          "name": "Puerta Derecha Alacena",
+          "code": "PUE-ALA-5735-D",
+          "qty": 1,
+          "length": 566,
+          "width": 346,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 16
+        },
+        {
+          "name": "Puerta Izquierda Alacena",
+          "code": "PUE-GAB-5735-I",
+          "qty": 1,
+          "length": 566,
+          "width": 346,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 17
+        },
+        {
+          "name": "Frente Inferior Alta",
+          "code": "FRE-INF-ALT-GAB-6036",
+          "qty": 1,
+          "length": 696,
+          "width": 356,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 18
+        },
+        {
+          "name": "Frente Central Baja",
+          "code": "FRE-CEN-BAJ-GAB-6018",
+          "qty": 1,
+          "length": 696,
+          "width": 176,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 19
+        },
+        {
+          "name": "Frente Superior Baja",
+          "code": "FRE-SUP-BAJ-GAB-6018",
+          "qty": 1,
+          "length": 696,
+          "width": 176,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 20
+        }
+      ],
+      "hardware": [
+        {
+          "name": "Corredera Telescópica 500mm",
+          "qty": 3
+        },
+        {
+          "name": "Bisagra Cierre Lento",
+          "qty": 4
+        },
+        {
+          "name": "Jaladera Acero Inox",
+          "qty": 5
+        },
+        {
+          "name": "Pata Regulable Plastica",
+          "qty": 6
+        },
+        {
+          "name": "Soporte de Entrepaño",
+          "qty": 4
+        },
+        {
+          "name": "Kit Minifixx 15mm",
+          "qty": 28
+        },
+        {
+          "name": "Taquetes de Madera 8x30mm",
+          "qty": 38
+        }
+      ]
+    },
+    {
+      "order": 41,
+      "code": "DES-NIC-4021061",
+      "name": "Despensa Nicho 400 x 2100 x 610 mm",
+      "category": "Despensa",
+      "width": 400,
+      "height": 2100,
+      "depth": 610,
+      "appliesCountertop": false,
+      "countertopWidthM": 0,
+      "imageUrl": null,
+      "notes": null,
+      "pieces": [
+        {
+          "name": "Respaldo Despensa",
+          "code": "LAT-DES-7057",
+          "qty": 1,
+          "length": 2069,
+          "width": 369,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": false,
+          "bandLong2": false,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 0
+        },
+        {
+          "name": "Lateral Derecha",
+          "code": "LAT-DES-21059-D",
+          "qty": 1,
+          "length": 2100,
+          "width": 610,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 1
+        },
+        {
+          "name": "Lateral Izquierda",
+          "code": "LAT-DES-21059-I",
+          "qty": 1,
+          "length": 2100,
+          "width": 610,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 2
+        },
+        {
+          "name": "Base Despensa",
+          "code": "BAS-DES-8077",
+          "qty": 1,
+          "length": 369,
+          "width": 610,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": false,
+          "bandLong2": false,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 3
+        },
+        {
+          "name": "Techo Despensa",
+          "code": "TEC-DES-8077",
+          "qty": 1,
+          "length": 369,
+          "width": 610,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": false,
+          "bandLong2": false,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 4
+        },
+        {
+          "name": "Entrepano Despensa",
+          "code": "ENT-DES-8077",
+          "qty": 3,
+          "length": 369,
+          "width": 550,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": false,
+          "bandShort1": false,
+          "bandShort2": false,
+          "order": 5
+        }
+      ],
+      "hardware": [
+        {
+          "name": "Pata Regulable Plastica",
+          "qty": 6
+        },
+        {
+          "name": "Soporte de Entrepaño",
+          "qty": 4
+        },
+        {
+          "name": "Tornillo 4x50 mm",
+          "qty": 50
+        },
+        {
+          "name": "Kit Minifixx 15mm",
+          "qty": 8
+        },
+        {
+          "name": "Taquetes de Madera 8x30mm",
+          "qty": 12
+        }
+      ]
+    },
+    {
+      "order": 42,
+      "code": "PAN-ALA-3434",
+      "name": "Panel Alacena 340 x 340 mm",
+      "category": "Panel",
+      "width": 0,
+      "height": 0,
+      "depth": 0,
+      "appliesCountertop": false,
+      "countertopWidthM": 0,
+      "imageUrl": null,
+      "notes": null,
+      "pieces": [
+        {
+          "name": "Panel Alacena",
+          "code": "PAN-ALA-3434",
+          "qty": 1,
+          "length": 340,
+          "width": 340,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 0
+        }
+      ],
+      "hardware": []
+    },
+    {
+      "order": 43,
+      "code": "PAN-ALA-6834",
+      "name": "Panel Alacena 680 x 340 mm",
+      "category": "Panel",
+      "width": 0,
+      "height": 0,
+      "depth": 0,
+      "appliesCountertop": false,
+      "countertopWidthM": 0,
+      "imageUrl": null,
+      "notes": null,
+      "pieces": [
+        {
+          "name": "Panel Alacena",
+          "code": "PAN-ALA-6834",
+          "qty": 1,
+          "length": 680,
+          "width": 340,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 0
+        }
+      ],
+      "hardware": []
+    },
+    {
+      "order": 44,
+      "code": "PAN-GAB-7261",
+      "name": "Panel Gabinete 720 x 610 mm",
+      "category": "Panel",
+      "width": 0,
+      "height": 0,
+      "depth": 0,
+      "appliesCountertop": false,
+      "countertopWidthM": 0,
+      "imageUrl": null,
+      "notes": null,
+      "pieces": [
+        {
+          "name": "Panel Gabinete",
+          "code": "PAN-GAB-7261",
+          "qty": 1,
+          "length": 720,
+          "width": 610,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 0
+        }
+      ],
+      "hardware": []
+    },
+    {
+      "order": 45,
+      "code": "PAN-DES-21061",
+      "name": "Panel Despensa 2100 x 610 mm",
+      "category": "Panel",
+      "width": 0,
+      "height": 0,
+      "depth": 0,
+      "appliesCountertop": false,
+      "countertopWidthM": 0,
+      "imageUrl": null,
+      "notes": null,
+      "pieces": [
+        {
+          "name": "Panel Despensa",
+          "code": "PAN-DES-21061",
+          "qty": 1,
+          "length": 2100,
+          "width": 610,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 0
+        }
+      ],
+      "hardware": []
+    },
+    {
+      "order": 46,
+      "code": "PAN-DES-21034",
+      "name": "Panel Despensa 2100 x 340 mm",
+      "category": "Panel",
+      "width": 0,
+      "height": 0,
+      "depth": 0,
+      "appliesCountertop": false,
+      "countertopWidthM": 0,
+      "imageUrl": null,
+      "notes": null,
+      "pieces": [
+        {
+          "name": "Panel Despensa",
+          "code": "PAN-DES-21034",
+          "qty": 1,
+          "length": 2100,
+          "width": 340,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 0
+        }
+      ],
+      "hardware": []
+    },
+    {
+      "order": 47,
+      "code": "ZOC-24015",
+      "name": "Zoclo 2400 x 150 mm",
+      "category": "Zoclo",
+      "width": 0,
+      "height": 0,
+      "depth": 0,
+      "appliesCountertop": false,
+      "countertopWidthM": 0,
+      "imageUrl": null,
+      "notes": null,
+      "pieces": [
+        {
+          "name": "Zoclo",
+          "code": "ZOC-24015",
+          "qty": 1,
+          "length": 2400,
+          "width": 150,
+          "materialName": "VESTO NOUGAT",
+          "grain": true,
+          "bandLong1": true,
+          "bandLong2": true,
+          "bandShort1": true,
+          "bandShort2": true,
+          "order": 0
+        }
+      ],
+      "hardware": []
+    }
+  ],
+  "demoItems": [
+    {
+      "code": "ALA-RIN-656832",
+      "qty": 1
+    },
+    {
+      "code": "ALA-2PU-806832",
+      "qty": 2
+    },
+    {
+      "code": "ALA-BAS-603432",
+      "qty": 1
+    },
+    {
+      "code": "ALA-BAS-703432",
+      "qty": 1
+    },
+    {
+      "code": "ALA-NIC-276832",
+      "qty": 1
+    },
+    {
+      "code": "GAB-RIN-1057258",
+      "qty": 1
+    },
+    {
+      "code": "GAB-3CA-407258",
+      "qty": 1
+    },
+    {
+      "code": "TAR-2PU-807258",
+      "qty": 1
+    }
+  ]
+}

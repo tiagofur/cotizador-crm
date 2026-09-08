@@ -1,0 +1,157 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// TABLERO | CUBIERTA
+model Material {
+  id             String   @id @default(cuid())
+  name           String   @unique
+  type           String   @default("TABLERO")
+  costPerM2      Float?
+  costPerMl      Float?
+  edgeBandCostMl Float?
+  edgeBandName   String?
+  sheetWidth     Float?
+  sheetLength    Float?
+  sheetCost      Float?
+  thickness      String?
+  notes          String?
+  isMaderado     Boolean  @default(false)
+  active         Boolean  @default(true)
+  pieces         Piece[]
+  settings       Settings[]
+  quotations     Quotation[]
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model Hardware {
+  id             String   @id @default(cuid())
+  name           String   @unique
+  unit           String   @default("Pieza")
+  unitCost       Float
+  notes          String?
+  active         Boolean  @default(true)
+  furnitureItems FurnitureHardware[]
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model Furniture {
+  id                String   @id @default(cuid())
+  code              String   @unique
+  name              String
+  category          String   @default("Otro")
+  width             Float    @default(0)
+  height            Float    @default(0)
+  depth             Float    @default(0)
+  imageUrl          String?
+  notes             String?
+  appliesCountertop Boolean  @default(false)
+  countertopWidthM  Float    @default(0)
+  order             Int      @default(0)
+  pieces            Piece[]
+  hardwareItems     FurnitureHardware[]
+  quotationItems    QuotationItem[]
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+model Piece {
+  id          String    @id @default(cuid())
+  furnitureId String
+  furniture   Furniture @relation(fields: [furnitureId], references: [id], onDelete: Cascade)
+  name        String
+  code        String?
+  qty         Int       @default(1)
+  length      Float
+  width       Float
+  materialId  String?
+  material    Material? @relation(fields: [materialId], references: [id])
+  grain       Boolean   @default(false)
+  bandLong1   Boolean   @default(false)
+  bandLong2   Boolean   @default(false)
+  bandShort1  Boolean   @default(false)
+  bandShort2  Boolean   @default(false)
+  order       Int       @default(0)
+}
+
+model FurnitureHardware {
+  id          String    @id @default(cuid())
+  furnitureId String
+  furniture   Furniture @relation(fields: [furnitureId], references: [id], onDelete: Cascade)
+  hardwareId  String
+  hardware    Hardware  @relation(fields: [hardwareId], references: [id], onDelete: Cascade)
+  qty         Int       @default(1)
+
+  @@unique([furnitureId, hardwareId])
+}
+
+model Settings {
+  id                  String    @id @default("default")
+  companyName         String    @default("Cotizador de Muebles")
+  companyPhone        String?
+  companyEmail        String?
+  companyAddress      String?
+  saleFactor          Float     @default(6.7)
+  ivaRate             Float     @default(0.16)
+  distributorDiscount Float     @default(0.35)
+  laborPerUnit        Float     @default(0)
+  countertopMultipleM Float     @default(1.2)
+  countertopFactor    Float     @default(4)
+  currency            String    @default("MXN")
+  maderadoMaterialId  String?
+  maderadoMaterial    Material? @relation(fields: [maderadoMaterialId], references: [id])
+}
+
+model Quotation {
+  id                   String     @id @default(cuid())
+  folio                String     @unique
+  clientName           String
+  clientPhone          String?
+  clientEmail          String?
+  notes                String?
+  finish               String     @default("BLANCO")
+  countertopMaterialId String?
+  countertopMaterial   Material?  @relation(fields: [countertopMaterialId], references: [id])
+  applyDistributor     Boolean    @default(false)
+  countertopMlOverride Float?
+  factorSnapshot       Float      @default(6.7)
+  laborSnapshot        Float      @default(0)
+  status               String     @default("BORRADOR")
+  furnitureCost        Float      @default(0)
+  furnitureSale        Float      @default(0)
+  countertopMl         Float      @default(0)
+  countertopCost       Float      @default(0)
+  countertopSale       Float      @default(0)
+  ivaAmount            Float      @default(0)
+  totalWithIva         Float      @default(0)
+  distributorFurniture Float      @default(0)
+  distributorCountertop Float     @default(0)
+  distributorIva       Float      @default(0)
+  distributorTotal     Float      @default(0)
+  items                QuotationItem[]
+  createdAt            DateTime   @default(now())
+  updatedAt            DateTime   @updatedAt
+}
+
+model QuotationItem {
+  id          String    @id @default(cuid())
+  quotationId String
+  quotation   Quotation @relation(fields: [quotationId], references: [id], onDelete: Cascade)
+  furnitureId String?
+  furniture   Furniture? @relation(fields: [furnitureId], references: [id])
+  qty         Int       @default(1)
+  code        String
+  name        String
+  width       Float     @default(0)
+  height      Float     @default(0)
+  depth       Float     @default(0)
+  unitCost    Float     @default(0)
+  unitPrice   Float     @default(0)
+}

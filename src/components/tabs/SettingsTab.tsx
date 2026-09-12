@@ -20,6 +20,7 @@ import {
 } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
+import { FinishProfilesCard } from '@/components/settings/finish-profiles-card';
 import {
   Building2,
   SlidersHorizontal,
@@ -28,6 +29,7 @@ import {
   Info,
   Save,
   Loader2,
+  Users,
 } from 'lucide-react';
 
 interface FormState {
@@ -41,6 +43,9 @@ interface FormState {
   laborPerUnit: string;
   countertopFactor: string;
   countertopMultipleM: string;
+  stalledThresholdDays: string;
+  wastePercentStandard: string;
+  wastePercentMaderado: string;
   maderadoMaterialId: string;
 }
 
@@ -56,6 +61,9 @@ function toForm(s: SettingsDTO): FormState {
     laborPerUnit: String(s.laborPerUnit ?? 0),
     countertopFactor: String(s.countertopFactor ?? 4),
     countertopMultipleM: String(s.countertopMultipleM ?? 1.2),
+    stalledThresholdDays: String(s.stalledThresholdDays ?? 21),
+    wastePercentStandard: String(Math.round(((s.wasteFactorStandard ?? 1) - 1) * 1000) / 10),
+    wastePercentMaderado: String(Math.round(((s.wasteFactorMaderado ?? 1) - 1) * 1000) / 10),
     maderadoMaterialId: s.maderadoMaterialId ?? '',
   };
 }
@@ -67,6 +75,10 @@ function parseNum(value: string, fallback: number): number {
 }
 
 const FORMULAS: { label: string; formula: string }[] = [
+  {
+    label: 'Costo del tablero',
+    formula: 'Costo de hoja ÷ m² de hoja × merma (maderada o estándar)',
+  },
   {
     label: 'Costo de una pieza',
     formula: 'm² × costo del tablero + ML de cintilla × costo de cintilla',
@@ -120,6 +132,9 @@ export default function SettingsTab({ onNavigate }: TabProps) {
     const laborPerUnit = parseNum(form.laborPerUnit, 0);
     const countertopFactor = parseNum(form.countertopFactor, 4);
     const countertopMultipleM = parseNum(form.countertopMultipleM, 1.2);
+    const stalledThresholdDays = parseNum(form.stalledThresholdDays, 21);
+    const wasteStandard = parseNum(form.wastePercentStandard, 0);
+    const wasteMaderado = parseNum(form.wastePercentMaderado, 0);
 
     if (!(saleFactor > 0)) {
       toast.error('El factor de venta debe ser mayor a 0.');
@@ -136,6 +151,16 @@ export default function SettingsTab({ onNavigate }: TabProps) {
     if (countertopMultipleM <= 0) {
       toast.error('El múltiplo de redondeo de cubierta debe ser mayor a 0.');
       return;
+    }
+    if (!Number.isInteger(stalledThresholdDays) || stalledThresholdDays < 1 || stalledThresholdDays > 365) {
+      toast.error('El umbral de estancamiento debe ser un número entero entre 1 y 365 días.');
+      return;
+    }
+    for (const [label, v] of [['merma estándar', wasteStandard], ['merma maderado', wasteMaderado]] as const) {
+      if (v < 0 || v > 200) {
+        toast.error(`La ${label} debe estar entre 0% y 200%.`);
+        return;
+      }
     }
     if (form.companyEmail.trim() && !/^\S+@\S+\.\S+$/.test(form.companyEmail.trim())) {
       toast.error('El correo de la empresa no es válido.');
@@ -158,6 +183,9 @@ export default function SettingsTab({ onNavigate }: TabProps) {
           laborPerUnit,
           countertopFactor,
           countertopMultipleM,
+          stalledThresholdDays,
+          wasteFactorStandard: 1 + wasteStandard / 100,
+          wasteFactorMaderado: 1 + wasteMaderado / 100,
           maderadoMaterialId: form.maderadoMaterialId || null,
         }),
       });
@@ -199,7 +227,7 @@ export default function SettingsTab({ onNavigate }: TabProps) {
         <Button
           onClick={() => void handleSave()}
           disabled={saving}
-          className="w-full bg-amber-600 text-white hover:bg-amber-700 sm:w-auto"
+          className="w-full bg-brand-600 text-white hover:bg-brand-700 sm:w-auto"
           aria-label="Guardar configuración"
         >
           {saving ? (
@@ -214,6 +242,9 @@ export default function SettingsTab({ onNavigate }: TabProps) {
       <div className="grid items-start gap-4 lg:grid-cols-3 lg:gap-6">
         {/* Columna de formularios */}
         <div className="space-y-4 lg:col-span-2 lg:space-y-6">
+          {/* Acabados y colores */}
+          <FinishProfilesCard />
+
           {/* Datos de la empresa */}
           <Card className="bg-white rounded-xl border border-stone-200 shadow-sm">
             <CardHeader>
@@ -373,6 +404,71 @@ export default function SettingsTab({ onNavigate }: TabProps) {
                 />
                 <p className="text-xs text-stone-500">
                   La cubierta se cobra por ML redondeado a este múltiplo (predeterminado 1.20 m)
+                </p>
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="wastePercentStandard">Merma de tableros estándar (%)</Label>
+                <Input
+                  id="wastePercentStandard"
+                  type="number"
+                  inputMode="decimal"
+                  min="0"
+                  step="1"
+                  value={form.wastePercentStandard}
+                  onChange={(e) => set('wastePercentStandard', e.target.value)}
+                  className="bg-white"
+                />
+                <p className="text-xs text-stone-500">
+                  Se aplica al calcular costo/m² desde la hoja en materiales no maderados (0% = sin merma)
+                </p>
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="wastePercentMaderado">Merma de tableros maderados (%)</Label>
+                <Input
+                  id="wastePercentMaderado"
+                  type="number"
+                  inputMode="decimal"
+                  min="0"
+                  step="1"
+                  value={form.wastePercentMaderado}
+                  onChange={(e) => set('wastePercentMaderado', e.target.value)}
+                  className="bg-white"
+                />
+                <p className="text-xs text-stone-500">
+                  Merma al calcular costo/m² desde la hoja en materiales maderados (veta combinada)
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* CRM: seguimiento */}
+          <Card className="bg-white rounded-xl border border-stone-200 shadow-sm">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-base">
+                <Users className="w-4 h-4 text-amber-600" aria-hidden="true" />
+                CRM · Seguimiento de clientes
+              </CardTitle>
+              <CardDescription>
+                Controla cuándo se considera que un cliente está estancado.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="space-y-1.5">
+                <Label htmlFor="stalledThresholdDays">Umbral de estancamiento (días)</Label>
+                <Input
+                  id="stalledThresholdDays"
+                  type="number"
+                  inputMode="numeric"
+                  min="1"
+                  max="365"
+                  step="1"
+                  value={form.stalledThresholdDays}
+                  onChange={(e) => set('stalledThresholdDays', e.target.value)}
+                  className="bg-white"
+                />
+                <p className="text-xs text-stone-500">
+                  Un cliente en etapa activa sin interacciones por más de estos días aparece como
+                  «estancado» en Reportes y suma al contador naranja (predeterminado 21).
                 </p>
               </div>
             </CardContent>

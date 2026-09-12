@@ -1,0 +1,19 @@
+# Caddyfile para Nahú Cocinas — HTTPS automático en localhost
+# Caddy genera un certificado local confiable la primera vez.
+# Para confiar en él: curl -o /tmp/root.crt http://localhost:2019/config/ca/root.crt && security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain /tmp/root.crt
+
+localhost:4200 {
+	tls internal
+
+	# Headers de compresión
+	encode gzip zstd
+
+	# Proxy reverso al dev server de Next.js
+	reverse_proxy dev:3000
+
+	# Logs de acceso
+	log {
+		output stdout
+		format console
+	}
+}

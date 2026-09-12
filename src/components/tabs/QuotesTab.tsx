@@ -7,11 +7,12 @@
  * detalle con desglose completo.
  * ============================================================ */
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import type { TabProps } from '@/app/page';
-import { useAppStore, settingsLike } from '@/lib/store';
-import type { Finish, QuotationDTO, QuotationStatus } from '@/lib/types';
-import { QUOTATION_STATUSES, STATUS_LABELS } from '@/lib/types';
+import { useAppStore, settingsLike, profileOf } from '@/lib/store';
+import type { ClientDTO, Finish, QuotationDTO, QuotationStatus } from '@/lib/types';
+import { COTIZACION_STATUSES, PEDIDO_STATUSES, STATUS_LABELS } from '@/lib/types';
+import WhatsAppTemplateDialog from '@/components/crm/whatsapp-template-dialog';
 import { money, num, formatDate, dims } from '@/lib/format';
 import { toast } from 'sonner';
 import {
@@ -21,7 +22,10 @@ import {
   FileSpreadsheet,
   FileText,
   Loader2,
+  MessageCircle,
   MoreHorizontal,
+  PackageCheck,
+  Pencil,
   Printer,
   Search,
   Trash2,
@@ -87,18 +91,26 @@ const STATUS_DOT: Record<QuotationStatus, string> = {
   ENVIADA: 'bg-amber-500',
   ACEPTADA: 'bg-emerald-500',
   PRODUCCION: 'bg-orange-500',
+  TERMINADO: 'bg-brand-600',
   ENTREGADA: 'bg-emerald-600',
   RECHAZADA: 'bg-red-500',
+  CANCELADA: 'bg-stone-600',
 };
 
 function FinishBadge({ finish }: { finish: Finish }) {
-  return finish === 'MADERADO' ? (
-    <Badge className="bg-amber-100 text-amber-800 border border-amber-200 hover:bg-amber-100 font-medium">
-      Maderado
-    </Badge>
-  ) : (
-    <Badge className="bg-stone-100 text-stone-700 border border-stone-200 hover:bg-stone-100 font-medium">
-      Blanco
+  const catalog = useAppStore((st) => st.catalog);
+  const profile = profileOf(catalog, finish);
+  const name = profile?.name ?? (finish === 'MADERADO' ? 'Maderado' : 'Blanco');
+  const colored = finish !== 'BLANCO';
+  return (
+    <Badge
+      className={
+        colored
+          ? 'bg-amber-100 text-amber-800 border border-amber-200 hover:bg-amber-100 font-medium'
+          : 'bg-stone-100 text-stone-700 border border-stone-200 hover:bg-stone-100 font-medium'
+      }
+    >
+      {name}
     </Badge>
   );
 }
@@ -109,34 +121,69 @@ const SCROLL_XS =
 export default function QuotesTab({ onNavigate }: TabProps) {
   const catalog = useAppStore((s) => s.catalog);
   const quotations = useAppStore((s) => s.quotations);
+  const clients = useAppStore((s) => s.clients);
+  const fetchClients = useAppStore((s) => s.fetchClients);
   const fetchQuotations = useAppStore((s) => s.fetchQuotations);
+  const setEditingQuotation = useAppStore((st) => st.setEditingQuotation);
   const loading = useAppStore((s) => s.loadingQuotations);
 
   const [search, setSearch] = useState('');
+  const [view, setView] = useState<'cotizaciones' | 'pedidos'>('cotizaciones');
   const [statusFilter, setStatusFilter] = useState<string>('ALL');
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [duplicatingId, setDuplicatingId] = useState<string | null>(null);
+  const [orderingId, setOrderingId] = useState<string | null>(null);
   const [detailId, setDetailId] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<QuotationDTO | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [waQuotation, setWaQuotation] = useState<QuotationDTO | null>(null);
 
   const settings = settingsLike(catalog);
   const ivaPct = settings.ivaRate * 100;
   const pctLabel = (v: number) => `${v % 1 === 0 ? v : v.toFixed(1)}%`;
 
+  const isPedido = (qt: QuotationDTO) => !!qt.orderCode;
+  const cotizaciones = useMemo(() => quotations.filter((qt) => !isPedido(qt)), [quotations]);
+  const pedidos = useMemo(() => quotations.filter(isPedido), [quotations]);
+  const visible = view === 'cotizaciones' ? cotizaciones : pedidos;
+  const allowedStatuses: QuotationStatus[] = view === 'cotizaciones' ? COTIZACION_STATUSES : PEDIDO_STATUSES;
+
   const filtered = useMemo(() => {
     const q = norm(search.trim());
-    return quotations.filter((qt) => {
+    return visible.filter((qt) => {
       if (statusFilter !== 'ALL' && qt.status !== statusFilter) return false;
       if (!q) return true;
       return norm(qt.folio).includes(q) || norm(qt.clientName).includes(q);
     });
-  }, [quotations, search, statusFilter]);
+  }, [visible, search, statusFilter]);
+
+  /* Cliente del CRM vinculado a la cotización seleccionada para WhatsApp */
+  const waClient: ClientDTO | null = waQuotation
+    ? (clients.find((c) => c.id === waQuotation.clientId) ?? null)
+    : null;
 
   const detail = useMemo(
     () => quotations.find((qt) => qt.id === detailId) ?? null,
     [quotations, detailId]
   );
+
+  /* Detalle completo con bitácora de revisiones */
+  const [detailFull, setDetailFull] = useState<QuotationDTO | null>(null);
+  useEffect(() => {
+    setDetailFull(null);
+    if (!detailId) return;
+    let alive = true;
+    void fetch(`/api/quotations/${detailId}`)
+      .then((r) => r.json())
+      .then((d: QuotationDTO) => {
+        if (alive) setDetailFull(d);
+      })
+      .catch(() => undefined);
+    return () => {
+      alive = false;
+    };
+  }, [detailId, quotations]);
+  const revisions = detailFull?.revisions ?? [];
 
   async function updateStatus(qt: QuotationDTO, status: QuotationStatus) {
     if (qt.status === status) return;
@@ -188,6 +235,24 @@ export default function QuotesTab({ onNavigate }: TabProps) {
     }
   }
 
+  async function generateOrder(qt: QuotationDTO) {
+    setOrderingId(qt.id);
+    try {
+      const res = await fetch(`/api/quotations/${qt.id}/order`, { method: 'POST' });
+      const data = await res.json().catch(() => null);
+      if (!res.ok) {
+        toast.error((data as { error?: string })?.error || 'No se pudo generar el pedido');
+        return;
+      }
+      toast.success(`Pedido ${data.orderCode} generado para ${qt.folio}`);
+      await fetchQuotations();
+    } catch {
+      toast.error('No se pudo generar el pedido');
+    } finally {
+      setOrderingId(null);
+    }
+  }
+
   function openPdf(id: string, prices: boolean) {
     window.open(`/api/quotations/${id}/pdf?prices=${prices ? 1 : 0}`, '_blank');
   }
@@ -224,7 +289,7 @@ export default function QuotesTab({ onNavigate }: TabProps) {
           </div>
           <Button
             onClick={() => onNavigate?.('cotizador')}
-            className="bg-amber-600 hover:bg-amber-700 text-white"
+            className="bg-brand-600 hover:bg-brand-700 text-white"
           >
             <Calculator className="w-4 h-4" aria-hidden />
             Ir al cotizador
@@ -236,6 +301,40 @@ export default function QuotesTab({ onNavigate }: TabProps) {
 
   return (
     <div className="space-y-4">
+      {/* ================= Cotizaciones / Pedidos ================= */}
+      <div role="tablist" aria-label="Tipo de documento" className="flex gap-1 rounded-lg bg-stone-100 p-1 w-fit">
+        {([
+          { id: 'cotizaciones', label: 'Cotizaciones', count: cotizaciones.length },
+          { id: 'pedidos', label: 'Pedidos', count: pedidos.length },
+        ] as const).map((t) => (
+          <button
+            key={t.id}
+            role="tab"
+            aria-selected={view === t.id}
+            onClick={() => {
+              setView(t.id);
+              setStatusFilter('ALL');
+            }}
+            className={cn(
+              'px-4 py-1.5 text-sm font-medium rounded-md transition-colors outline-none focus-visible:ring-2 focus-visible:ring-amber-500',
+              view === t.id
+                ? 'bg-white text-stone-900 shadow-sm'
+                : 'text-stone-500 hover:text-stone-800'
+            )}
+          >
+            {t.label}
+            <span
+              className={cn(
+                'ml-1.5 inline-flex min-w-[1.25rem] items-center justify-center rounded-full px-1 text-[11px] font-semibold',
+                view === t.id ? 'bg-brand-600 text-white' : 'bg-stone-200 text-stone-600'
+              )}
+            >
+              {t.count}
+            </span>
+          </button>
+        ))}
+      </div>
+
       {/* ================= Toolbar ================= */}
       <Card className="bg-white rounded-xl border border-stone-200 shadow-sm">
         <CardContent className="p-4">
@@ -263,9 +362,9 @@ export default function QuotesTab({ onNavigate }: TabProps) {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="ALL">Todos los estados</SelectItem>
-                {QUOTATION_STATUSES.map((s) => (
-                  <SelectItem key={s} value={s}>
-                    {STATUS_LABELS[s]}
+                {allowedStatuses.map((st) => (
+                  <SelectItem key={st} value={st}>
+                    {STATUS_LABELS[st]}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -274,7 +373,7 @@ export default function QuotesTab({ onNavigate }: TabProps) {
               variant="secondary"
               className="bg-stone-100 text-stone-600 border border-stone-200 justify-center sm:justify-start"
             >
-              {filtered.length} de {quotations.length}
+              {filtered.length} de {visible.length} {view === 'cotizaciones' ? 'cotizaciones' : 'pedidos'}
             </Badge>
           </div>
         </CardContent>
@@ -304,7 +403,9 @@ export default function QuotesTab({ onNavigate }: TabProps) {
             {filtered.length === 0 && (
               <TableRow>
                 <TableCell colSpan={8} className="py-12 text-center text-stone-500">
-                  Sin resultados para tu búsqueda.
+                  {view === 'pedidos'
+                    ? 'Aún no hay pedidos. Convierte una cotización aceptada con «Convertir en pedido».'
+                    : 'Sin resultados para tu búsqueda.'}
                 </TableCell>
               </TableRow>
             )}
@@ -321,6 +422,16 @@ export default function QuotesTab({ onNavigate }: TabProps) {
                     >
                       {qt.folio}
                     </button>
+                    {qt.orderCode && (
+                      <span className="mt-0.5 block text-[10px] font-semibold text-emerald-700">
+                        {qt.orderCode}
+                      </span>
+                    )}
+                    {qt.title && (
+                      <span className="block max-w-[140px] truncate text-[11px] font-normal text-stone-500" title={qt.title}>
+                        {qt.title}
+                      </span>
+                    )}
                   </TableCell>
                   <TableCell className="text-xs text-stone-500 whitespace-nowrap">
                     {formatDate(qt.createdAt)}
@@ -358,9 +469,9 @@ export default function QuotesTab({ onNavigate }: TabProps) {
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        {QUOTATION_STATUSES.map((s) => (
-                          <SelectItem key={s} value={s}>
-                            {STATUS_LABELS[s]}
+                        {(isPedido(qt) ? PEDIDO_STATUSES : COTIZACION_STATUSES).map((st) => (
+                          <SelectItem key={st} value={st}>
+                            {STATUS_LABELS[st]}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -391,6 +502,12 @@ export default function QuotesTab({ onNavigate }: TabProps) {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end" className="w-56">
+                        {qt.clientId && (
+                          <DropdownMenuItem onSelect={() => setWaQuotation(qt)}>
+                            <MessageCircle className="text-emerald-600" aria-hidden />
+                            Enviar por WhatsApp
+                          </DropdownMenuItem>
+                        )}
                         <DropdownMenuItem onSelect={() => openPdf(qt.id, true)}>
                           <FileText className="text-amber-600" aria-hidden />
                           PDF con precios
@@ -403,7 +520,34 @@ export default function QuotesTab({ onNavigate }: TabProps) {
                           <FileSpreadsheet className="text-emerald-600" aria-hidden />
                           Excel producción
                         </DropdownMenuItem>
+                        {['BORRADOR', 'ENVIADA', 'ACEPTADA', 'PRODUCCION', 'TERMINADO'].includes(qt.status) && (
+                          <DropdownMenuItem
+                            onSelect={() => {
+                              setEditingQuotation(qt);
+                              onNavigate?.('cotizador');
+                            }}
+                          >
+                            <Pencil className="text-stone-500" aria-hidden />
+                            {qt.orderCode ? 'Editar (crea revisión)' : 'Editar'}
+                          </DropdownMenuItem>
+                        )}
                         <DropdownMenuSeparator />
+                        {!qt.orderCode && (
+                          <DropdownMenuItem onSelect={() => void generateOrder(qt)} disabled={orderingId === qt.id}>
+                            {orderingId === qt.id ? (
+                              <Loader2 className="animate-spin" aria-hidden />
+                            ) : (
+                              <PackageCheck aria-hidden />
+                            )}
+                            Convertir en pedido
+                          </DropdownMenuItem>
+                        )}
+                        {qt.orderCode && (
+                          <DropdownMenuItem disabled>
+                            <PackageCheck className="text-emerald-600" aria-hidden />
+                            Pedido {qt.orderCode}
+                          </DropdownMenuItem>
+                        )}
                         <DropdownMenuItem onSelect={() => duplicate(qt)} disabled={duplicatingId === qt.id}>
                           {duplicatingId === qt.id ? (
                             <Loader2 className="animate-spin" aria-hidden />
@@ -440,6 +584,11 @@ export default function QuotesTab({ onNavigate }: TabProps) {
                   <DialogTitle className="text-xl font-bold text-stone-900">
                     {detail.folio}
                   </DialogTitle>
+                  {detail.orderCode && (
+                    <span className="rounded-full bg-emerald-100 border border-emerald-200 px-2.5 py-0.5 text-xs font-semibold text-emerald-800">
+                      {detail.orderCode}
+                    </span>
+                  )}
                   <FinishBadge finish={detail.finish} />
                   <span className="inline-flex items-center gap-1.5 rounded-full bg-stone-100 border border-stone-200 px-2.5 py-0.5 text-xs font-medium text-stone-700">
                     <span
@@ -450,6 +599,7 @@ export default function QuotesTab({ onNavigate }: TabProps) {
                   </span>
                 </div>
                 <DialogDescription className="text-xs">
+                  {detail.title && <span className="font-medium text-stone-700">{detail.title} · </span>}
                   {formatDate(detail.createdAt)} · Total con IVA{' '}
                   <span className="font-bold text-amber-700">{money(detail.totalWithIva)}</span>
                 </DialogDescription>
@@ -471,6 +621,45 @@ export default function QuotesTab({ onNavigate }: TabProps) {
                   </p>
                 )}
               </div>
+
+              {/* Bitácora de revisiones (solo pedidos) */}
+              {detail.orderCode && (
+                <div className="rounded-lg border border-stone-200 bg-stone-50 p-3">
+                  <p className="text-[11px] uppercase tracking-wide text-stone-400">
+                    Revisiones anteriores <span className="text-stone-400 normal-case">(actual: Rev. {detail.rev})</span>
+                  </p>
+                  {!detailFull && (
+                    <p className="mt-1 text-xs text-stone-400">Cargando revisiones…</p>
+                  )}
+                  {detailFull && revisions.length === 0 && (
+                    <p className="mt-1 text-xs text-stone-500">Sin cambios desde que se creó el pedido.</p>
+                  )}
+                  {revisions.length > 0 && (
+                    <ul className="mt-2 space-y-1.5">
+                      {revisions.map((r) => (
+                        <li key={r.id} className="text-xs text-stone-600">
+                          <details>
+                            <summary className="cursor-pointer select-none">
+                              <span className="font-semibold text-stone-800">Rev. {r.rev}</span>{' '}
+                              · {formatDate(r.createdAt)} · {money(r.totalWithIva)}
+                              {r.note && <span className="text-stone-500"> — {r.note}</span>}
+                            </summary>
+                            <ul className="mt-1 ml-4 border-l border-stone-200 pl-3 space-y-0.5">
+                              {(JSON.parse(r.itemsJson) as { code: string; name: string; qty: number; unitPrice: number }[]).map(
+                                (it, i) => (
+                                  <li key={i}>
+                                    {it.qty}× {it.name} — {money(it.unitPrice)} c/u
+                                  </li>
+                                )
+                              )}
+                            </ul>
+                          </details>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              )}
 
               {/* Items */}
               <div className="rounded-lg border border-stone-200 overflow-hidden">
@@ -712,6 +901,22 @@ export default function QuotesTab({ onNavigate }: TabProps) {
           Crear nueva cotización
         </Button>
       </div>
+
+      {/* WhatsApp con plantillas para cotizaciones vinculadas a un cliente del CRM */}
+      {waQuotation && waClient && (
+        <WhatsAppTemplateDialog
+          open
+          onOpenChange={(o) => !o && setWaQuotation(null)}
+          client={waClient}
+          quotations={quotations}
+          initialTemplate="cotizacion"
+          initialQuotationId={waQuotation.id}
+          onLogged={(_it, _client) => {
+            void fetchQuotations();
+            void fetchClients();
+          }}
+        />
+      )}
     </div>
   );
 }

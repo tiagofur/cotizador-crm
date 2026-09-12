@@ -1,0 +1,73 @@
+services:
+  # ── Producción (imagen multi-stage, standalone) ──────────────────
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: nahu-cocinas
+    ports:
+      - "4200:4200"
+    volumes:
+      - ./db:/app/db
+      - ./upload:/app/upload
+    environment:
+      - DATABASE_URL=file:../db/custom.db
+      - NODE_ENV=production
+    restart: unless-stopped
+    # Seguridad
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp:size=64M
+    # Logging
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # ── Desarrollo (hot-reload con bun dev) ──────────────────────────
+  dev:
+    image: oven/bun:1
+    container_name: nahu-cocinas-dev
+    # No expose port — Caddy se encarga del externo
+    volumes:
+      - .:/app
+      - dev_node_modules:/app/node_modules
+      - ./db:/app/db
+      - ./upload:/app/upload
+    working_dir: /app
+    environment:
+      - DATABASE_URL=file:../db/custom.db
+      - NODE_ENV=development
+      - WATCHPACK_POLLING=true
+    command: >
+      sh -c '
+        echo "📦 Instalando dependencias..." &&
+        bun install --frozen-lockfile &&
+        echo "🔧 Generando Prisma client..." &&
+        bunx prisma generate &&
+        echo "🚀 Iniciando dev server en puerto 3000..." &&
+        bunx next dev -p 3000
+      '
+    restart: unless-stopped
+
+  # ── Caddy reverse proxy (HTTPS automático) ──────────────────────
+  caddy:
+    image: caddy:2-alpine
+    container_name: nahu-cocinas-caddy
+    ports:
+      - "4200:4200"
+    volumes:
+      - ./Caddyfile.nahu:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - dev
+    restart: unless-stopped
+
+volumes:
+  dev_node_modules:
+  caddy_data:
+  caddy_config:

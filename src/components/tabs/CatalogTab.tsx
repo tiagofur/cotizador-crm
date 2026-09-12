@@ -264,7 +264,7 @@ export default function CatalogTab({ onNavigate }: TabProps) {
                   className={cn(
                     'min-h-[36px] rounded-md px-3 py-1.5 text-xs font-medium transition-colors outline-none focus-visible:ring-2 focus-visible:ring-amber-500',
                     materialFilter === f.value
-                      ? 'bg-amber-600 text-white shadow-sm'
+                      ? 'bg-brand-600 text-white shadow-sm'
                       : 'text-stone-500 hover:bg-stone-50 hover:text-stone-800'
                   )}
                 >
@@ -280,7 +280,7 @@ export default function CatalogTab({ onNavigate }: TabProps) {
 
             <Button
               onClick={() => setMaterialDialog({ open: true, editing: null })}
-              className="sm:ml-auto bg-amber-600 hover:bg-amber-700 text-white min-h-[40px]"
+              className="sm:ml-auto bg-brand-600 hover:bg-brand-700 text-white min-h-[40px]"
             >
               <Plus className="h-4 w-4" aria-hidden />
               Nuevo material
@@ -435,7 +435,7 @@ export default function CatalogTab({ onNavigate }: TabProps) {
             </p>
             <Button
               onClick={() => setHardwareDialog({ open: true, editing: null })}
-              className="sm:ml-auto bg-amber-600 hover:bg-amber-700 text-white min-h-[40px]"
+              className="sm:ml-auto bg-brand-600 hover:bg-brand-700 text-white min-h-[40px]"
             >
               <Plus className="h-4 w-4" aria-hidden />
               Nuevo herraje

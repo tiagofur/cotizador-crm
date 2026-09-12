@@ -26,6 +26,18 @@ export async function PUT(req: NextRequest) {
         countertopMultipleM: body.countertopMultipleM !== undefined ? Number(body.countertopMultipleM) : undefined,
         countertopFactor: body.countertopFactor !== undefined ? Number(body.countertopFactor) : undefined,
         currency: body.currency !== undefined ? String(body.currency) : undefined,
+        stalledThresholdDays:
+          body.stalledThresholdDays !== undefined
+            ? Math.max(1, Math.min(365, Math.round(Number(body.stalledThresholdDays) || 0)))
+            : undefined,
+        wasteFactorStandard:
+          body.wasteFactorStandard !== undefined
+            ? Math.max(1, Math.min(3, Number(body.wasteFactorStandard) || 1))
+            : undefined,
+        wasteFactorMaderado:
+          body.wasteFactorMaderado !== undefined
+            ? Math.max(1, Math.min(3, Number(body.wasteFactorMaderado) || 1))
+            : undefined,
         maderadoMaterialId: body.maderadoMaterialId !== undefined ? body.maderadoMaterialId : undefined,
       },
     });

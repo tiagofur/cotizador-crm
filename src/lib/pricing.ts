@@ -5,7 +5,19 @@
  * Precio = (costo + mano de obra/unidad × unidades) × factor de venta
  * ============================================================ */
 
-export type Finish = 'BLANCO' | 'MADERADO';
+/** Identificador de acabado: 'BLANCO'/'MADERADO' históricos o id de un FinishProfile */
+export type Finish = string;
+
+/** Perfil de acabado: define materiales de cuerpo y frentes (los ids BLANCO/MADERADO son históricos) */
+export interface FinishProfileLike {
+  id: string;
+  name: string;
+  /** true (Blanco histórico): cada pieza usa su propio material del despiece */
+  usePieceMaterials: boolean;
+  bodyMaterial?: MaterialLike | null;
+  frontMaterial?: MaterialLike | null;
+  active?: boolean;
+}
 
 export interface MaterialLike {
   id: string;
@@ -27,6 +39,8 @@ export interface PieceLike {
   width: number; // mm
   materialId?: string | null;
   material?: MaterialLike | null;
+  /** Es pieza de frente: usa el material del frente del perfil de acabado */
+  isFront?: boolean;
   grain: boolean;
   bandLong1: boolean;
   bandLong2: boolean;
@@ -57,6 +71,11 @@ export interface FurnitureLike {
 }
 
 export interface SettingsLike {
+  /** Días sin interacción para considerar estancado a un cliente (CRM) */
+  stalledThresholdDays?: number;
+  /** Merma (multiplicador ≥1) para costo/m² calculado desde hoja */
+  wasteFactorStandard?: number;
+  wasteFactorMaderado?: number;
   saleFactor: number;
   ivaRate: number;
   distributorDiscount: number;
@@ -64,6 +83,28 @@ export interface SettingsLike {
   countertopMultipleM: number;
   countertopFactor: number;
   currency?: string;
+}
+
+/** Costo/m² efectivo de un tablero: hoja ÷ m² de hoja × merma; sin hoja usa el costo capturado */
+export function effectiveCostPerM2(
+  m: Pick<MaterialLike, 'costPerM2'> & {
+    sheetCost?: number | null;
+    sheetWidth?: number | null;
+    sheetLength?: number | null;
+    isMaderado?: boolean;
+  },
+  wasteFactorStandard = 1,
+  wasteFactorMaderado = 1
+): number {
+  const { sheetCost, sheetWidth, sheetLength } = m;
+  if (sheetCost && sheetWidth && sheetLength) {
+    const m2 = (sheetWidth / 1000) * (sheetLength / 1000);
+    if (m2 > 0) {
+      const merma = m.isMaderado ? wasteFactorMaderado : wasteFactorStandard;
+      return (sheetCost / m2) * merma;
+    }
+  }
+  return m.costPerM2 ?? 0;
 }
 
 /** Área en m² de una pieza (total, incluyendo cantidad) */
@@ -81,21 +122,11 @@ export function pieceEdgeMl(p: PieceLike): number {
   return (p.qty * ml) / 1000;
 }
 
-/** Material efectivo de una pieza según el acabado */
-export function resolvePieceMaterial(p: PieceLike, maderadoMaterialId: string | null, finish: Finish): MaterialLike | null {
-  if (finish === 'MADERADO' && maderadoMaterialId) {
-    // Si la pieza ya es el material maderado, se queda igual
-    if (p.material?.id === maderadoMaterialId) return p.material;
-    // En acabado maderado todas las piezas usan el material maderado
-    return null; // la persona que llama debe resolver el material maderado
-  }
-  return p.material ?? null;
-}
-
-/** Material de una pieza según acabado, dado el objeto material maderado */
-export function pieceMaterialFor(p: PieceLike, finish: Finish, maderadoMat: MaterialLike | null): MaterialLike | null {
-  if (finish === 'MADERADO') return maderadoMat ?? p.material ?? null;
-  return p.material ?? null;
+/** Material efectivo de una pieza según el perfil de acabado */
+export function pieceMaterialFor(p: PieceLike, profile: FinishProfileLike | null): MaterialLike | null {
+  if (!profile || profile.usePieceMaterials) return p.material ?? null;
+  if (p.isFront) return profile.frontMaterial ?? null;
+  return profile.bodyMaterial ?? null;
 }
 
 /** Costo de una pieza con su material efectivo */
@@ -117,18 +148,14 @@ export interface FurnitureCostResult {
   totalMl: number;
 }
 
-/** Desglose de costo de un mueble en un acabado */
-export function furnitureCostBreakdown(
-  f: FurnitureLike,
-  finish: Finish,
-  maderadoMat: MaterialLike | null
-): FurnitureCostResult {
+/** Desglose de costo de un mueble con un perfil de acabado */
+export function furnitureCostBreakdown(f: FurnitureLike, profile: FinishProfileLike | null): FurnitureCostResult {
   let boards = 0;
   let band = 0;
   let totalM2 = 0;
   let totalMl = 0;
   for (const p of f.pieces) {
-    const mat = pieceMaterialFor(p, finish, maderadoMat);
+    const mat = pieceMaterialFor(p, profile);
     boards += pieceCost(p, mat) - (mat ? (mat.edgeBandCostMl || 0) * pieceEdgeMl(p) : 0);
     band += mat ? (mat.edgeBandCostMl || 0) * pieceEdgeMl(p) : 0;
     totalM2 += pieceAreaM2(p);
@@ -141,17 +168,16 @@ export function furnitureCostBreakdown(
   return { boardsCost: boards, bandCost: band, hardwareCost: hardware, total: boards + band + hardware, totalM2, totalMl };
 }
 
-export function furnitureCost(f: FurnitureLike, finish: Finish, maderadoMat: MaterialLike | null): number {
-  return furnitureCostBreakdown(f, finish, maderadoMat).total;
+export function furnitureCost(f: FurnitureLike, profile: FinishProfileLike | null): number {
+  return furnitureCostBreakdown(f, profile).total;
 }
 
 export function furniturePrice(
   f: FurnitureLike,
-  finish: Finish,
-  maderadoMat: MaterialLike | null,
+  profile: FinishProfileLike | null,
   settings: SettingsLike
 ): number {
-  return furnitureCost(f, finish, maderadoMat) * settings.saleFactor;
+  return furnitureCost(f, profile) * settings.saleFactor;
 }
 
 export interface QuoteItemInput {
@@ -161,7 +187,7 @@ export interface QuoteItemInput {
 
 export interface QuoteTotalsInput {
   items: QuoteItemInput[];
-  finish: Finish;
+  profile: FinishProfileLike | null;
   countertop?: MaterialLike | null;
   countertopMlOverride?: number | null;
   factor: number;
@@ -170,7 +196,6 @@ export interface QuoteTotalsInput {
   distributorDiscount: number;
   countertopFactor: number;
   countertopMultipleM: number;
-  maderadoMat: MaterialLike | null;
 }
 
 export interface QuoteTotals {
@@ -201,15 +226,15 @@ export function roundUpTo(value: number, multiple: number): number {
 /** Cálculo completo de una cotización */
 export function computeQuoteTotals(input: QuoteTotalsInput): QuoteTotals {
   const {
-    items, finish, countertop, countertopMlOverride, factor, laborPerUnit,
-    ivaRate, distributorDiscount, countertopFactor, countertopMultipleM, maderadoMat,
+    items, profile, countertop, countertopMlOverride, factor, laborPerUnit,
+    ivaRate, distributorDiscount, countertopFactor, countertopMultipleM,
   } = input;
 
   let furnitureCostTotal = 0;
   let totalUnits = 0;
   let countertopMlReal = 0;
   const perItem = items.map((it) => {
-    const unitCost = furnitureCost(it.furniture, finish, maderadoMat);
+    const unitCost = furnitureCost(it.furniture, profile);
     const costPlusLabor = unitCost + laborPerUnit;
     const unitPrice = costPlusLabor * factor;
     const total = unitPrice * it.qty;

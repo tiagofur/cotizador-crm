@@ -26,6 +26,8 @@ model Material {
   pieces         Piece[]
   settings       Settings[]
   quotations     Quotation[]
+  bodyProfiles   FinishProfile[] @relation("FinishProfileBody")
+  frontProfiles  FinishProfile[] @relation("FinishProfileFront")
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 }
@@ -74,6 +76,7 @@ model Piece {
   materialId  String?
   material    Material? @relation(fields: [materialId], references: [id])
   grain       Boolean   @default(false)
+  isFront     Boolean   @default(false)
   bandLong1   Boolean   @default(false)
   bandLong2   Boolean   @default(false)
   bandShort1  Boolean   @default(false)
@@ -94,10 +97,10 @@ model FurnitureHardware {
 
 model Settings {
   id                  String    @id @default("default")
-  companyName         String    @default("Cotizador de Muebles")
-  companyPhone        String?
-  companyEmail        String?
-  companyAddress      String?
+  companyName         String    @default("Nahú Cocinas")
+  companyPhone        String?   @default("322 349 2746")
+  companyEmail        String?   @default("nahucocinas@gmail.com")
+  companyAddress      String?   @default("Boca de Tomates 233, Las Juntas · 48291 Puerto Vallarta, Jal.")
   saleFactor          Float     @default(6.7)
   ivaRate             Float     @default(0.16)
   distributorDiscount Float     @default(0.35)
@@ -105,16 +108,69 @@ model Settings {
   countertopMultipleM Float     @default(1.2)
   countertopFactor    Float     @default(4)
   currency            String    @default("MXN")
+  stalledThresholdDays Int      @default(21)
+  wasteFactorStandard Float     @default(1.0)
+  wasteFactorMaderado Float     @default(1.0)
   maderadoMaterialId  String?
   maderadoMaterial    Material? @relation(fields: [maderadoMaterialId], references: [id])
+}
+
+// Perfil de acabado: define qué materiales usa el cuerpo y los frentes.
+// ids 'BLANCO' y 'MADERADO' son los acabados históricos; el resto son colores de frente.
+model FinishProfile {
+  id               String   @id
+  name             String
+  usePieceMaterials Boolean @default(false) // true (Blanco): cada pieza usa su material del despiece
+  bodyMaterialId   String?
+  bodyMaterial     Material? @relation("FinishProfileBody", fields: [bodyMaterialId], references: [id])
+  frontMaterialId  String?
+  frontMaterial    Material? @relation("FinishProfileFront", fields: [frontMaterialId], references: [id])
+  active           Boolean  @default(true)
+  order            Int      @default(0)
+}
+
+model Client {
+  id             String        @id @default(cuid())
+  name           String  // Razon social o nombre de contacto
+  kind           String        @default("PROSPECTO")  // CARPINTERO | DISTRIBUIDOR | FABRICA | PROSPECTO | OTRO
+  stage          String        @default("PROSPECTANDO")  // NUEVO | PROSPECTANDO | CONTACTADO | COTIZADO | NEGOCIACION | GANADO | PERDIDO
+  company        String?
+  phone          String?
+  email          String?
+  address        String?
+  city           String?
+  notes          String?
+  /// Descuento % propio (0-100). Null = usar el descuento base de Configuración
+  discountPercent Float?
+  lastContactAt  DateTime?
+  nextFollowUpAt DateTime?
+  quotations     Quotation[]
+  interactions   Interaction[]
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+}
+
+model Interaction {
+  id          String   @id @default(cuid())
+  clientId    String
+  client      Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  type        String   @default("NOTA")  // LLAMADA | WHATSAPP | EMAIL | VISITA | COTIZACION | NOTA
+  subject     String?
+  content     String
+  occurredAt  DateTime @default(now())
+  createdAt   DateTime @default(now())
 }
 
 model Quotation {
   id                   String     @id @default(cuid())
   folio                String     @unique
+  clientId             String?
+  client               Client?    @relation(fields: [clientId], references: [id])
   clientName           String
   clientPhone          String?
   clientEmail          String?
+  title                String?
+  orderCode            String?    @unique
   notes                String?
   finish               String     @default("BLANCO")
   countertopMaterialId String?
@@ -123,6 +179,10 @@ model Quotation {
   countertopMlOverride Float?
   factorSnapshot       Float      @default(6.7)
   laborSnapshot        Float      @default(0)
+  distributorSnapshot  Float?
+  /// Revisión actual del documento (pedidos incrementan al editarse)
+  rev                  Int        @default(1)
+  revisions            QuotationRevision[]
   status               String     @default("BORRADOR")
   furnitureCost        Float      @default(0)
   furnitureSale        Float      @default(0)
@@ -138,6 +198,23 @@ model Quotation {
   items                QuotationItem[]
   createdAt            DateTime   @default(now())
   updatedAt            DateTime   @updatedAt
+}
+
+// Bitácora de revisiones: snapshot del estado anterior al editar un pedido
+model QuotationRevision {
+  id               String    @id @default(cuid())
+  quotationId      String
+  quotation        Quotation @relation(fields: [quotationId], references: [id], onDelete: Cascade)
+  rev              Int
+  status           String
+  itemsJson        String
+  furnitureSale    Float
+  totalWithIva     Float
+  distributorTotal Float?
+  note             String?
+  createdAt        DateTime  @default(now())
+
+  @@unique([quotationId, rev])
 }
 
 model QuotationItem {

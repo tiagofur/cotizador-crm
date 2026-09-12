@@ -222,7 +222,7 @@ export default function HardwareDialog({ open, onOpenChange, hardware }: Hardwar
             >
               Cancelar
             </Button>
-            <Button type="submit" disabled={saving} className="bg-amber-600 hover:bg-amber-700 text-white">
+            <Button type="submit" disabled={saving} className="bg-brand-600 hover:bg-brand-700 text-white">
               {saving && <Loader2 className="h-4 w-4 animate-spin" aria-hidden />}
               {hardware ? 'Guardar cambios' : 'Crear herraje'}
             </Button>

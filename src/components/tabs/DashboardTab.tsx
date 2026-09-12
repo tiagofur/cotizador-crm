@@ -26,6 +26,9 @@ import {
   ChevronRight,
   Sparkles,
   ListChecks,
+  Users,
+  CalendarClock,
+  UserPlus,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -72,8 +75,10 @@ const STATUS_BADGE_CLASS: Record<QuotationStatus, string> = {
   ENVIADA: 'bg-amber-100 text-amber-800 border-amber-200',
   ACEPTADA: 'bg-emerald-100 text-emerald-800 border-emerald-200',
   PRODUCCION: 'bg-orange-100 text-orange-800 border-orange-200',
+  TERMINADO: 'bg-brand-100 text-brand-800 border-brand-200',
   ENTREGADA: 'bg-emerald-600 text-white border-emerald-600',
   RECHAZADA: 'bg-red-100 text-red-700 border-red-200',
+  CANCELADA: 'bg-stone-200 text-stone-700 border-stone-300',
 };
 
 export default function DashboardTab({ onNavigate }: TabProps) {
@@ -104,6 +109,15 @@ export default function DashboardTab({ onNavigate }: TabProps) {
   const recent = quotations.slice(0, 5);
   const alerts = data?.alerts ?? [];
   const settings = data?.settings;
+  const clients = useAppStore((s) => s.clients);
+
+  /* Seguimientos pendientes de clientes (hoy o atrasados), los más urgentes primero */
+  const pendingFollowUps = clients
+    .filter((c) => c.nextFollowUpAt && new Date(c.nextFollowUpAt).getTime() <= new Date().setHours(23, 59, 59, 999))
+    .sort(
+      (a, b) => new Date(a.nextFollowUpAt!).getTime() - new Date(b.nextFollowUpAt!).getTime()
+    )
+    .slice(0, 5);
 
   return (
     <div className="space-y-6">
@@ -300,6 +314,74 @@ export default function DashboardTab({ onNavigate }: TabProps) {
         </Card>
       </section>
 
+      {/* CRM: seguimiento de clientes */}
+      <section aria-label="Seguimiento de clientes">
+        <Card className="bg-white rounded-xl border border-stone-200 shadow-sm">
+          <CardHeader>
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <div className="min-w-0">
+                <CardTitle className="flex items-center gap-2 text-base">
+                  <Users className="w-4 h-4 text-amber-600" aria-hidden="true" />
+                  Seguimiento de clientes (CRM)
+                </CardTitle>
+                <CardDescription>
+                  {clients.length === 0
+                    ? 'Registra prospectos y da seguimiento a cada comunicación.'
+                    : `${clients.length} cliente${clients.length === 1 ? '' : 's'} en seguimiento.`}
+                </CardDescription>
+              </div>
+              <Button
+                size="sm"
+                onClick={() => onNavigate?.('clientes')}
+                className="bg-brand-600 text-white hover:bg-brand-700"
+              >
+                {clients.length === 0 ? (
+                  <>
+                    <UserPlus className="w-4 h-4" aria-hidden="true" />
+                    Abrir CRM
+                  </>
+                ) : (
+                  <>
+                    <ChevronRight className="w-4 h-4" aria-hidden="true" />
+                    Abrir CRM
+                  </>
+                )}
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent>
+            {pendingFollowUps.length === 0 ? (
+              <p className="text-sm text-stone-500 flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-emerald-500" aria-hidden="true" />
+                Sin seguimientos pendientes para hoy. ¡Al día!
+              </p>
+            ) : (
+              <ul className="space-y-2">
+                {pendingFollowUps.map((c) => (
+                  <li key={c.id}>
+                    <button
+                      type="button"
+                      onClick={() => onNavigate?.('clientes')}
+                      className="w-full rounded-lg border border-amber-200 bg-amber-50/60 p-3 text-left transition-colors hover:bg-amber-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
+                      aria-label={`Seguimiento pendiente de ${c.name}`}
+                    >
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-sm font-medium text-stone-900 truncate">{c.name}</span>
+                        <span className="inline-flex items-center gap-1 text-xs font-semibold text-amber-700 shrink-0">
+                          <CalendarClock className="w-3.5 h-3.5" aria-hidden="true" />
+                          {formatDate(c.nextFollowUpAt!)}
+                        </span>
+                      </div>
+                      {c.phone && <p className="text-xs text-stone-500 mt-0.5">{c.phone}</p>}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </CardContent>
+        </Card>
+      </section>
+
       {/* Cotizaciones recientes + Acciones rápidas */}
       <section aria-label="Actividad reciente y acciones" className="grid gap-4 lg:grid-cols-3">
         <Card className="bg-white rounded-xl border border-stone-200 shadow-sm lg:col-span-2">
@@ -323,7 +405,7 @@ export default function DashboardTab({ onNavigate }: TabProps) {
                 <Button
                   size="sm"
                   onClick={() => onNavigate?.('cotizador')}
-                  className="bg-amber-600 text-white hover:bg-amber-700"
+                  className="bg-brand-600 text-white hover:bg-brand-700"
                 >
                   <Calculator className="w-4 h-4" aria-hidden="true" />
                   Ir al cotizador
@@ -370,7 +452,7 @@ export default function DashboardTab({ onNavigate }: TabProps) {
           </CardHeader>
           <CardContent className="space-y-2">
             <Button
-              className="w-full bg-amber-600 text-white hover:bg-amber-700"
+              className="w-full bg-brand-600 text-white hover:bg-brand-700"
               onClick={() => onNavigate?.('cotizador')}
             >
               <Calculator className="w-4 h-4" aria-hidden="true" />

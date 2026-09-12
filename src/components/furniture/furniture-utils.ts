@@ -13,6 +13,7 @@ export interface DraftPiece {
   length: string;
   width: string;
   materialId: string;
+  isFront: boolean;
   grain: boolean;
   bandLong1: boolean;
   bandLong2: boolean;
@@ -56,6 +57,7 @@ export function emptyPiece(): DraftPiece {
     length: '',
     width: '',
     materialId: '',
+    isFront: false,
     grain: false,
     bandLong1: false,
     bandLong2: false,
@@ -101,6 +103,7 @@ export function draftFromFurniture(f: FurnitureDTO): FurnitureDraft {
       length: String(p.length),
       width: String(p.width),
       materialId: p.materialId ?? '',
+      isFront: p.isFront,
       grain: p.grain,
       bandLong1: p.bandLong1,
       bandLong2: p.bandLong2,
@@ -124,6 +127,7 @@ export function draftPieceLike(p: DraftPiece): PieceLike {
     length: Number(p.length) || 0,
     width: Number(p.width) || 0,
     materialId: p.materialId || null,
+    isFront: p.isFront,
     grain: p.grain,
     bandLong1: p.bandLong1,
     bandLong2: p.bandLong2,

@@ -2,7 +2,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import * as XLSX from 'xlsx';
 import { db } from '@/lib/db';
-import { getMaderadoMaterial } from '@/lib/server/queries';
+import { getFinishProfile } from '@/lib/server/queries';
 import { pieceAreaM2, pieceEdgeMl, type PieceLike } from '@/lib/pricing';
 
 type Params = { params: Promise<{ id: string }> };
@@ -24,8 +24,13 @@ export async function GET(_req: NextRequest, { params }: Params) {
   });
   if (!q) return NextResponse.json({ error: 'Cotización no encontrada' }, { status: 404 });
 
-  const maderadoMat = await getMaderadoMaterial();
-  const finish = q.finish === 'MADERADO' ? 'MADERADO' : 'BLANCO';
+  const profile = await getFinishProfile(q.finish);
+  const finishLabel = profile?.name ?? q.finish;
+  const materialForPiece = (p: { materialId: string | null; material: { name: string } | null; isFront: boolean }) => {
+    if (!profile || profile.usePieceMaterials) return p.material?.name ?? '—';
+    if (p.isFront) return profile.frontMaterial?.name ?? p.material?.name ?? '—';
+    return profile.bodyMaterial?.name ?? p.material?.name ?? '—';
+  };
 
   const wb = XLSX.utils.book_new();
 
@@ -34,7 +39,7 @@ export async function GET(_req: NextRequest, { params }: Params) {
     ['LISTA DE PRODUCCIÓN', null, null, null, null, null, null],
     ['Folio', q.folio], ['Cliente', q.clientName],
     ['Fecha', q.createdAt.toLocaleDateString('es-MX')],
-    ['Acabado', finish], ['Moneda', 'MXN'],
+    ['Acabado', finishLabel], ['Moneda', 'MXN'],
     ['Factor de venta', q.factorSnapshot], ['IVA', `${(q.ivaAmount / Math.max(q.furnitureSale + q.countertopSale, 0.01) * 100).toFixed(0)}%`],
     [],
     ['CANT', 'CÓDIGO', 'MUEBLE', 'DIMENSIONES (mm)', 'COSTO UNIT.', 'PRECIO UNIT.', 'TOTAL'],
@@ -67,7 +72,7 @@ export async function GET(_req: NextRequest, { params }: Params) {
     const f = item.furniture;
     if (!f) continue;
     for (const p of f.pieces) {
-      const materialName = finish === 'MADERADO' ? (maderadoMat?.name ?? p.material?.name ?? '—') : (p.material?.name ?? '—');
+      const materialName = materialForPiece(p);
       const pl: PieceLike = {
         name: p.name, qty: p.qty, length: p.length, width: p.width,
         material: { id: p.materialId ?? '', name: materialName, type: 'TABLERO', costPerM2: 0, costPerMl: null, edgeBandCostMl: 0 },

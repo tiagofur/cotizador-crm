@@ -7,6 +7,7 @@ import FurnitureTab from '@/components/tabs/FurnitureTab';
 import CatalogTab from '@/components/tabs/CatalogTab';
 import QuoterTab from '@/components/tabs/QuoterTab';
 import QuotesTab from '@/components/tabs/QuotesTab';
+import ClientsTab from '@/components/tabs/ClientsTab';
 import SettingsTab from '@/components/tabs/SettingsTab';
 import { Toaster } from '@/components/ui/sonner';
 import {
@@ -15,12 +16,15 @@ import {
   Boxes,
   Calculator,
   FileText,
+  Users,
   Settings2,
   Hammer,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { overdueFollowUps, stalledClients } from '@/lib/crm';
+import { stalledThreshold } from '@/lib/store';
 
-export type TabId = 'inicio' | 'muebles' | 'catalogo' | 'cotizador' | 'cotizaciones' | 'config';
+export type TabId = 'inicio' | 'muebles' | 'catalogo' | 'cotizador' | 'cotizaciones' | 'clientes' | 'config';
 
 export interface TabProps {
   onNavigate?: (tab: TabId) => void;
@@ -32,6 +36,7 @@ const TABS: { id: TabId; label: string; icon: React.ElementType }[] = [
   { id: 'catalogo', label: 'Catálogo', icon: Boxes },
   { id: 'cotizador', label: 'Cotizador', icon: Calculator },
   { id: 'cotizaciones', label: 'Cotizaciones', icon: FileText },
+  { id: 'clientes', label: 'Clientes (CRM)', icon: Users },
   { id: 'config', label: 'Configuración', icon: Settings2 },
 ];
 
@@ -39,13 +44,34 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState<TabId>('inicio');
   const fetchCatalog = useAppStore((s) => s.fetchCatalog);
   const fetchQuotations = useAppStore((s) => s.fetchQuotations);
+  const fetchClients = useAppStore((s) => s.fetchClients);
   const catalog = useAppStore((s) => s.catalog);
   const quotations = useAppStore((s) => s.quotations);
+  const clients = useAppStore((s) => s.clients);
 
   useEffect(() => {
     fetchCatalog();
     fetchQuotations();
-  }, [fetchCatalog, fetchQuotations]);
+    fetchClients();
+  }, [fetchCatalog, fetchQuotations, fetchClients]);
+
+  const overdueCount = overdueFollowUps(clients).length;
+  const stalledCount = stalledClients(clients, stalledThreshold(catalog)).length;
+  const alertTotal = overdueCount + stalledCount;
+
+  useEffect(() => {
+    if (alertTotal === 0) {
+      document.title = 'Cotizador de Muebles';
+      return;
+    }
+    if (overdueCount > 0 && stalledCount > 0) {
+      document.title = `(${alertTotal}) Cotizador de Muebles`;
+    } else if (overdueCount > 0) {
+      document.title = `(${overdueCount} atrasados) Cotizador de Muebles`;
+    } else {
+      document.title = `(${stalledCount} sin contacto) Cotizador de Muebles`;
+    }
+  }, [alertTotal, overdueCount, stalledCount]);
 
   const renderTab = () => {
     const props: TabProps = { onNavigate: setActiveTab };
@@ -60,6 +86,8 @@ export default function Home() {
         return <QuoterTab {...props} />;
       case 'cotizaciones':
         return <QuotesTab {...props} />;
+      case 'clientes':
+        return <ClientsTab {...props} />;
       case 'config':
         return <SettingsTab {...props} />;
     }
@@ -92,11 +120,21 @@ export default function Home() {
             {TABS.map((t) => {
               const Icon = t.icon;
               const active = activeTab === t.id;
+              const badge =
+                t.id === 'clientes'
+                  ? overdueCount > 0
+                    ? { value: overdueCount, title: `${overdueCount} seguimiento(s) atrasado(s)`, cls: 'bg-red-500 text-white' }
+                    : stalledCount > 0
+                      ? { value: stalledCount, title: `${stalledCount} cliente(s) sin contacto`, cls: 'bg-orange-500 text-white' }
+                      : null
+                  : null;
               return (
                 <button
                   key={t.id}
                   onClick={() => setActiveTab(t.id)}
                   aria-current={active ? 'page' : undefined}
+                  aria-label={badge ? `${t.label}, ${badge.title}` : undefined}
+                  title={badge?.title}
                   className={cn(
                     'flex items-center gap-1.5 px-3 sm:px-4 py-2.5 text-sm font-medium whitespace-nowrap border-b-2 transition-colors outline-none focus-visible:ring-2 focus-visible:ring-amber-500 rounded-t-md',
                     active
@@ -106,6 +144,16 @@ export default function Home() {
                 >
                   <Icon className="w-4 h-4" />
                   {t.label}
+                  {badge && badge.value > 0 && (
+                    <span
+                      className={cn(
+                        'ml-0.5 inline-flex min-w-[1.25rem] items-center justify-center rounded-full px-1.5 text-[11px] font-semibold leading-5',
+                        badge.cls
+                      )}
+                    >
+                      {badge.value > 99 ? '99+' : badge.value}
+                    </span>
+                  )}
                 </button>
               );
             })}

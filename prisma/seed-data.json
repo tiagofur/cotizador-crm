@@ -1,13 +1,16 @@
 {
   "settings": {
-    "companyName": "Cotizador de Muebles",
+    "companyName": "Nahú Cocinas",
     "saleFactor": 6.7,
     "ivaRate": 0.16,
     "distributorDiscount": 0.35,
     "laborPerUnit": 0,
     "countertopMultipleM": 1.2,
     "countertopFactor": 4,
-    "currency": "MXN"
+    "currency": "MXN",
+    "companyPhone": "322 349 2746",
+    "companyEmail": "nahucocinas@gmail.com",
+    "companyAddress": "Boca de Tomates 233, Las Juntas · 48291 Puerto Vallarta, Jal."
   },
   "materials": [
     {

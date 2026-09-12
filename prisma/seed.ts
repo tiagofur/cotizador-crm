@@ -193,7 +193,10 @@ async function main() {
       .map((x) => ({ furniture: x.f.like, qty: x.d.qty }));
     const totals = computeQuoteTotals({
       items,
-      finish: v.finish,
+      profile:
+        v.finish === 'MADERADO'
+          ? { id: 'MADERADO', name: 'Maderado', usePieceMaterials: false, bodyMaterial: maderadoMatLike, frontMaterial: maderadoMatLike }
+          : { id: 'BLANCO', name: 'Blanco', usePieceMaterials: true },
       countertop: null,
       factor: data.settings.saleFactor,
       laborPerUnit: data.settings.laborPerUnit,
@@ -201,7 +204,6 @@ async function main() {
       distributorDiscount: data.settings.distributorDiscount,
       countertopFactor: data.settings.countertopFactor,
       countertopMultipleM: data.settings.countertopMultipleM,
-      maderadoMat: maderadoMatLike,
     });
     const folio = `COT-${year}-${String(n).padStart(4, '0')}`;
     const q = await prisma.quotation.create({

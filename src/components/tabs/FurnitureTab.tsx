@@ -21,7 +21,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import {
   Select,
   SelectContent,
@@ -134,6 +133,75 @@ export default function FurnitureTab({ onNavigate }: TabProps) {
     );
   }
 
+  /* Vista de pantalla completa: detalle o editor del mueble */
+  if (open) {
+    return (
+      <div className="-mx-4 -my-6 px-4 py-6">
+        {showEditor ? (
+          <FurnitureEditor
+            furniture={selected}
+            catalog={catalog}
+            categories={categories}
+            onSaved={(isNew) => {
+              if (isNew) {
+                closeDialog();
+              } else {
+                setMode('read');
+              }
+            }}
+            onCancel={() => {
+              if (selected) {
+                setMode('read');
+              } else {
+                closeDialog();
+              }
+            }}
+          />
+        ) : selected ? (
+          <FurnitureDetail
+            furniture={selected}
+            onEdit={() => setMode('edit')}
+            onDelete={() => setConfirmDelete(true)}
+            onClose={closeDialog}
+          />
+        ) : null}
+
+        {/* Confirmación de eliminación */}
+        <AlertDialog open={confirmDelete} onOpenChange={setConfirmDelete}>
+          <AlertDialogContent className="sm:max-w-md">
+            <AlertDialogHeader>
+              <AlertDialogTitle>¿Eliminar el mueble {selected?.code}?</AlertDialogTitle>
+              <AlertDialogDescription>
+                Se eliminarán también sus piezas y herrajes. Esta acción no se puede deshacer. Si el mueble está usado
+                en cotizaciones, el sistema no permitirá eliminarlo.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel disabled={deleteBusy}>Cancelar</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={(e) => {
+                  e.preventDefault();
+                  void handleDelete();
+                }}
+                disabled={deleteBusy}
+                className="bg-red-600 text-white hover:bg-red-700 focus-visible:ring-red-500"
+              >
+                {deleteBusy ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+                    Eliminando…
+                  </>
+                ) : (
+                  'Sí, eliminar'
+                )}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      </div>
+    );
+  }
+
   return (
     <div>
       {/* Toolbar sticky */}
@@ -178,7 +246,7 @@ export default function FurnitureTab({ onNavigate }: TabProps) {
             <Button
               type="button"
               onClick={openNew}
-              className="bg-amber-600 text-white hover:bg-amber-700 focus-visible:ring-amber-500"
+              className="bg-brand-600 text-white hover:bg-brand-700 focus-visible:ring-amber-500"
             >
               <Plus className="h-4 w-4" aria-hidden />
               Nuevo mueble
@@ -263,57 +331,6 @@ export default function FurnitureTab({ onNavigate }: TabProps) {
           ))}
         </ul>
       )}
-
-      {/* Diálogo de detalle / edición */}
-      <Dialog open={open} onOpenChange={(o) => (o ? setOpen(true) : closeDialog())}>
-        <DialogContent className="max-h-[90vh] max-w-[calc(100%-2rem)] overflow-y-auto sm:max-w-5xl">
-          <DialogHeader>
-            <DialogTitle className="pr-8 text-base sm:text-lg">
-              {showEditor
-                ? selected
-                  ? `Editar ${selected.code}`
-                  : 'Nuevo mueble'
-                : selected
-                  ? `${selected.code} · ${selected.name}`
-                  : 'Mueble'}
-            </DialogTitle>
-            <DialogDescription className="text-xs sm:text-sm">
-              {showEditor
-                ? 'Completa el despiece y los herrajes; el costo se calcula en vivo.'
-                : 'Detalle del mueble con desglose de costos por acabado.'}
-            </DialogDescription>
-          </DialogHeader>
-
-          {showEditor ? (
-            <FurnitureEditor
-              furniture={selected}
-              catalog={catalog}
-              categories={categories}
-              onSaved={(isNew) => {
-                if (isNew) {
-                  closeDialog();
-                } else {
-                  setMode('read');
-                }
-              }}
-              onCancel={() => {
-                if (selected) {
-                  setMode('read');
-                } else {
-                  closeDialog();
-                }
-              }}
-            />
-          ) : selected ? (
-            <FurnitureDetail
-              furniture={selected}
-              onEdit={() => setMode('edit')}
-              onDelete={() => setConfirmDelete(true)}
-              onClose={closeDialog}
-            />
-          ) : null}
-        </DialogContent>
-      </Dialog>
 
       {/* Confirmación de eliminación */}
       <AlertDialog open={confirmDelete} onOpenChange={setConfirmDelete}>

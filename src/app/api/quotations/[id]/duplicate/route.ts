@@ -17,11 +17,14 @@ export async function POST(_req: NextRequest, { params }: Params) {
     const previewFolio = `COT-${year}-${String(tempCount + 1).padStart(4, '0')}`;
 
     const copy = await createQuotationFromInput({
+      clientId: original.clientId,
       clientName: `${original.clientName} (copia)`,
+      title: original.title ? `${original.title} (copia)` : null,
+      distributorDiscount: original.distributorSnapshot ?? undefined,
       clientPhone: original.clientPhone,
       clientEmail: original.clientEmail,
       notes: original.notes,
-      finish: original.finish as 'BLANCO' | 'MADERADO',
+      finish: original.finish,
       countertopMaterialId: original.countertopMaterialId,
       countertopMlOverride: original.countertopMlOverride,
       applyDistributor: original.applyDistributor,

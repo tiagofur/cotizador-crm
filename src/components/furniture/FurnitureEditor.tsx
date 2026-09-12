@@ -208,6 +208,7 @@ export function FurnitureEditor({ furniture, catalog, categories, onSaved, onCan
           length: Number(p.length) || 0,
           width: Number(p.width) || 0,
           materialId: p.materialId || null,
+          isFront: p.isFront,
           grain: p.grain,
           bandLong1: p.bandLong1,
           bandLong2: p.bandLong2,
@@ -447,7 +448,7 @@ export function FurnitureEditor({ furniture, catalog, categories, onSaved, onCan
               type="button"
               size="sm"
               onClick={addPiece}
-              className="bg-amber-600 text-white hover:bg-amber-700 focus-visible:ring-amber-500"
+              className="bg-brand-600 text-white hover:bg-brand-700 focus-visible:ring-amber-500"
             >
               <Plus className="h-4 w-4" aria-hidden />
               Agregar pieza
@@ -464,6 +465,7 @@ export function FurnitureEditor({ furniture, catalog, categories, onSaved, onCan
                 <TableHead className="text-xs text-right">Largo</TableHead>
                 <TableHead className="text-xs text-right">Ancho</TableHead>
                 <TableHead className="text-xs">Material</TableHead>
+                <TableHead className="text-center text-xs" title="Es frente (usa el color elegido en el acabado)">Fte.</TableHead>
                 <TableHead className="text-center text-xs" title="Veta">Veta</TableHead>
                 <TableHead className="text-center text-xs" title="Cintilla lado largo 1">L1</TableHead>
                 <TableHead className="text-center text-xs" title="Cintilla lado largo 2">L2</TableHead>
@@ -546,6 +548,17 @@ export function FurnitureEditor({ furniture, catalog, categories, onSaved, onCan
                           ))}
                         </SelectContent>
                       </Select>
+                    </TableCell>
+                    <TableCell className="px-1">
+                      <div className="flex justify-center">
+                        <Checkbox
+                          checked={p.isFront}
+                          onCheckedChange={(v) => updatePiece(p.key, { isFront: v === true })}
+                          aria-label={`La pieza ${i + 1} es frente`}
+                          title="Es frente: cambia de material según el color del acabado"
+                          className="size-3.5"
+                        />
+                      </div>
                     </TableCell>
                     {FLAG_LABELS.map(({ key, label }) => (
                       <TableCell key={key} className="px-1">
@@ -748,7 +761,7 @@ export function FurnitureEditor({ furniture, catalog, categories, onSaved, onCan
           type="button"
           onClick={handleSave}
           disabled={saving}
-          className="bg-amber-600 text-white hover:bg-amber-700 focus-visible:ring-amber-500"
+          className="bg-brand-600 text-white hover:bg-brand-700 focus-visible:ring-amber-500"
         >
           {saving ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : <Save className="h-4 w-4" aria-hidden />}
           {isNew ? 'Crear mueble' : 'Guardar cambios'}

@@ -12,12 +12,13 @@ import type { TabProps } from '@/app/page';
 import {
   useAppStore,
   settingsLike,
-  maderadoMaterial,
+  profileOf,
+  activeProfiles,
   toFurnitureLike,
   priceOf,
   computeQuoteTotals,
 } from '@/lib/store';
-import type { Finish, FurnitureDTO, QuotationInput } from '@/lib/types';
+import type { Finish, FurnitureDTO, QuotationInput, ClientDTO } from '@/lib/types';
 import { money, num } from '@/lib/format';
 import { toast } from 'sonner';
 import {
@@ -44,6 +45,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+
 import { Separator } from '@/components/ui/separator';
 import { Switch } from '@/components/ui/switch';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
@@ -83,18 +85,56 @@ export default function QuoterTab({ onNavigate }: TabProps) {
 
   /* ----- configuración de la cotización ----- */
   const [finish, setFinish] = useState<Finish>('BLANCO');
+  const profiles = useMemo(() => activeProfiles(catalog), [catalog]);
+  // Si el perfil guardado ya no existe o está inactivo, cae al primero activo
+  const effectiveFinish = profiles.some((p) => p.id === finish) ? finish : (profiles[0]?.id ?? 'BLANCO');
+  const profileSelected = useMemo(() => profileOf(catalog, effectiveFinish), [catalog, effectiveFinish]);
   const [countertopId, setCountertopId] = useState<string>('none');
   const [overrideStr, setOverrideStr] = useState('');
   const [factorStr, setFactorStr] = useState('');
   const [laborStr, setLaborStr] = useState('');
   const [applyDistributor, setApplyDistributor] = useState(false);
 
+  const [title, setTitle] = useState('');
+
   /* ----- cliente ----- */
+  const clients = useAppStore((s) => s.clients);
+  const fetchClients = useAppStore((s) => s.fetchClients);
+  const editingQuotation = useAppStore((st) => st.editingQuotation);
+  const setEditingQuotation = useAppStore((st) => st.setEditingQuotation);
+  const [clientId, setClientId] = useState<string>('none');
   const [clientName, setClientName] = useState('');
   const [clientPhone, setClientPhone] = useState('');
   const [clientEmail, setClientEmail] = useState('');
   const [notes, setNotes] = useState('');
   const [extraOpen, setExtraOpen] = useState(false);
+
+  const selectedClient = useMemo(
+    () => (clientId !== 'none' ? (clients.find((c) => c.id === clientId) ?? null) : null),
+    [clientId, clients]
+  );
+
+  /* Descuento del cliente: si tiene % propio se usa ese; si no, el base. Su presencia activa el switch. */
+  const baseDiscount = settingsLike(catalog).distributorDiscount;
+  const effectiveDiscount = selectedClient?.discountPercent != null ? selectedClient.discountPercent / 100 : baseDiscount;
+  const clientHasOwnDiscount = selectedClient?.discountPercent != null;
+  useEffect(() => {
+    if (clientHasOwnDiscount) setApplyDistributor(true);
+  }, [clientHasOwnDiscount]);
+
+  useEffect(() => {
+    void fetchClients();
+  }, [fetchClients]);
+
+
+  /** Al elegir un cliente registrado, autocompleta nombre/tel/correo */
+  useEffect(() => {
+    if (selectedClient) {
+      setClientName(selectedClient.name);
+      setClientPhone(selectedClient.phone ?? '');
+      setClientEmail(selectedClient.email ?? '');
+    }
+  }, [selectedClient]);
 
   const [saving, setSaving] = useState(false);
 
@@ -113,6 +153,40 @@ export default function QuoterTab({ onNavigate }: TabProps) {
     for (const f of catalog?.furniture ?? []) map[f.id] = f;
     return map;
   }, [catalog]);
+
+  /* ----- modo edición: hidratar el formulario con la cotización a editar ----- */
+  const hydratedIdRef = useRef<string | null>(null);
+  useEffect(() => {
+    const eq = editingQuotation;
+    if (!eq || hydratedIdRef.current === eq.id || !catalog) return;
+    hydratedIdRef.current = eq.id;
+    setTitle(eq.title ?? '');
+    setClientId(eq.clientId ?? 'none');
+    setClientName(eq.clientName);
+    setClientPhone(eq.clientPhone ?? '');
+    setClientEmail(eq.clientEmail ?? '');
+    setNotes(eq.notes ?? '');
+    setFinish(eq.finish);
+    setCountertopId(eq.countertopMaterialId ?? 'none');
+    setOverrideStr(eq.countertopMlOverride != null ? String(eq.countertopMlOverride) : '');
+    setFactorStr(String(eq.factorSnapshot));
+    setLaborStr(String(eq.laborSnapshot));
+    setApplyDistributor(eq.applyDistributor);
+    const lines: CartLine[] = [];
+    let dropped = 0;
+    for (const it of eq.items) {
+      if (it.furnitureId && furnitureById[it.furnitureId]) {
+        lines.push({ furnitureId: it.furnitureId, qty: it.qty });
+      } else {
+        dropped++;
+      }
+    }
+    setCart(lines);
+    if (dropped > 0) {
+      toast.warning(`${dropped} partida(s) del documento ya no existen en el catálogo y se omitieron`);
+    }
+  }, [editingQuotation, furnitureById, catalog]);
+
 
   const categories = useMemo(() => {
     const set = new Set<string>();
@@ -141,7 +215,7 @@ export default function QuoterTab({ onNavigate }: TabProps) {
   /* ----- totales en vivo ----- */
   const totals = useMemo(() => {
     const settings = settingsLike(catalog);
-    const madMat = maderadoMaterial(catalog);
+    const profile = profileOf(catalog, effectiveFinish);
     const countertop =
       countertopId !== 'none'
         ? (catalog?.materials.find((m) => m.id === countertopId) ?? null)
@@ -154,18 +228,17 @@ export default function QuoterTab({ onNavigate }: TabProps) {
       items: cart
         .filter((c) => furnitureById[c.furnitureId])
         .map((c) => ({ furniture: toFurnitureLike(furnitureById[c.furnitureId]), qty: c.qty })),
-      finish,
+      profile,
       countertop,
       countertopMlOverride: override,
       factor: Number.isFinite(factorNum) && factorNum > 0 ? factorNum : settings.saleFactor,
       laborPerUnit: Number.isFinite(laborNum) && laborNum >= 0 ? laborNum : settings.laborPerUnit,
       ivaRate: settings.ivaRate,
-      distributorDiscount: settings.distributorDiscount,
+      distributorDiscount: effectiveDiscount,
       countertopFactor: settings.countertopFactor,
       countertopMultipleM: settings.countertopMultipleM,
-      maderadoMat: madMat,
     });
-  }, [catalog, cart, furnitureById, finish, countertopId, overrideStr, factorStr, laborStr]);
+  }, [catalog, cart, furnitureById, effectiveFinish, countertopId, overrideStr, factorStr, laborStr, effectiveDiscount]);
 
   const countertop = useMemo(
     () =>
@@ -192,7 +265,7 @@ export default function QuoterTab({ onNavigate }: TabProps) {
 
   const settings = settingsLike(catalog);
   const ivaPct = settings.ivaRate * 100;
-  const distPct = settings.distributorDiscount * 100;
+  const distPct = effectiveDiscount * 100;
   const pctLabel = (v: number) => `${v % 1 === 0 ? v : v.toFixed(1)}%`;
 
   const canSave = clientName.trim().length > 0 && cart.length > 0 && !saving;
@@ -214,7 +287,11 @@ export default function QuoterTab({ onNavigate }: TabProps) {
     setCart((prev) => prev.filter((c) => c.furnitureId !== id));
   }
   function resetForm() {
+    setEditingQuotation(null);
+    hydratedIdRef.current = null;
+    setTitle('');
     setCart([]);
+    setClientId('none');
     setClientName('');
     setClientPhone('');
     setClientEmail('');
@@ -233,31 +310,41 @@ export default function QuoterTab({ onNavigate }: TabProps) {
       const parsedFactor = Number(factorStr);
       const parsedLabor = Number(laborStr);
       const payload: QuotationInput = {
+        clientId: clientId !== 'none' ? clientId : null,
         clientName: clientName.trim(),
+        title: title.trim() || null,
         clientPhone: clientPhone.trim() || null,
         clientEmail: clientEmail.trim() || null,
         notes: notes.trim() || null,
-        finish,
+        finish: effectiveFinish,
         countertopMaterialId: countertopId !== 'none' ? countertopId : null,
         countertopMlOverride:
           overrideStr.trim() !== '' && Number.isFinite(parsedOverride) && parsedOverride > 0
             ? parsedOverride
             : null,
         applyDistributor,
+        distributorDiscount: applyDistributor ? effectiveDiscount : undefined,
         factor:
           Number.isFinite(parsedFactor) && parsedFactor > 0 ? parsedFactor : undefined,
         laborPerUnit:
           Number.isFinite(parsedLabor) && parsedLabor >= 0 ? parsedLabor : undefined,
         items: cart.map((c) => ({ furnitureId: c.furnitureId, qty: c.qty })),
       };
-      const res = await fetch('/api/quotations', {
-        method: 'POST',
+      const isEdit = !!editingQuotation;
+      const res = await fetch(isEdit ? `/api/quotations/${editingQuotation.id}` : '/api/quotations', {
+        method: isEdit ? 'PUT' : 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data?.error || 'Error al guardar la cotización');
-      toast.success(`Cotización ${data.folio} guardada`);
+      toast.success(
+        isEdit
+          ? editingQuotation!.orderCode
+            ? `Pedido ${editingQuotation!.orderCode} actualizado — Rev. ${data.rev}`
+            : `Cotización ${data.folio} actualizada`
+          : `Cotización ${data.folio} guardada`
+      );
       resetForm();
       await fetchQuotations();
       onNavigate?.('cotizaciones');
@@ -281,6 +368,27 @@ export default function QuoterTab({ onNavigate }: TabProps) {
 
   return (
     <div className="grid gap-6 lg:grid-cols-[1fr_400px] items-start">
+      {editingQuotation && (
+        <div className="lg:col-span-2 flex flex-wrap items-center justify-between gap-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2">
+          <p className="text-sm text-amber-900">
+            Editando{' '}
+            <strong>
+              {editingQuotation.orderCode
+                ? `pedido ${editingQuotation.orderCode} (Rev. ${editingQuotation.rev})`
+                : editingQuotation.folio}
+            </strong>
+            {editingQuotation.orderCode && ' — al guardar se creará una revisión'}
+          </p>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => setEditingQuotation(null)}
+          >
+            Cancelar edición
+          </Button>
+        </div>
+      )}
       {/* ================= Columna izquierda: selector de muebles ================= */}
       <Card className="bg-white rounded-xl border border-stone-200 shadow-sm">
         <CardHeader className="pb-3">
@@ -386,7 +494,7 @@ export default function QuoterTab({ onNavigate }: TabProps) {
                       {f.name}
                     </p>
                     <p className="text-xs font-semibold text-amber-700 tabular-nums">
-                      {money(priceOf(catalog, f, finish))}
+                      {money(priceOf(catalog, f, effectiveFinish))}
                       <span className="font-normal text-stone-400"> / unidad</span>
                     </p>
                   </div>
@@ -398,7 +506,7 @@ export default function QuoterTab({ onNavigate }: TabProps) {
                       aria-label={`Agregar ${f.name}`}
                       title="Agregar a la cotización"
                       onClick={() => addToCart(f.id)}
-                      className="h-8 w-8 shrink-0 bg-amber-600 hover:bg-amber-700 text-white rounded-lg"
+                      className="h-8 w-8 shrink-0 bg-brand-600 hover:bg-brand-700 text-white rounded-lg"
                     >
                       <Plus className="w-4 h-4" aria-hidden />
                     </Button>
@@ -462,18 +570,71 @@ export default function QuoterTab({ onNavigate }: TabProps) {
           {/* Cliente */}
           <section className="space-y-2" aria-label="Datos del cliente">
             <div className="space-y-1.5">
+              <Label htmlFor="quote-title" className="text-xs text-stone-600">
+                Nombre de la cotización (opcional)
+              </Label>
+              <Input
+                id="quote-title"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="Ej. Cocina Depto Roma — isla + entrepaños"
+                className="h-9 border-stone-300"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="client-registered" className="text-xs text-stone-600">
+                Cliente del CRM
+              </Label>
+              <Select value={clientId} onValueChange={setClientId}>
+                <SelectTrigger
+                  id="client-registered"
+                  size="sm"
+                  className="w-full bg-white border-stone-300"
+                  aria-label="Seleccionar cliente registrado"
+                >
+                  <SelectValue placeholder="Cliente ocasional (sin registro)" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">Cliente ocasional (sin registro)</SelectItem>
+                  {clients.map((c) => (
+                    <SelectItem key={c.id} value={c.id}>
+                      {c.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {selectedClient && (selectedClient.phone || selectedClient.email) && (
+                <p className="text-[11px] text-stone-500">
+                  Contacto: {[selectedClient.phone, selectedClient.email].filter(Boolean).join(' · ')}
+                </p>
+              )}
+              {clientHasOwnDiscount && (
+                <p className="text-[11px] font-medium text-emerald-700">
+                  Descuento propio del cliente: −{pctLabel(selectedClient!.discountPercent!)} (se aplica al activar
+                  precio distribuidor)
+                </p>
+              )}
+            </div>
+            <div className="space-y-1.5">
               <Label htmlFor="client-name" className="text-xs text-stone-600">
-                Cliente <span className="text-red-600" aria-hidden>*</span>
+                Nombre <span className="text-red-600" aria-hidden>*</span>
               </Label>
               <Input
                 id="client-name"
                 value={clientName}
                 onChange={(e) => setClientName(e.target.value)}
-                placeholder="Nombre del cliente"
+                placeholder={selectedClient ? 'Nombre del cliente' : 'Nombre del cliente ocasional'}
                 required
                 aria-required="true"
-                className="h-9 border-stone-300"
+                readOnly={!!selectedClient}
+                className={cn('h-9 border-stone-300', selectedClient && 'bg-stone-50 text-stone-500')}
               />
+              {!selectedClient && (
+                <p className="text-[11px] text-stone-400">
+                  Cliente nuevo o de una sola vez — no queda en el CRM. Regístralo para dar
+                  seguimiento.
+                </p>
+              )}
             </div>
 
             <Collapsible open={extraOpen} onOpenChange={setExtraOpen}>
@@ -501,7 +662,8 @@ export default function QuoterTab({ onNavigate }: TabProps) {
                     onChange={(e) => setClientPhone(e.target.value)}
                     placeholder="Ej. 55 1234 5678"
                     type="tel"
-                    className="h-9 border-stone-300"
+                    readOnly={!!selectedClient}
+                    className={cn('h-9 border-stone-300', selectedClient && 'bg-stone-50 text-stone-500')}
                   />
                 </div>
                 <div className="space-y-1.5">
@@ -514,7 +676,8 @@ export default function QuoterTab({ onNavigate }: TabProps) {
                     onChange={(e) => setClientEmail(e.target.value)}
                     placeholder="cliente@correo.com"
                     type="email"
-                    className="h-9 border-stone-300"
+                    readOnly={!!selectedClient}
+                    className={cn('h-9 border-stone-300', selectedClient && 'bg-stone-50 text-stone-500')}
                   />
                 </div>
                 <div className="space-y-1.5">
@@ -538,37 +701,32 @@ export default function QuoterTab({ onNavigate }: TabProps) {
 
           {/* Acabado */}
           <section className="space-y-2" aria-label="Acabado">
-            <Label className="text-xs text-stone-600">Acabado</Label>
-            <ToggleGroup
-              type="single"
-              variant="outline"
-              className="w-full"
-              value={finish}
-              onValueChange={(v) => {
-                if (v) setFinish(v as Finish);
-              }}
-              aria-label="Seleccionar acabado"
+            <Label htmlFor="finish-select" className="text-xs text-stone-600">
+              Acabado / color de frentes
+            </Label>
+            <Select
+              value={effectiveFinish}
+              onValueChange={(v) => setFinish(v)}
             >
-              <ToggleGroupItem
-                value="BLANCO"
-                aria-label="Acabado blanco"
-                className="flex-1 data-[state=on]:bg-stone-800 data-[state=on]:text-white data-[state=on]:border-stone-800"
-              >
-                <span
-                  className="h-2.5 w-2.5 rounded-full bg-stone-300 border border-stone-400"
-                  aria-hidden
-                />
-                Blanco
-              </ToggleGroupItem>
-              <ToggleGroupItem
-                value="MADERADO"
-                aria-label="Acabado maderado"
-                className="flex-1 data-[state=on]:bg-amber-600 data-[state=on]:text-white data-[state=on]:border-amber-600"
-              >
-                <span className="h-2.5 w-2.5 rounded-full bg-amber-700" aria-hidden />
-                Maderado
-              </ToggleGroupItem>
-            </ToggleGroup>
+              <SelectTrigger id="finish-select" aria-label="Seleccionar acabado">
+                <SelectValue placeholder="Acabado" />
+              </SelectTrigger>
+              <SelectContent>
+                {profiles.map((p) => (
+                  <SelectItem key={p.id} value={p.id}>
+                    {p.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {profileSelected?.frontMaterial && (
+              <p className="text-[11px] text-stone-500">
+                Frentes: {profileSelected.frontMaterial.name} · Interior:{' '}
+                {profileSelected.usePieceMaterials
+                  ? 'según despiece'
+                  : profileSelected.bodyMaterial?.name ?? '—'}
+              </p>
+            )}
           </section>
 
           {/* Cubierta */}
@@ -686,7 +844,7 @@ export default function QuoterTab({ onNavigate }: TabProps) {
                 checked={applyDistributor}
                 onCheckedChange={setApplyDistributor}
                 aria-label="Aplicar precio distribuidor"
-                className="data-[state=checked]:bg-amber-600"
+                className="data-[state=checked]:bg-brand-600"
               />
             </div>
           </section>
@@ -869,7 +1027,7 @@ export default function QuoterTab({ onNavigate }: TabProps) {
             onClick={handleSave}
             disabled={!canSave}
             aria-label="Guardar cotización"
-            className="w-full h-11 text-sm font-semibold bg-amber-600 hover:bg-amber-700 text-white"
+            className="w-full h-11 text-sm font-semibold bg-brand-600 hover:bg-brand-700 text-white"
           >
             {saving ? (
               <>
@@ -879,7 +1037,7 @@ export default function QuoterTab({ onNavigate }: TabProps) {
             ) : (
               <>
                 <Calculator className="w-4 h-4" aria-hidden />
-                Guardar cotización
+                {editingQuotation ? 'Guardar cambios' : 'Guardar cotización'}
               </>
             )}
           </Button>

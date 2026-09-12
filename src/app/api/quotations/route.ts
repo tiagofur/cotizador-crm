@@ -5,7 +5,7 @@ import { sanitizeNums } from '@/lib/num';
 
 const Q_NUM_KEYS = ['factorSnapshot', 'laborSnapshot', 'furnitureCost', 'furnitureSale', 'countertopMl', 'countertopCost', 'countertopSale', 'ivaAmount', 'totalWithIva', 'distributorFurniture', 'distributorCountertop', 'distributorIva', 'distributorTotal'];
 
-const quotationInclude = { items: { orderBy: { id: 'asc' as const } }, countertopMaterial: true };
+const quotationInclude = { items: { orderBy: { id: 'asc' as const } }, countertopMaterial: true, client: { select: { id: true, name: true, stage: true } } };
 
 export async function GET() {
   const quotations = await db.quotation.findMany({
@@ -15,6 +15,7 @@ export async function GET() {
   return NextResponse.json(
     quotations.map((q) => ({
       ...sanitizeNums(q as unknown as Record<string, unknown>, Q_NUM_KEYS, 2),
+      client: q.client,
       items: q.items.map((it) => sanitizeNums(it as unknown as Record<string, unknown>, ['unitCost', 'unitPrice'], 2)),
     }))
   );

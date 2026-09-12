@@ -2,11 +2,12 @@
 
 /* Dialog de creación/edición de materiales (tableros y cubiertas) */
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import { Loader2, TriangleAlert } from 'lucide-react';
 import type { MaterialDTO } from '@/lib/types';
-import { useAppStore } from '@/lib/store';
+import { useAppStore, sheetCostPerM2 } from '@/lib/store';
+import { money, num2 } from '@/lib/format';
 import {
   Dialog,
   DialogContent,
@@ -96,6 +97,7 @@ function orNull(v: string): number | null {
 }
 
 export default function MaterialDialog({ open, onOpenChange, material, typeLocked }: MaterialDialogProps) {
+  const catalog = useAppStore((st) => st.catalog);
   const fetchCatalog = useAppStore((s) => s.fetchCatalog);
   const [form, setForm] = useState<MaterialForm>(EMPTY_FORM);
   const [nameError, setNameError] = useState(false);
@@ -111,6 +113,26 @@ export default function MaterialDialog({ open, onOpenChange, material, typeLocke
 
   const set = <K extends keyof MaterialForm>(key: K, value: MaterialForm[K]) =>
     setForm((f) => ({ ...f, [key]: value }));
+
+  const computed = useMemo(() => {
+    const sc = Number(String(form.sheetCost).replace(',', '.'));
+    const w = Number(String(form.sheetWidth).replace(',', '.'));
+    const l = Number(String(form.sheetLength).replace(',', '.'));
+    if (!Number.isFinite(sc) || sc <= 0 || !Number.isFinite(w) || w <= 0 || !Number.isFinite(l) || l <= 0) return null;
+    return sheetCostPerM2(
+      { sheetCost: sc, sheetWidth: w, sheetLength: l, isMaderado: form.isMaderado },
+      catalog
+    );
+  }, [form.sheetCost, form.sheetWidth, form.sheetLength, form.isMaderado, catalog]);
+
+  // Automático: si hay datos de hoja, el costo/m² se llena solo (sin paso manual)
+  useEffect(() => {
+    if (!computed) return;
+    setForm((f) => {
+      const v = String(Math.round(computed.cost * 100) / 100);
+      return f.costPerM2 === v ? f : { ...f, costPerM2: v };
+    });
+  }, [computed]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -232,7 +254,14 @@ export default function MaterialDialog({ open, onOpenChange, material, typeLocke
                   value={form.costPerM2}
                   onChange={(e) => set('costPerM2', e.target.value)}
                   placeholder="239.84"
+                  disabled={!!computed}
+                  title={computed ? 'Calculado automáticamente desde el costo de hoja × merma' : undefined}
                 />
+                <p className="text-[11px] text-stone-500">
+                  {computed
+                    ? 'Calculado desde la hoja (edita el costo de hoja para cambiarlo)'
+                    : 'Captura la hoja para calcularlo automáticamente, o escríbelo a mano'}
+                </p>
               </div>
               <div className="grid gap-1.5">
                 <Label htmlFor="material-thickness">Espesor</Label>
@@ -307,6 +336,20 @@ export default function MaterialDialog({ open, onOpenChange, material, typeLocke
                   Referencia: {form.sheetWidth || '—'}×{form.sheetLength || '—'} mm por hoja completa.
                 </p>
               </div>
+              {computed && (
+                <div className="sm:col-span-2 flex flex-wrap items-center justify-between gap-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2">
+                  <p className="text-xs text-stone-700">
+                    Costo/m² calculado: <strong className="tabular-nums">{money(computed.cost)}</strong>{' '}
+                    <span className="text-stone-500">
+                      (${num2(Number(String(form.sheetCost).replace(',', '.')))} por hoja ÷ {num2(computed.sheetM2)} m² × merma{' '}
+                      {computed.merma === 1 ? '0%' : `+${Math.round((computed.merma - 1) * 1000) / 10}%`})
+                    </span>
+                  </p>
+                  <span className="text-[11px] text-stone-500">
+                    Se aplica automáticamente
+                  </span>
+                </div>
+              )}
             </div>
           ) : (
             <div className="grid gap-1.5">
@@ -376,7 +419,7 @@ export default function MaterialDialog({ open, onOpenChange, material, typeLocke
             >
               Cancelar
             </Button>
-            <Button type="submit" disabled={saving} className="bg-amber-600 hover:bg-amber-700 text-white">
+            <Button type="submit" disabled={saving} className="bg-brand-600 hover:bg-brand-700 text-white">
               {saving && <Loader2 className="h-4 w-4 animate-spin" aria-hidden />}
               {material ? 'Guardar cambios' : 'Crear material'}
             </Button>

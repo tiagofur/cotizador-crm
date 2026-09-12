@@ -1,7 +1,7 @@
 /* Modo lectura del diálogo de mueble: cabecera, costos por acabado, piezas y herrajes */
 'use client';
 
-import { useAppStore, breakdownOf, priceOf } from '@/lib/store';
+import { useAppStore, breakdownOf, priceOf, activeProfiles } from '@/lib/store';
 import { money, num, num2, dims } from '@/lib/format';
 import { pieceAreaM2, pieceEdgeMl } from '@/lib/pricing';
 import type { Finish, FurnitureDTO } from '@/lib/types';
@@ -63,9 +63,9 @@ export function FurnitureDetail({
   const catalog = useAppStore((s) => s.catalog);
   const factor = catalog?.settings.saleFactor ?? 6.7;
 
-  const finishes: Finish[] = ['BLANCO', 'MADERADO'];
-  const breakdowns = finishes.map((fin) => breakdownOf(catalog, furniture, fin));
-  const prices = finishes.map((fin) => priceOf(catalog, furniture, fin));
+  const profiles = activeProfiles(catalog);
+  const breakdowns = profiles.map((p) => breakdownOf(catalog, furniture, p.id));
+  const prices = profiles.map((p) => priceOf(catalog, furniture, p.id));
 
   const totalM2 = furniture.pieces.reduce((acc, p) => acc + pieceAreaM2(p), 0);
   const totalMl = furniture.pieces.reduce((acc, p) => acc + pieceEdgeMl(p), 0);
@@ -133,15 +133,18 @@ export function FurnitureDetail({
               <TableHeader>
                 <TableRow>
                   <TableHead>Concepto</TableHead>
-                  <TableHead className="text-right">Blanco</TableHead>
-                  <TableHead className="text-right">Maderado</TableHead>
+                  {profiles.map((p) => (
+                    <TableHead key={p.id} className="text-right">
+                      {p.name}
+                    </TableHead>
+                  ))}
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {conceptRows.map((row) => (
                   <TableRow key={row.label}>
                     <TableCell className="text-stone-600">{row.label}</TableCell>
-                    {finishes.map((_, i) => (
+                    {profiles.map((p, i) => (
                       <TableCell key={i} className="text-right tabular-nums">
                         {money(row.pick(i))}
                       </TableCell>
@@ -152,7 +155,7 @@ export function FurnitureDetail({
               <TableFooter>
                 <TableRow>
                   <TableCell>Total costo</TableCell>
-                  {finishes.map((_, i) => (
+                  {profiles.map((p, i) => (
                     <TableCell key={i} className="text-right tabular-nums">
                       {money(breakdowns[i].total)}
                     </TableCell>
@@ -162,7 +165,7 @@ export function FurnitureDetail({
                   <TableCell>
                     Precio de venta <span className="text-xs text-stone-400">(× {num2(factor)})</span>
                   </TableCell>
-                  {finishes.map((_, i) => (
+                  {profiles.map((p, i) => (
                     <TableCell key={i} className="text-right font-bold tabular-nums text-amber-700">
                       {money(prices[i])}
                     </TableCell>
@@ -219,6 +222,9 @@ export function FurnitureDetail({
                     <TableCell className="text-right text-xs tabular-nums">{num(p.length, 0)}</TableCell>
                     <TableCell className="text-right text-xs tabular-nums">{num(p.width, 0)}</TableCell>
                     <TableCell className="text-xs text-stone-600">{p.material?.name ?? '—'}</TableCell>
+                    <TableCell className="p-2">
+                      <Mark on={p.isFront} label="Es frente" />
+                    </TableCell>
                     {CHECK_COLS.map((c) => (
                       <TableCell key={c.key} className="p-2">
                         <Mark on={p[c.key]} label={c.label} />
@@ -231,7 +237,7 @@ export function FurnitureDetail({
               </TableBody>
               <TableFooter>
                 <TableRow>
-                  <TableCell colSpan={7} className="text-xs text-stone-500">
+                  <TableCell colSpan={8} className="text-xs text-stone-500">
                     Totales
                   </TableCell>
                   {CHECK_COLS.map((c) => (
@@ -301,7 +307,7 @@ export function FurnitureDetail({
         <Button
           type="button"
           onClick={onEdit}
-          className="bg-amber-600 text-white hover:bg-amber-700 focus-visible:ring-amber-500"
+          className="bg-brand-600 text-white hover:bg-brand-700 focus-visible:ring-amber-500"
         >
           <Pencil className="h-4 w-4" aria-hidden />
           Editar

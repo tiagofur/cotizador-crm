@@ -120,3 +120,56 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* ============================================================
+ * Marca Nahú Cocinas — folleto maquila 2026
+ * Verde bosque #2F5D46 · Dorado #B89858 · Crema #EFEBE3 · Café #4A3B31
+ * Sobrescribe las escaleras amber (acento dorado) y stone
+ * (neutros cálidos) sin tocar las clases existentes.
+ * ============================================================ */
+@theme {
+  /* Dorado del logo (500 = #B89858 real; 600+ oscurecidos para texto accesible) */
+  --color-amber-50: #faf7ef;
+  --color-amber-100: #f3ecdb;
+  --color-amber-200: #e6d8b8;
+  --color-amber-300: #d8c294;
+  --color-amber-400: #c9ab6f;
+  --color-amber-500: #b89858;
+  --color-amber-600: #8f6f31;
+  --color-amber-700: #7a5d28;
+  --color-amber-800: #63491f;
+  --color-amber-900: #4d3817;
+
+  /* Neutros cálidos del folleto (crema/beige)
+     400/500 oscurecidos vs el folleto para microtextos legibles (AA) */
+  --color-stone-50: #faf9f6;
+  --color-stone-100: #f1efe8;
+  --color-stone-200: #e2ded2;
+  --color-stone-300: #b4ac96;
+  --color-stone-400: #7a715f;
+  --color-stone-500: #615847;
+  --color-stone-600: #57503f;
+  --color-stone-700: #474237;
+  --color-stone-800: #35322a;
+  --color-stone-900: #26241f;
+}
+
+@theme {
+  /* Verde bosque del encabezado del folleto */
+  --color-brand-50: #f0f5f1;
+  --color-brand-100: #dce8de;
+  --color-brand-200: #b9d1bf;
+  --color-brand-300: #8fb29a;
+  --color-brand-400: #628f72;
+  --color-brand-500: #427155;
+  --color-brand-600: #2f5d46;
+  --color-brand-700: #274c3a;
+  --color-brand-800: #1f3d2f;
+  --color-brand-900: #173024;
+  /* Café del pie del folleto */
+  --color-bark-500: #6b5a4c;
+  --color-bark-600: #5a4a3d;
+  --color-bark-700: #4a3b31;
+  --color-bark-800: #3a2e26;
+  --color-bark-900: #2b221c;
+}

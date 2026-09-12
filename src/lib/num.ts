@@ -7,11 +7,11 @@ export function flt(n: unknown, decimals = 6): number {
 
 /** Redondea los campos numéricos de un objeto usando la lista de llaves dada */
 export function sanitizeNums<T extends Record<string, unknown>>(obj: T, keys: string[], decimals = 6): T {
-  const out = { ...obj };
+  const out = { ...obj } as Record<string, unknown>;
   for (const k of keys) {
     if (out[k] !== null && out[k] !== undefined && typeof out[k] === 'number') {
       out[k] = flt(out[k] as number, decimals);
     }
   }
-  return out;
+  return out as T;
 }

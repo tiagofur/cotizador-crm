@@ -39,6 +39,7 @@ export async function POST(req: NextRequest) {
             length: Number(p.length) || 0,
             width: Number(p.width) || 0,
             materialId: p.materialId || null,
+            isFront: !!p.isFront,
             grain: !!p.grain,
             bandLong1: !!p.bandLong1,
             bandLong2: !!p.bandLong2,

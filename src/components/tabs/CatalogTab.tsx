@@ -274,7 +274,8 @@ export default function CatalogTab({ onNavigate }: TabProps) {
             </div>
 
             <p className="text-xs text-stone-500 order-3 sm:order-none">
-              {tablerosCount} tableros · {cubiertasCount} cubiertas
+              {tablerosCount} {tablerosCount === 1 ? 'tablero' : 'tableros'} ·{' '}
+              {cubiertasCount} {cubiertasCount === 1 ? 'cubierta' : 'cubiertas'}
               {materialFilter !== 'TODOS' && ` · mostrando ${filteredMaterials.length}`}
             </p>
 
@@ -290,7 +291,7 @@ export default function CatalogTab({ onNavigate }: TabProps) {
           <div className="bg-white rounded-xl border border-stone-200 shadow-sm">
             <div className="max-h-[65vh] overflow-auto rounded-xl">
               <Table>
-                <TableHeader className="sticky top-0 z-10 bg-white shadow-[0_1px_0_0_theme(colors.stone.200)]">
+                <TableHeader className="sticky top-0 z-10 bg-white shadow-[0_1px_0_0_var(--color-stone-200)]">
                   <TableRow className="hover:bg-transparent">
                     <TableHead className="pl-4">Nombre</TableHead>
                     <TableHead>Tipo</TableHead>
@@ -445,7 +446,7 @@ export default function CatalogTab({ onNavigate }: TabProps) {
           <div className="bg-white rounded-xl border border-stone-200 shadow-sm">
             <div className="max-h-[65vh] overflow-auto rounded-xl">
               <Table>
-                <TableHeader className="sticky top-0 z-10 bg-white shadow-[0_1px_0_0_theme(colors.stone.200)]">
+                <TableHeader className="sticky top-0 z-10 bg-white shadow-[0_1px_0_0_var(--color-stone-200)]">
                   <TableRow className="hover:bg-transparent">
                     <TableHead className="pl-4">Nombre</TableHead>
                     <TableHead>Unidad</TableHead>

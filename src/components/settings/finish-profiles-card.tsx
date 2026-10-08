@@ -160,7 +160,7 @@ export function FinishProfilesCard() {
   }
 
   return (
-    <Card className="bg-white rounded-xl border border-stone-200 shadow-sm">
+    <Card>
       <CardHeader className="flex-row items-start justify-between space-y-0">
         <div className="space-y-1.5">
           <CardTitle className="flex items-center gap-2 text-base">

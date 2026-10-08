@@ -1,9 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { requireRole } from '@/lib/server/auth';
 import { db } from '@/lib/db';
 
 const BUILT_IN = ['BLANCO', 'MADERADO'];
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  const denied = await requireRole(req, 'ADMIN', 'TIENDA');
+  if (denied) return denied;
   const profiles = await db.finishProfile.findMany({
     include: { bodyMaterial: true, frontMaterial: true },
     orderBy: { order: 'asc' },
@@ -12,6 +15,8 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
+  const denied = await requireRole(req, 'ADMIN');
+  if (denied) return denied;
   try {
     const body = await req.json();
     const name = String(body.name ?? '').trim();
@@ -41,6 +46,8 @@ export async function POST(req: NextRequest) {
 }
 
 export async function PATCH(req: NextRequest) {
+  const denied = await requireRole(req, 'ADMIN');
+  if (denied) return denied;
   try {
     const body = await req.json();
     const id = String(body.id ?? '');
@@ -73,6 +80,8 @@ export async function PATCH(req: NextRequest) {
 }
 
 export async function DELETE(req: NextRequest) {
+  const denied = await requireRole(req, 'ADMIN');
+  if (denied) return denied;
   const { searchParams } = new URL(req.url);
   const id = searchParams.get('id');
   if (!id) return NextResponse.json({ error: 'Falta el id' }, { status: 400 });

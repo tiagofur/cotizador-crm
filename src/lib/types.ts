@@ -17,9 +17,34 @@ export interface FinishProfileDTO {
 }
 
 export type QuotationStatus =
-  | 'BORRADOR' | 'ENVIADA' | 'ACEPTADA' | 'RECHAZADA' // cotización
-  | 'PRODUCCION' | 'TERMINADO' | 'ENTREGADA' // pedido
+  | 'SOLICITUD' | 'BORRADOR' | 'ENVIADA' | 'ACEPTADA' | 'RECHAZADA' // cotización (SOLICITUD = pre-cotización del portal)
+  | 'PRODUCCION' | 'TERMINADO' | 'ENTREGADA' // pedido (cocina y maquila comparten ciclo)
   | 'CANCELADA'; // ambos
+
+/** Tipo de documento: cocina armada (MUEBLE) o servicio de maquila a carpinteros (MAQUILA) */
+export type QuotationKind = 'MUEBLE' | 'MAQUILA';
+
+/* ---------- Usuarios y roles (mono-empresa) ---------- */
+
+export type UserRole = 'ADMIN' | 'TIENDA' | 'CLIENTE';
+
+export const USER_ROLES: UserRole[] = ['ADMIN', 'TIENDA', 'CLIENTE'];
+
+export const USER_ROLE_LABELS: Record<UserRole, string> = {
+  ADMIN: 'Administrador',
+  TIENDA: 'Usuario de tienda',
+  CLIENTE: 'Cliente (portal)',
+};
+
+export interface SessionUserDTO {
+  id: string;
+  name: string;
+  role: UserRole;
+  email: string | null;
+  phone: string | null;
+  /** Solo CLIENTE: ficha CRM vinculada; filtra sus cotizaciones */
+  clientId: string | null;
+}
 
 /* ---------- CRM ---------- */
 
@@ -221,6 +246,14 @@ export interface SettingsDTO {
   wasteFactorStandard: number;
   wasteFactorMaderado: number;
   maderadoMaterialId: string | null;
+  /** Tarifario de maquila: $/pasada de sierra y $/ml de encintado (servicio) */
+  cutCostPerPass: number;
+  edgeBandServiceCostMl: number;
+  /** Portal: pasadas promedio por tablero para estimar cortes en solicitudes */
+  avgCutsPerSheet: number;
+  /** Plazos de entrega estimada (días naturales) al crear documentos */
+  deliveryDaysCocina: number;
+  deliveryDaysMaquila: number;
 }
 
 export interface CatalogData {
@@ -245,6 +278,61 @@ export interface QuotationItemDTO {
   unitPrice: number;
 }
 
+/* ---------- Maquila ---------- */
+
+export interface MaquilaLineDTO {
+  id: string;
+  quotationId: string;
+  materialId: string;
+  material: MaterialDTO | null;
+  sheetsQty: number;
+  edgeBandMl: number;
+  unitSheetCost: number;
+  unitBandCostMl: number;
+  notes: string | null;
+  order: number;
+}
+
+export interface MaquilaLineInput {
+  materialId: string;
+  sheetsQty: number;
+  edgeBandMl: number;
+  notes?: string | null;
+}
+
+export interface MaquilaPieceDTO {
+  id: string;
+  quotationId: string;
+  name: string;
+  qty: number;
+  length: number;
+  width: number;
+  materialId: string | null;
+  material: MaterialDTO | null;
+  grain: boolean;
+  bandL1: boolean;
+  bandL2: boolean;
+  bandA1: boolean;
+  bandA2: boolean;
+  notes: string | null;
+  order: number;
+}
+
+/** Pieza capturada pieza a pieza o importada del Excel de formato */
+export interface MaquilaPieceInput {
+  name: string;
+  qty: number;
+  length: number;
+  width: number;
+  materialId: string | null;
+  grain?: boolean;
+  bandL1?: boolean;
+  bandL2?: boolean;
+  bandA1?: boolean;
+  bandA2?: boolean;
+  notes?: string | null;
+}
+
 export interface QuotationRevisionDTO {
   id: string;
   rev: number;
@@ -260,8 +348,15 @@ export interface QuotationRevisionDTO {
 export interface QuotationDTO {
   id: string;
   folio: string;
+  kind: QuotationKind;
   /** Revisión actual (los pedidos incrementan al editarse) */
   rev: number;
+  /** Origen: TIENDA (app interna) | PORTAL (solicitud del cliente) */
+  source: 'TIENDA' | 'PORTAL';
+  /** true = cutQty estimado (Σ hojas × promedio); la tienda lo reemplaza con pasadas reales */
+  cutsEstimated: boolean;
+  /** true = hojas por material derivadas del despiece (pendientes de optimización real) */
+  sheetsEstimated: boolean;
   /** Nombre/referencia de la cotización (opcional) */
   title: string | null;
   /** Código de pedido PED-YYYY-NNNN cuando ya se convirtió en venta */
@@ -291,7 +386,18 @@ export interface QuotationDTO {
   distributorCountertop: number;
   distributorIva: number;
   distributorTotal: number;
+  // Resumen maquila
+  cutQty: number;
+  cutUnitCost: number;
+  edgeBandMl: number;
+  edgeBandUnitCost: number;
+  materialsTotal: number;
+  servicesTotal: number;
+  /** Fecha estimada de entrega (ISO) o null */
+  estimatedDeliveryAt: string | null;
   items: QuotationItemDTO[];
+  maquilaLines: MaquilaLineDTO[];
+  maquilaPieces: MaquilaPieceDTO[];
   revisions?: QuotationRevisionDTO[];
   createdAt: string;
   updatedAt: string;
@@ -344,6 +450,7 @@ export interface QuotationInput {
   clientPhone?: string | null;
   clientEmail?: string | null;
   notes?: string | null;
+  kind?: QuotationKind;
   finish: Finish;
   countertopMaterialId?: string | null;
   countertopMlOverride?: number | null;
@@ -355,15 +462,29 @@ export interface QuotationInput {
   factor?: number;
   laborPerUnit?: number;
   items: { furnitureId: string; qty: number }[];
+  /** Maquila: líneas de material, pasadas de corte y overrides de tarifario */
+  maquilaLines?: MaquilaLineInput[];
+  /** Despiece del cliente: el servidor estima hojas/cortes y deriva las líneas de material */
+  maquilaPieces?: MaquilaPieceInput[];
+  cutQty?: number;
+  cutCostPerPass?: number;
+  edgeBandServiceCostMl?: number;
+  /** Fecha estimada de entrega (ISO o yyyy-MM-dd); si se omite se aplica el plazo por tipo */
+  estimatedDeliveryAt?: string | null;
+  /** Portal: marca los cortes como estimados y crea el documento como SOLICITUD */
+  source?: 'TIENDA' | 'PORTAL';
+  cutsEstimated?: boolean;
 }
 
-export const COTIZACION_STATUSES: QuotationStatus[] = ['BORRADOR', 'ENVIADA', 'ACEPTADA', 'RECHAZADA', 'CANCELADA'];
+export const COTIZACION_STATUSES: QuotationStatus[] = ['SOLICITUD', 'BORRADOR', 'ENVIADA', 'ACEPTADA', 'RECHAZADA', 'CANCELADA'];
+/** Estados de pedido: cocina y maquila comparten ciclo (el taller hace corte y encintado) */
 export const PEDIDO_STATUSES: QuotationStatus[] = ['PRODUCCION', 'TERMINADO', 'ENTREGADA', 'CANCELADA'];
 
 /** Lista completa (compatibilidad) */
 export const QUOTATION_STATUSES: QuotationStatus[] = [...COTIZACION_STATUSES, ...PEDIDO_STATUSES.filter((x) => x !== 'CANCELADA')];
 
 export const STATUS_LABELS: Record<QuotationStatus, string> = {
+  SOLICITUD: 'Solicitud',
   BORRADOR: 'Borrador',
   ENVIADA: 'Enviada',
   ACEPTADA: 'Aceptada',

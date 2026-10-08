@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { requireRole } from '@/lib/server/auth';
 import { db } from '@/lib/db';
 import { clientInclude, serializeClient, parseStage, parseKind, parseDateInput } from '@/lib/server/crm';
 
@@ -11,6 +12,8 @@ const norm = (s: string) =>
     .trim();
 
 export async function GET(req: NextRequest) {
+  const denied = await requireRole(req, 'ADMIN', 'TIENDA');
+  if (denied) return denied;
   const q = norm(req.nextUrl.searchParams.get('q') ?? '');
   const stage = req.nextUrl.searchParams.get('stage');
   const kind = req.nextUrl.searchParams.get('kind');
@@ -33,6 +36,8 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
+  const denied = await requireRole(req, 'ADMIN', 'TIENDA');
+  if (denied) return denied;
   try {
     const body = await req.json();
     const name = String(body.name ?? '').trim();

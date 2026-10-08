@@ -1,5 +1,6 @@
 /* Genera el Excel de producción: resumen + lista de piezas + herrajes */
 import { NextRequest, NextResponse } from 'next/server';
+import { requireRole } from '@/lib/server/auth';
 import * as XLSX from 'xlsx';
 import { db } from '@/lib/db';
 import { getFinishProfile } from '@/lib/server/queries';
@@ -11,6 +12,8 @@ const quotationInclude = { items: { orderBy: { id: 'asc' as const } }, counterto
 const si = (b: boolean) => (b ? 'SÍ' : '');
 
 export async function GET(_req: NextRequest, { params }: Params) {
+  const denied = await requireRole(_req, 'ADMIN', 'TIENDA');
+  if (denied) return denied;
   const { id } = await params;
   const q = await db.quotation.findUnique({
     where: { id },

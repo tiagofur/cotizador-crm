@@ -1,7 +1,7 @@
 /* Tab "Muebles": catálogo con búsqueda/filtros, precios en vivo y editor de despiece */
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { Loader2, Plus, Search, SearchX } from 'lucide-react';
 import type { TabProps } from '@/app/page';
@@ -57,6 +57,18 @@ export default function FurnitureTab({ onNavigate }: TabProps) {
   const [mode, setMode] = useState<'read' | 'edit'>('read');
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [deleteBusy, setDeleteBusy] = useState(false);
+  const returnScroll = useRef(0);
+  const firstRender = useRef(true);
+
+  /* Al abrir el detalle/editor la vista empieza arriba; al cerrar se regresa
+     al punto de la grilla donde estaba el usuario. */
+  useEffect(() => {
+    if (firstRender.current) {
+      firstRender.current = false;
+      return;
+    }
+    window.scrollTo({ top: open ? 0 : returnScroll.current });
+  }, [open]);
 
   const categories = useMemo(() => {
     const set = new Set<string>();
@@ -87,12 +99,14 @@ export default function FurnitureTab({ onNavigate }: TabProps) {
   const showEditor = open && mode === 'edit';
 
   function openDetail(f: FurnitureDTO) {
+    returnScroll.current = window.scrollY;
     setSelectedId(f.id);
     setMode('read');
     setOpen(true);
   }
 
   function openNew() {
+    returnScroll.current = window.scrollY;
     setSelectedId(null);
     setMode('edit');
     setOpen(true);
@@ -204,8 +218,8 @@ export default function FurnitureTab({ onNavigate }: TabProps) {
 
   return (
     <div>
-      {/* Toolbar sticky */}
-      <div className="sticky top-24 z-30 -mx-4 mb-4 border-b border-stone-200 bg-stone-50/95 px-4 py-3 backdrop-blur">
+      {/* Toolbar: sticky solo en desktop (en móvil ocuparía un tercio de pantalla) */}
+      <div className="lg:sticky lg:top-24 z-30 -mx-4 mb-4 border-b border-stone-200 bg-stone-50/95 px-4 py-3 lg:backdrop-blur">
         <div className="flex flex-col gap-2 lg:flex-row lg:items-center">
           <div className="relative flex-1">
             <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-400" aria-hidden />
@@ -292,7 +306,7 @@ export default function FurnitureTab({ onNavigate }: TabProps) {
                 <div className="relative">
                   <FurnitureImage url={f.imageUrl} alt={`Imagen de ${f.name}`} className="h-40 w-full" />
                   {f.appliesCountertop && (
-                    <Badge className="absolute right-2 top-2 border-transparent bg-amber-500 text-white">
+                    <Badge className="absolute right-2 top-2 border-transparent bg-amber-600 text-white">
                       Cubierta
                     </Badge>
                   )}

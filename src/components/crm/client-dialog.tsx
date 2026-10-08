@@ -153,7 +153,7 @@ export default function ClientDialog({ open, onOpenChange, client, onSaved }: Pr
               value={form.name}
               onChange={(e) => set('name')(e.target.value)}
               placeholder="Ej. Mueblería La Unión o Juan Pérez"
-              className="border-stone-300"
+              className="border-stone-200"
               autoFocus
             />
           </div>
@@ -164,7 +164,7 @@ export default function ClientDialog({ open, onOpenChange, client, onSaved }: Pr
                 Tipo
               </Label>
               <Select value={form.kind} onValueChange={set('kind')}>
-                <SelectTrigger id="cl-kind" className="border-stone-300" aria-label="Tipo de cliente">
+                <SelectTrigger id="cl-kind" className="border-stone-200" aria-label="Tipo de cliente">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -181,7 +181,7 @@ export default function ClientDialog({ open, onOpenChange, client, onSaved }: Pr
                 Etapa
               </Label>
               <Select value={form.stage} onValueChange={set('stage')}>
-                <SelectTrigger id="cl-stage" className="border-stone-300" aria-label="Etapa del cliente">
+                <SelectTrigger id="cl-stage" className="border-stone-200" aria-label="Etapa del cliente">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -206,7 +206,7 @@ export default function ClientDialog({ open, onOpenChange, client, onSaved }: Pr
                 value={form.phone}
                 onChange={(e) => set('phone')(e.target.value)}
                 placeholder="55 1234 5678"
-                className="border-stone-300"
+                className="border-stone-200"
               />
             </div>
             <div className="grid gap-1.5">
@@ -219,7 +219,7 @@ export default function ClientDialog({ open, onOpenChange, client, onSaved }: Pr
                 value={form.email}
                 onChange={(e) => set('email')(e.target.value)}
                 placeholder="cliente@correo.com"
-                className="border-stone-300"
+                className="border-stone-200"
               />
             </div>
             <div className="grid gap-1.5">
@@ -236,7 +236,7 @@ export default function ClientDialog({ open, onOpenChange, client, onSaved }: Pr
                 value={form.discountPercent}
                 onChange={(e) => set('discountPercent')(e.target.value)}
                 placeholder="Ej. 40 — vacío usa el base"
-                className="border-stone-300"
+                className="border-stone-200"
               />
               <p className="text-[11px] text-stone-500">
                 Se aplica como precio distribuidor al cotizar. Si lo dejas vacío se usa el descuento base de
@@ -255,7 +255,7 @@ export default function ClientDialog({ open, onOpenChange, client, onSaved }: Pr
                 value={form.company}
                 onChange={(e) => set('company')(e.target.value)}
                 placeholder="Taller o negocio"
-                className="border-stone-300"
+                className="border-stone-200"
               />
             </div>
             <div className="grid gap-1.5">
@@ -267,7 +267,7 @@ export default function ClientDialog({ open, onOpenChange, client, onSaved }: Pr
                 value={form.city}
                 onChange={(e) => set('city')(e.target.value)}
                 placeholder="Ej. Guadalajara"
-                className="border-stone-300"
+                className="border-stone-200"
               />
             </div>
           </div>
@@ -281,7 +281,7 @@ export default function ClientDialog({ open, onOpenChange, client, onSaved }: Pr
               value={form.address}
               onChange={(e) => set('address')(e.target.value)}
               placeholder="Calle, número, colonia"
-              className="border-stone-300"
+              className="border-stone-200"
             />
           </div>
 
@@ -294,7 +294,7 @@ export default function ClientDialog({ open, onOpenChange, client, onSaved }: Pr
               type="date"
               value={form.nextFollowUpAt}
               onChange={(e) => set('nextFollowUpAt')(e.target.value)}
-              className="border-stone-300"
+              className="border-stone-200"
             />
           </div>
 
@@ -308,7 +308,7 @@ export default function ClientDialog({ open, onOpenChange, client, onSaved }: Pr
               onChange={(e) => set('notes')(e.target.value)}
               placeholder="Preferencias, qué interesa, cómo llegó…"
               rows={2}
-              className="border-stone-300 min-h-0"
+              className="border-stone-200 min-h-0"
             />
           </div>
         </div>

@@ -19,7 +19,7 @@ import {
   computeQuoteTotals,
 } from '@/lib/store';
 import type { Finish, FurnitureDTO, QuotationInput, ClientDTO } from '@/lib/types';
-import { money, num } from '@/lib/format';
+import { money, num, formatDate } from '@/lib/format';
 import { toast } from 'sonner';
 import {
   Armchair,
@@ -48,7 +48,6 @@ import {
 
 import { Separator } from '@/components/ui/separator';
 import { Switch } from '@/components/ui/switch';
-import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import {
   Collapsible,
   CollapsibleContent,
@@ -68,9 +67,6 @@ interface CartLine {
   furnitureId: string;
   qty: number;
 }
-
-const SCROLL_XS =
-  '[&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-stone-300 hover:[&::-webkit-scrollbar-thumb]:bg-stone-400';
 
 export default function QuoterTab({ onNavigate }: TabProps) {
   const catalog = useAppStore((s) => s.catalog);
@@ -154,11 +150,12 @@ export default function QuoterTab({ onNavigate }: TabProps) {
     return map;
   }, [catalog]);
 
-  /* ----- modo edición: hidratar el formulario con la cotización a editar ----- */
+  /* ----- modo edición: hidratar el formulario con la cotización a editar -----
+     (las de maquila se editan en su propia pestaña) */
   const hydratedIdRef = useRef<string | null>(null);
   useEffect(() => {
     const eq = editingQuotation;
-    if (!eq || hydratedIdRef.current === eq.id || !catalog) return;
+    if (!eq || eq.kind === 'MAQUILA' || hydratedIdRef.current === eq.id || !catalog) return;
     hydratedIdRef.current = eq.id;
     setTitle(eq.title ?? '');
     setClientId(eq.clientId ?? 'none');
@@ -357,7 +354,7 @@ export default function QuoterTab({ onNavigate }: TabProps) {
 
   if (!catalog) {
     return (
-      <Card className="bg-white rounded-xl border border-stone-200 shadow-sm">
+      <Card>
         <CardContent className="flex flex-col items-center justify-center gap-3 py-20 text-stone-500">
           <Loader2 className="w-8 h-8 animate-spin text-amber-600" aria-hidden />
           <p className="text-sm">Cargando catálogo…</p>
@@ -368,7 +365,7 @@ export default function QuoterTab({ onNavigate }: TabProps) {
 
   return (
     <div className="grid gap-6 lg:grid-cols-[1fr_400px] items-start">
-      {editingQuotation && (
+      {editingQuotation && editingQuotation.kind !== 'MAQUILA' && (
         <div className="lg:col-span-2 flex flex-wrap items-center justify-between gap-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2">
           <p className="text-sm text-amber-900">
             Editando{' '}
@@ -390,7 +387,7 @@ export default function QuoterTab({ onNavigate }: TabProps) {
         </div>
       )}
       {/* ================= Columna izquierda: selector de muebles ================= */}
-      <Card className="bg-white rounded-xl border border-stone-200 shadow-sm">
+      <Card className="lg:max-h-[calc(100vh-12rem)]">
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between gap-3">
             <div className="min-w-0">
@@ -418,13 +415,13 @@ export default function QuoterTab({ onNavigate }: TabProps) {
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Buscar por código o nombre…"
                 aria-label="Buscar muebles por código o nombre"
-                className="pl-8 h-9 bg-white border-stone-300"
+                className="pl-8 h-9 bg-white border-stone-200"
               />
             </div>
             <Select value={category} onValueChange={setCategory}>
               <SelectTrigger
                 size="sm"
-                className="w-full sm:w-[210px] bg-white border-stone-300 h-9"
+                className="w-full sm:w-[210px] bg-white border-stone-200 h-9"
                 aria-label="Filtrar por categoría"
               >
                 <SelectValue placeholder="Categoría" />
@@ -441,9 +438,9 @@ export default function QuoterTab({ onNavigate }: TabProps) {
           </div>
         </CardHeader>
 
-        <CardContent className="pt-0">
+        <CardContent className="pt-0 lg:flex-1 lg:min-h-0 lg:flex lg:flex-col">
           <div
-            className={cn('max-h-[70vh] overflow-y-auto -mx-1 px-1 space-y-1', SCROLL_XS)}
+            className={cn('max-h-[70vh] lg:max-h-none lg:flex-1 lg:min-h-0 overflow-y-auto -mx-1 px-1 space-y-1')}
             role="list"
             aria-label="Lista de muebles del catálogo"
           >
@@ -512,7 +509,7 @@ export default function QuoterTab({ onNavigate }: TabProps) {
                     </Button>
                   ) : (
                     <div
-                      className="flex items-center shrink-0 rounded-lg border border-stone-300 bg-white overflow-hidden"
+                      className="flex items-center shrink-0 rounded-lg border border-stone-200 bg-white overflow-hidden"
                       role="group"
                       aria-label={`Cantidad de ${f.name}`}
                     >
@@ -555,7 +552,7 @@ export default function QuoterTab({ onNavigate }: TabProps) {
       </Card>
 
       {/* ================= Columna derecha: panel de cotización ================= */}
-      <Card className="bg-white rounded-xl border border-stone-200 shadow-sm lg:sticky lg:top-20 lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto">
+      <Card className="lg:max-h-[calc(100vh-12rem)] lg:overflow-y-auto">
         <CardHeader className="pb-3">
           <CardTitle className="text-base flex items-center gap-2">
             <Calculator className="w-4 h-4 text-amber-600" aria-hidden />
@@ -578,7 +575,7 @@ export default function QuoterTab({ onNavigate }: TabProps) {
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="Ej. Cocina Depto Roma — isla + entrepaños"
-                className="h-9 border-stone-300"
+                className="h-9 border-stone-200"
               />
             </div>
             <div className="space-y-1.5">
@@ -589,7 +586,7 @@ export default function QuoterTab({ onNavigate }: TabProps) {
                 <SelectTrigger
                   id="client-registered"
                   size="sm"
-                  className="w-full bg-white border-stone-300"
+                  className="w-full bg-white border-stone-200"
                   aria-label="Seleccionar cliente registrado"
                 >
                   <SelectValue placeholder="Cliente ocasional (sin registro)" />
@@ -627,7 +624,7 @@ export default function QuoterTab({ onNavigate }: TabProps) {
                 required
                 aria-required="true"
                 readOnly={!!selectedClient}
-                className={cn('h-9 border-stone-300', selectedClient && 'bg-stone-50 text-stone-500')}
+                className={cn('h-9 border-stone-200', selectedClient && 'bg-stone-50 text-stone-500')}
               />
               {!selectedClient && (
                 <p className="text-[11px] text-stone-400">
@@ -663,7 +660,7 @@ export default function QuoterTab({ onNavigate }: TabProps) {
                     placeholder="Ej. 55 1234 5678"
                     type="tel"
                     readOnly={!!selectedClient}
-                    className={cn('h-9 border-stone-300', selectedClient && 'bg-stone-50 text-stone-500')}
+                    className={cn('h-9 border-stone-200', selectedClient && 'bg-stone-50 text-stone-500')}
                   />
                 </div>
                 <div className="space-y-1.5">
@@ -677,7 +674,7 @@ export default function QuoterTab({ onNavigate }: TabProps) {
                     placeholder="cliente@correo.com"
                     type="email"
                     readOnly={!!selectedClient}
-                    className={cn('h-9 border-stone-300', selectedClient && 'bg-stone-50 text-stone-500')}
+                    className={cn('h-9 border-stone-200', selectedClient && 'bg-stone-50 text-stone-500')}
                   />
                 </div>
                 <div className="space-y-1.5">
@@ -690,7 +687,7 @@ export default function QuoterTab({ onNavigate }: TabProps) {
                     onChange={(e) => setNotes(e.target.value)}
                     placeholder="Observaciones para esta cotización…"
                     rows={2}
-                    className="border-stone-300 min-h-0"
+                    className="min-h-0"
                   />
                 </div>
               </CollapsibleContent>
@@ -708,7 +705,7 @@ export default function QuoterTab({ onNavigate }: TabProps) {
               value={effectiveFinish}
               onValueChange={(v) => setFinish(v)}
             >
-              <SelectTrigger id="finish-select" aria-label="Seleccionar acabado">
+              <SelectTrigger id="finish-select" className="w-full" aria-label="Seleccionar acabado">
                 <SelectValue placeholder="Acabado" />
               </SelectTrigger>
               <SelectContent>
@@ -738,7 +735,7 @@ export default function QuoterTab({ onNavigate }: TabProps) {
               <SelectTrigger
                 id="countertop-select"
                 size="sm"
-                className="w-full bg-white border-stone-300"
+                className="w-full bg-white border-stone-200"
                 aria-label="Seleccionar material de cubierta"
               >
                 <SelectValue placeholder="Sin cubierta" />
@@ -782,7 +779,7 @@ export default function QuoterTab({ onNavigate }: TabProps) {
                     onChange={(e) => setOverrideStr(e.target.value)}
                     placeholder="Automático"
                     aria-label="Sobrescribir metros lineales de cubierta"
-                    className="h-8 border-stone-300"
+                    className="h-8 border-stone-200"
                   />
                 </div>
               </div>
@@ -813,7 +810,7 @@ export default function QuoterTab({ onNavigate }: TabProps) {
                   step={0.1}
                   value={factorStr}
                   onChange={(e) => setFactorStr(e.target.value)}
-                  className="h-9 border-stone-300"
+                  className="h-9 border-stone-200"
                 />
               </div>
               <div className="space-y-1.5">
@@ -828,7 +825,7 @@ export default function QuoterTab({ onNavigate }: TabProps) {
                   step={0.01}
                   value={laborStr}
                   onChange={(e) => setLaborStr(e.target.value)}
-                  className="h-9 border-stone-300"
+                  className="h-9 border-stone-200"
                 />
               </div>
             </div>
@@ -881,7 +878,7 @@ export default function QuoterTab({ onNavigate }: TabProps) {
                 <p className="text-sm text-stone-500">Selecciona muebles del catálogo</p>
               </div>
             ) : (
-              <div className={cn('max-h-56 overflow-y-auto divide-y divide-stone-100', SCROLL_XS)}>
+              <div className="max-h-56 overflow-y-auto divide-y divide-stone-100">
                 {cart.map((c, idx) => {
                   const f = furnitureById[c.furnitureId];
                   const per = totals.perItem[idx];
@@ -897,7 +894,7 @@ export default function QuoterTab({ onNavigate }: TabProps) {
                         </p>
                       </div>
                       <div
-                        className="flex items-center shrink-0 rounded-md border border-stone-300 bg-white overflow-hidden"
+                        className="flex items-center shrink-0 rounded-md border border-stone-200 bg-white overflow-hidden"
                         role="group"
                         aria-label={`Cantidad de ${f.name}`}
                       >

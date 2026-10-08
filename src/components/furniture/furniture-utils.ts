@@ -156,7 +156,3 @@ export function normalizeText(s: string): string {
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '');
 }
-
-/** Clases utilitarias para scrollbar fino en contenedores con scroll */
-export const thinScrollbar =
-  '[&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-stone-300 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb:hover]:bg-stone-400';

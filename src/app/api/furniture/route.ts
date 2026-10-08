@@ -1,9 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { requireRole } from '@/lib/server/auth';
 import { db } from '@/lib/db';
 import { furnitureInclude } from '@/lib/server/queries';
 import type { FurnitureInput } from '@/lib/types';
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  const denied = await requireRole(req, 'ADMIN', 'TIENDA');
+  if (denied) return denied;
   const furniture = await db.furniture.findMany({
     include: furnitureInclude,
     orderBy: { order: 'asc' },
@@ -12,6 +15,8 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
+  const denied = await requireRole(req, 'ADMIN');
+  if (denied) return denied;
   try {
     const body = await req.json() as FurnitureInput;
     if (!body.code?.trim() || !body.name?.trim()) {

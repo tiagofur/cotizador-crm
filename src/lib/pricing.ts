@@ -26,6 +26,10 @@ export interface MaterialLike {
   costPerM2: number | null;
   costPerMl: number | null;
   edgeBandCostMl: number | null;
+  /** Costo de la hoja completa (maquila vende tableros a este costo) */
+  sheetCost?: number | null;
+  sheetWidth?: number | null;
+  sheetLength?: number | null;
   isMaderado?: boolean;
   active?: boolean;
 }
@@ -76,6 +80,12 @@ export interface SettingsLike {
   /** Merma (multiplicador ≥1) para costo/m² calculado desde hoja */
   wasteFactorStandard?: number;
   wasteFactorMaderado?: number;
+  /** Tarifario de maquila */
+  cutCostPerPass?: number;
+  edgeBandServiceCostMl?: number;
+  /** Plazos de entrega estimada (días) */
+  deliveryDaysCocina?: number;
+  deliveryDaysMaquila?: number;
   saleFactor: number;
   ivaRate: number;
   distributorDiscount: number;

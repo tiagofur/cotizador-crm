@@ -18,7 +18,6 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { FurnitureImage } from './FurnitureImage';
-import { thinScrollbar } from './furniture-utils';
 import { Check, Layers, Pencil, Ruler, StickyNote, Trash2, Wrench } from 'lucide-react';
 
 function Mark({ on, label }: { on: boolean; label: string }) {
@@ -82,45 +81,49 @@ export function FurnitureDetail({
 
   return (
     <div className="space-y-5">
-      {/* Cabecera */}
-      <div className="relative">
-        <FurnitureImage
-          url={furniture.imageUrl}
-          alt={`Imagen de ${furniture.name}`}
-          className="h-48 w-full rounded-lg border border-stone-200"
-          iconClassName="h-14 w-14"
-        />
-        {furniture.appliesCountertop && (
-          <Badge className="absolute right-3 top-3 border-transparent bg-amber-500 text-white">
-            Cubierta {furniture.countertopWidthM > 0 ? `· ${num2(furniture.countertopWidthM)} m` : ''}
-          </Badge>
-        )}
-      </div>
+      {/* Cabecera: imagen + identidad del mueble en una superficie */}
+      <Card>
+        <CardContent className="flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-6">
+          <div className="relative shrink-0">
+            <FurnitureImage
+              url={furniture.imageUrl}
+              alt={`Imagen de ${furniture.name}`}
+              className="aspect-[4/3] w-full rounded-lg border border-stone-200 sm:aspect-auto sm:h-56 sm:w-72"
+              iconClassName="h-14 w-14"
+            />
+            {furniture.appliesCountertop && (
+              <Badge className="absolute right-3 top-3 border-transparent bg-amber-600 text-white">
+                Cubierta {furniture.countertopWidthM > 0 ? `· ${num2(furniture.countertopWidthM)} m` : ''}
+              </Badge>
+            )}
+          </div>
 
-      <div className="space-y-2">
-        <div className="flex flex-wrap items-center gap-2">
-          <Badge variant="secondary" className="font-mono text-[11px]">
-            {furniture.code}
-          </Badge>
-          <Badge variant="outline" className="text-[11px] text-stone-500">
-            {furniture.category}
-          </Badge>
-        </div>
-        <h3 className="text-lg font-bold leading-snug text-stone-900">{furniture.name}</h3>
-        <p className="flex items-center gap-1.5 text-sm text-stone-500">
-          <Ruler className="h-4 w-4 shrink-0" aria-hidden />
-          {dims(furniture.width, furniture.height, furniture.depth)}
-        </p>
-        {furniture.notes && (
-          <p className="flex items-start gap-1.5 rounded-md bg-stone-50 p-2 text-sm text-stone-600">
-            <StickyNote className="mt-0.5 h-4 w-4 shrink-0 text-stone-400" aria-hidden />
-            {furniture.notes}
-          </p>
-        )}
-      </div>
+          <div className="min-w-0 flex-1 space-y-2">
+            <div className="flex flex-wrap items-center gap-2">
+              <Badge variant="secondary" className="font-mono text-[11px]">
+                {furniture.code}
+              </Badge>
+              <Badge variant="outline" className="text-[11px] text-stone-500">
+                {furniture.category}
+              </Badge>
+            </div>
+            <h3 className="text-xl font-bold leading-snug text-stone-900">{furniture.name}</h3>
+            <p className="flex items-center gap-1.5 text-sm text-stone-500">
+              <Ruler className="h-4 w-4 shrink-0" aria-hidden />
+              {dims(furniture.width, furniture.height, furniture.depth)}
+            </p>
+            {furniture.notes && (
+              <p className="flex items-start gap-1.5 rounded-md bg-stone-50 p-2 text-sm text-stone-600">
+                <StickyNote className="mt-0.5 h-4 w-4 shrink-0 text-stone-400" aria-hidden />
+                {furniture.notes}
+              </p>
+            )}
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Costos por acabado */}
-      <Card className="rounded-xl border-stone-200 shadow-sm">
+      <Card>
         <CardHeader className="pb-3">
           <CardTitle className="flex items-center gap-2 text-base">
             <Layers className="h-4 w-4 text-amber-600" aria-hidden />
@@ -192,7 +195,7 @@ export function FurnitureDetail({
             Sin piezas registradas.
           </p>
         ) : (
-          <div className={`rounded-lg border border-stone-200 max-h-72 overflow-y-auto overflow-x-auto ${thinScrollbar}`}>
+          <div className="rounded-lg border border-stone-200 max-h-72 overflow-y-auto overflow-x-auto">
             <Table>
               <TableHeader className="[&_th]:sticky [&_th]:top-0 [&_th]:z-10 [&_th]:bg-white">
                 <TableRow>

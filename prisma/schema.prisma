@@ -26,6 +26,8 @@ model Material {
   pieces         Piece[]
   settings       Settings[]
   quotations     Quotation[]
+  maquilaLines   MaquilaLine[]
+  maquilaPieces  MaquilaPiece[]
   bodyProfiles   FinishProfile[] @relation("FinishProfileBody")
   frontProfiles  FinishProfile[] @relation("FinishProfileFront")
   createdAt      DateTime @default(now())
@@ -113,6 +115,14 @@ model Settings {
   wasteFactorMaderado Float     @default(1.0)
   maderadoMaterialId  String?
   maderadoMaterial    Material? @relation(fields: [maderadoMaterialId], references: [id])
+  // Tarifario de maquila: corte por pasada de sierra y encintado por ml (servicio, aparte del material)
+  cutCostPerPass        Float   @default(15)
+  edgeBandServiceCostMl Float   @default(12)
+  // Plazos de entrega estimada en documentos nuevos (días naturales, editables por documento)
+  deliveryDaysCocina    Int     @default(30)
+  deliveryDaysMaquila   Int     @default(7)
+  // Portal: pasadas de sierra promedio por tablero para pre-cotizar solicitudes sin despiece
+  avgCutsPerSheet       Float   @default(25)
 }
 
 // Perfil de acabado: define qué materiales usa el cuerpo y los frentes.
@@ -146,8 +156,28 @@ model Client {
   nextFollowUpAt DateTime?
   quotations     Quotation[]
   interactions   Interaction[]
+  /// Cuenta del portal del cliente (1:1; solo para clientes con acceso al portal)
+  portalUser     User?
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
+}
+
+// Usuarios de la app interna (ADMIN | TIENDA) y del portal (CLIENTE). Mono-empresa: sin tenant.
+model User {
+  id           String   @id @default(cuid())
+  /// Login interno; opcional para cuentas CLIENTE (login por teléfono)
+  email        String?  @unique
+  /// Login de clientes del portal, normalizado a solo dígitos (teléfono de la ficha CRM)
+  phone        String?  @unique
+  name         String
+  passwordHash String
+  role         String   @default("TIENDA") // ADMIN | TIENDA | CLIENTE
+  active       Boolean  @default(true)
+  /// Solo CLIENTE: vínculo 1:1 con la ficha CRM; sus cotizaciones se filtran por clientId
+  clientId     String?  @unique
+  client       Client?  @relation(fields: [clientId], references: [id], onDelete: SetNull)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 }
 
 model Interaction {
@@ -164,6 +194,10 @@ model Interaction {
 model Quotation {
   id                   String     @id @default(cuid())
   folio                String     @unique
+  /// Tipo de documento: MUEBLE (cocina armada) | MAQUILA (servicio a carpinteros)
+  kind                 String     @default("MUEBLE")
+  /// Origen: TIENDA (app interna) | PORTAL (solicitud del cliente)
+  source               String     @default("TIENDA")
   clientId             String?
   client               Client?    @relation(fields: [clientId], references: [id])
   clientName           String
@@ -195,7 +229,26 @@ model Quotation {
   distributorCountertop Float     @default(0)
   distributorIva       Float      @default(0)
   distributorTotal     Float      @default(0)
+  // ----- Resumen maquila (0 en documentos MUEBLE) -----
+  /// Pasadas de sierra capturadas en el apartado de servicios
+  cutQty               Int        @default(0)
+  /// true = cutQty es estimado (Σ hojas × promedio); la tienda lo reemplaza por pasadas reales
+  cutsEstimated        Boolean    @default(false)
+  /// true = hojas por material derivadas del despiece; la tienda las ajusta tras optimizar en máquina
+  sheetsEstimated      Boolean    @default(false)
+  /// Snapshot $/pasada al cotizar
+  cutUnitCost          Float      @default(0)
+  /// Σ metros de cintilla de todas las líneas (base del encintado)
+  edgeBandMl           Float      @default(0)
+  /// Snapshot $/ml del servicio de encintado
+  edgeBandUnitCost     Float      @default(0)
+  materialsTotal       Float      @default(0)
+  servicesTotal        Float      @default(0)
+  /// Fecha estimada de entrega (default por tipo: 7 días maquila / 30 cocinas; editable por documento)
+  estimatedDeliveryAt  DateTime?
   items                QuotationItem[]
+  maquilaLines         MaquilaLine[]
+  maquilaPieces        MaquilaPiece[]
   createdAt            DateTime   @default(now())
   updatedAt            DateTime   @updatedAt
 }
@@ -211,6 +264,9 @@ model QuotationRevision {
   furnitureSale    Float
   totalWithIva     Float
   distributorTotal Float?
+  /// Maquila: importes del snapshot anterior (null en MUEBLE)
+  materialsTotal   Float?
+  servicesTotal    Float?
   note             String?
   createdAt        DateTime  @default(now())
 
@@ -231,4 +287,51 @@ model QuotationItem {
   depth       Float     @default(0)
   unitCost    Float     @default(0)
   unitPrice   Float     @default(0)
+}
+
+// Línea de material de una cotización de maquila: tableros completos + cintilla
+model MaquilaLine {
+  id             String    @id @default(cuid())
+  quotationId    String
+  quotation      Quotation @relation(fields: [quotationId], references: [id], onDelete: Cascade)
+  materialId     String
+  material       Material  @relation(fields: [materialId], references: [id])
+  /// Cantidad de tableros completos (se venden al costo de hoja)
+  sheetsQty      Int       @default(0)
+  /// Metros de cintilla de esta línea
+  edgeBandMl     Float     @default(0)
+  /// Snapshot costo de hoja al cotizar
+  unitSheetCost  Float     @default(0)
+  /// Snapshot costo de cintilla/ml (material) al cotizar
+  unitBandCostMl Float     @default(0)
+  notes          String?
+  order          Int       @default(0)
+}
+
+// Pieza del despiece de maquila: el cliente la registra y el sistema estima hojas/cortes.
+// Cantos: L1/L2 = lados LARGOS, A1/A2 = lados ANCHOS (encintado por lado)
+model MaquilaPiece {
+  id          String    @id @default(cuid())
+  quotationId String
+  quotation   Quotation @relation(fields: [quotationId], references: [id], onDelete: Cascade)
+  name        String
+  qty         Int       @default(1)
+  /// Largo en mm
+  length      Float
+  /// Ancho en mm
+  width       Float
+  materialId  String?
+  material    Material? @relation(fields: [materialId], references: [id])
+  /// Veta (orientación de la textura) para el optimizador
+  grain       Boolean   @default(false)
+  /// Canto en el lado largo 1
+  bandL1      Boolean   @default(false)
+  /// Canto en el lado largo 2
+  bandL2      Boolean   @default(false)
+  /// Canto en el lado ancho 1
+  bandA1      Boolean   @default(false)
+  /// Canto en el lado ancho 2
+  bandA2      Boolean   @default(false)
+  notes       String?
+  order       Int       @default(0)
 }

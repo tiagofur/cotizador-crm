@@ -225,7 +225,7 @@ export default function WhatsAppTemplateDialog({
           <div className="grid gap-1.5">
             <Label className="text-xs text-stone-600">Plantilla</Label>
             <Select value={template} onValueChange={switchTemplate}>
-              <SelectTrigger className="border-stone-300" aria-label="Elegir plantilla">
+              <SelectTrigger className="border-stone-200" aria-label="Elegir plantilla">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -252,7 +252,7 @@ export default function WhatsAppTemplateDialog({
                 </p>
               ) : (
                 <Select value={quotationId} onValueChange={setQuotationId}>
-                  <SelectTrigger id="wa-quotation" className="border-stone-300" aria-label="Elegir cotización">
+                  <SelectTrigger id="wa-quotation" className="border-stone-200" aria-label="Elegir cotización">
                     <SelectValue placeholder="Elige una cotización" />
                   </SelectTrigger>
                   <SelectContent>
@@ -288,7 +288,7 @@ export default function WhatsAppTemplateDialog({
                 setTouched(true);
               }}
               rows={8}
-              className={cn('border-stone-300 min-h-0 text-sm', template === 'cotizacion' && !quotation && 'opacity-60')}
+              className={cn('border-stone-200 min-h-0 text-sm', template === 'cotizacion' && !quotation && 'opacity-60')}
               aria-label="Mensaje de WhatsApp"
             />
             <p className="text-[11px] text-stone-400">

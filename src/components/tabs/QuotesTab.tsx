@@ -11,16 +11,19 @@ import { useEffect, useMemo, useState } from 'react';
 import type { TabProps } from '@/app/page';
 import { useAppStore, settingsLike, profileOf } from '@/lib/store';
 import type { ClientDTO, Finish, QuotationDTO, QuotationStatus } from '@/lib/types';
+import { Inbox, TriangleAlert } from 'lucide-react';
 import { COTIZACION_STATUSES, PEDIDO_STATUSES, STATUS_LABELS } from '@/lib/types';
 import WhatsAppTemplateDialog from '@/components/crm/whatsapp-template-dialog';
+import QuotesKanban from '@/components/quotes/quotes-kanban';
 import { money, num, formatDate, dims } from '@/lib/format';
 import { toast } from 'sonner';
 import {
   Calculator,
+  Columns3,
   Copy,
-  Eye,
   FileSpreadsheet,
   FileText,
+  LayoutList,
   Loader2,
   MessageCircle,
   MoreHorizontal,
@@ -87,6 +90,7 @@ function norm(s: string): string {
 }
 
 const STATUS_DOT: Record<QuotationStatus, string> = {
+  SOLICITUD: 'bg-indigo-500',
   BORRADOR: 'bg-stone-400',
   ENVIADA: 'bg-amber-500',
   ACEPTADA: 'bg-emerald-500',
@@ -115,8 +119,13 @@ function FinishBadge({ finish }: { finish: Finish }) {
   );
 }
 
-const SCROLL_XS =
-  '[&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-stone-300 hover:[&::-webkit-scrollbar-thumb]:bg-stone-400';
+function MaquilaBadge() {
+  return (
+    <Badge className="bg-sky-100 text-sky-800 border border-sky-200 hover:bg-sky-100 font-medium">
+      Maquila
+    </Badge>
+  );
+}
 
 export default function QuotesTab({ onNavigate }: TabProps) {
   const catalog = useAppStore((s) => s.catalog);
@@ -129,6 +138,7 @@ export default function QuotesTab({ onNavigate }: TabProps) {
 
   const [search, setSearch] = useState('');
   const [view, setView] = useState<'cotizaciones' | 'pedidos'>('cotizaciones');
+  const [displayMode, setDisplayMode] = useState<'table' | 'kanban'>('table');
   const [statusFilter, setStatusFilter] = useState<string>('ALL');
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [duplicatingId, setDuplicatingId] = useState<string | null>(null);
@@ -142,6 +152,7 @@ export default function QuotesTab({ onNavigate }: TabProps) {
   const ivaPct = settings.ivaRate * 100;
   const pctLabel = (v: number) => `${v % 1 === 0 ? v : v.toFixed(1)}%`;
 
+  /* Cocinas y maquilas conviven en el mismo flujo: la fila se identifica por su badge */
   const isPedido = (qt: QuotationDTO) => !!qt.orderCode;
   const cotizaciones = useMemo(() => quotations.filter((qt) => !isPedido(qt)), [quotations]);
   const pedidos = useMemo(() => quotations.filter(isPedido), [quotations]);
@@ -156,6 +167,18 @@ export default function QuotesTab({ onNavigate }: TabProps) {
       return norm(qt.folio).includes(q) || norm(qt.clientName).includes(q);
     });
   }, [visible, search, statusFilter]);
+
+  /* Tablero único: todos los documentos, columnas de ciclo compartidas */
+  const kanbanFiltered = useMemo(() => {
+    const q = norm(search.trim());
+    if (!q) return quotations;
+    return quotations.filter(
+      (qt) =>
+        norm(qt.folio).includes(q) ||
+        norm(qt.clientName).includes(q) ||
+        (qt.title && norm(qt.title).includes(q))
+    );
+  }, [quotations, search]);
 
   /* Cliente del CRM vinculado a la cotización seleccionada para WhatsApp */
   const waClient: ClientDTO | null = waQuotation
@@ -185,6 +208,19 @@ export default function QuotesTab({ onNavigate }: TabProps) {
   }, [detailId, quotations]);
   const revisions = detailFull?.revisions ?? [];
 
+  /* Desglose maquila para el diálogo de detalle */
+  const maquilaSplit = useMemo(() => {
+    if (!detail || detail.kind !== 'MAQUILA') return null;
+    const sheets = detail.maquilaLines.reduce((a, l) => a + l.sheetsQty * l.unitSheetCost, 0);
+    const cut = detail.cutQty * detail.cutUnitCost;
+    return {
+      sheets,
+      bandMat: detail.materialsTotal - sheets,
+      cut,
+      edge: detail.servicesTotal - cut,
+    };
+  }, [detail]);
+
   async function updateStatus(qt: QuotationDTO, status: QuotationStatus) {
     if (qt.status === status) return;
     setUpdatingId(qt.id);
@@ -201,6 +237,33 @@ export default function QuotesTab({ onNavigate }: TabProps) {
       toast.error(`No se pudo actualizar el estado de ${qt.folio}`);
     } finally {
       setUpdatingId(null);
+    }
+  }
+
+  /** Fecha estimada de entrega editada a mano desde el detalle (yyyy-MM-dd o vacío) */
+  const [deliveryDraft, setDeliveryDraft] = useState('');
+  useEffect(() => {
+    const d = quotations.find((q) => q.id === detailId);
+    setDeliveryDraft(d?.estimatedDeliveryAt ? d.estimatedDeliveryAt.slice(0, 10) : '');
+  }, [detailId, quotations]);
+  async function updateDelivery(dateStr: string) {
+    if (!detail) return;
+    const prev = detail.estimatedDeliveryAt ? detail.estimatedDeliveryAt.slice(0, 10) : '';
+    setDeliveryDraft(dateStr);
+    if (dateStr === prev) return;
+    try {
+      const res = await fetch(`/api/quotations/${detail.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ estimatedDeliveryAt: dateStr || null }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.error);
+      await fetchQuotations();
+      toast.success(dateStr ? `Entrega de ${detail.folio}: ${formatDate(dateStr)}` : `Entrega de ${detail.folio} sin fecha`);
+    } catch {
+      toast.error('No se pudo actualizar la fecha de entrega');
+      setDeliveryDraft(prev);
     }
   }
 
@@ -238,6 +301,19 @@ export default function QuotesTab({ onNavigate }: TabProps) {
   async function generateOrder(qt: QuotationDTO) {
     setOrderingId(qt.id);
     try {
+      // Si la cotización está en BORRADOR o ENVIADA, pasarla a ACEPTADA para cumplir la regla del backend
+      if (qt.status === 'BORRADOR' || qt.status === 'ENVIADA') {
+        const patchRes = await fetch(`/api/quotations/${qt.id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status: 'ACEPTADA' }),
+        });
+        if (!patchRes.ok) {
+          toast.error('No se pudo actualizar el estado previo a pedido');
+          return;
+        }
+      }
+
       const res = await fetch(`/api/quotations/${qt.id}/order`, { method: 'POST' });
       const data = await res.json().catch(() => null);
       if (!res.ok) {
@@ -263,7 +339,7 @@ export default function QuotesTab({ onNavigate }: TabProps) {
   /* ---------- Cargando ---------- */
   if (loading && quotations.length === 0) {
     return (
-      <Card className="bg-white rounded-xl border border-stone-200 shadow-sm">
+      <Card>
         <CardContent className="flex flex-col items-center justify-center gap-3 py-20 text-stone-500">
           <Loader2 className="w-8 h-8 animate-spin text-amber-600" aria-hidden />
           <p className="text-sm">Cargando cotizaciones…</p>
@@ -275,7 +351,7 @@ export default function QuotesTab({ onNavigate }: TabProps) {
   /* ---------- Vacío ---------- */
   if (quotations.length === 0) {
     return (
-      <Card className="bg-white rounded-xl border border-stone-200 shadow-sm">
+      <Card>
         <CardContent className="flex flex-col items-center justify-center gap-4 py-20 text-center">
           <div className="w-16 h-16 rounded-2xl bg-stone-100 flex items-center justify-center">
             <FileText className="w-8 h-8 text-stone-400" aria-hidden />
@@ -283,8 +359,8 @@ export default function QuotesTab({ onNavigate }: TabProps) {
           <div className="space-y-1">
             <h3 className="font-semibold text-stone-900">Aún no hay cotizaciones</h3>
             <p className="text-sm text-stone-500 max-w-sm">
-              Crea tu primera cotización con el cotizador en vivo: elige muebles, ajusta acabado y
-              cubierta, y guárdala.
+              Cotiza una cocina armada en vivo: elige muebles del catálogo, ajusta acabado y
+              cubierta, y guárdala. Las maquilas se crean en la pestaña Maquila.
             </p>
           </div>
           <Button
@@ -292,7 +368,7 @@ export default function QuotesTab({ onNavigate }: TabProps) {
             className="bg-brand-600 hover:bg-brand-700 text-white"
           >
             <Calculator className="w-4 h-4" aria-hidden />
-            Ir al cotizador
+            Cotizar una cocina
           </Button>
         </CardContent>
       </Card>
@@ -301,42 +377,88 @@ export default function QuotesTab({ onNavigate }: TabProps) {
 
   return (
     <div className="space-y-4">
-      {/* ================= Cotizaciones / Pedidos ================= */}
-      <div role="tablist" aria-label="Tipo de documento" className="flex gap-1 rounded-lg bg-stone-100 p-1 w-fit">
-        {([
-          { id: 'cotizaciones', label: 'Cotizaciones', count: cotizaciones.length },
-          { id: 'pedidos', label: 'Pedidos', count: pedidos.length },
-        ] as const).map((t) => (
+      {/* ================= Cabecera de vista: Documentos y Switch de Modo ================= */}
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        {displayMode === 'table' ? (
+          <div role="tablist" aria-label="Tipo de documento" className="flex gap-1 rounded-lg bg-stone-100 p-1 w-fit">
+            {([
+              { id: 'cotizaciones', label: 'Cotizaciones', count: cotizaciones.length },
+              { id: 'pedidos', label: 'Pedidos', count: pedidos.length },
+            ] as const).map((t) => (
+              <button
+                key={t.id}
+                role="tab"
+                aria-selected={view === t.id}
+                onClick={() => {
+                  setView(t.id);
+                  setStatusFilter('ALL');
+                }}
+                className={cn(
+                  'px-4 py-1.5 text-sm font-medium rounded-md transition-colors outline-none focus-visible:ring-2 focus-visible:ring-amber-500',
+                  view === t.id
+                    ? 'bg-white text-stone-900 shadow-sm'
+                    : 'text-stone-500 hover:text-stone-800'
+                )}
+              >
+                {t.label}
+                <span
+                  className={cn(
+                    'ml-1.5 inline-flex min-w-[1.25rem] items-center justify-center rounded-full px-1 text-[11px] font-semibold',
+                    view === t.id ? 'bg-brand-600 text-white' : 'bg-stone-200 text-stone-600'
+                  )}
+                >
+                  {t.count}
+                </span>
+              </button>
+            ))}
+          </div>
+        ) : (
+          <div className="flex items-center gap-2">
+            <h2 className="text-sm font-semibold text-stone-800 flex items-center gap-1.5">
+              <Columns3 className="w-4 h-4 text-amber-600" />
+              Tablero Integral de Cotizaciones y Pedidos
+            </h2>
+            <Badge variant="secondary" className="bg-stone-100 text-stone-600 text-xs">
+              {quotations.length} documentos
+            </Badge>
+          </div>
+        )}
+
+        {/* Switch visual [ 📋 Tabla | 🗂️ Tablero ] */}
+        <div className="flex gap-1 rounded-lg bg-stone-100 p-1 border border-stone-200">
           <button
-            key={t.id}
-            role="tab"
-            aria-selected={view === t.id}
-            onClick={() => {
-              setView(t.id);
-              setStatusFilter('ALL');
-            }}
+            type="button"
+            onClick={() => setDisplayMode('table')}
+            aria-pressed={displayMode === 'table'}
             className={cn(
-              'px-4 py-1.5 text-sm font-medium rounded-md transition-colors outline-none focus-visible:ring-2 focus-visible:ring-amber-500',
-              view === t.id
+              'flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md transition-colors outline-none focus-visible:ring-2 focus-visible:ring-amber-500',
+              displayMode === 'table'
                 ? 'bg-white text-stone-900 shadow-sm'
                 : 'text-stone-500 hover:text-stone-800'
             )}
           >
-            {t.label}
-            <span
-              className={cn(
-                'ml-1.5 inline-flex min-w-[1.25rem] items-center justify-center rounded-full px-1 text-[11px] font-semibold',
-                view === t.id ? 'bg-brand-600 text-white' : 'bg-stone-200 text-stone-600'
-              )}
-            >
-              {t.count}
-            </span>
+            <LayoutList className="w-3.5 h-3.5" />
+            Tabla
           </button>
-        ))}
+          <button
+            type="button"
+            onClick={() => setDisplayMode('kanban')}
+            aria-pressed={displayMode === 'kanban'}
+            className={cn(
+              'flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md transition-colors outline-none focus-visible:ring-2 focus-visible:ring-amber-500',
+              displayMode === 'kanban'
+                ? 'bg-white text-stone-900 shadow-sm'
+                : 'text-stone-500 hover:text-stone-800'
+            )}
+          >
+            <Columns3 className="w-3.5 h-3.5" />
+            Tablero
+          </button>
+        </div>
       </div>
 
       {/* ================= Toolbar ================= */}
-      <Card className="bg-white rounded-xl border border-stone-200 shadow-sm">
+      <Card>
         <CardContent className="p-4">
           <div className="flex flex-col sm:flex-row gap-3 sm:items-center">
             <div className="relative flex-1">
@@ -347,53 +469,71 @@ export default function QuotesTab({ onNavigate }: TabProps) {
               <Input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="Buscar por folio o cliente…"
+                placeholder={
+                  displayMode === 'table'
+                    ? 'Buscar por folio o cliente…'
+                    : 'Buscar en el tablero por folio, cliente o título…'
+                }
                 aria-label="Buscar cotizaciones por folio o cliente"
-                className="pl-8 h-9 bg-white border-stone-300"
+                className="pl-8 h-9 bg-white border-stone-200"
               />
             </div>
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger
-                size="sm"
-                className="w-full sm:w-[190px] bg-white border-stone-300 h-9"
-                aria-label="Filtrar por estado"
-              >
-                <SelectValue placeholder="Estado" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="ALL">Todos los estados</SelectItem>
-                {allowedStatuses.map((st) => (
-                  <SelectItem key={st} value={st}>
-                    {STATUS_LABELS[st]}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            {displayMode === 'table' && (
+              <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <SelectTrigger
+                  size="sm"
+                  className="w-full sm:w-[190px] bg-white border-stone-200 h-9"
+                  aria-label="Filtrar por estado"
+                >
+                  <SelectValue placeholder="Estado" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="ALL">Todos los estados</SelectItem>
+                  {allowedStatuses.map((st) => (
+                    <SelectItem key={st} value={st}>
+                      {STATUS_LABELS[st]}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
             <Badge
               variant="secondary"
               className="bg-stone-100 text-stone-600 border border-stone-200 justify-center sm:justify-start"
             >
-              {filtered.length} de {visible.length} {view === 'cotizaciones' ? 'cotizaciones' : 'pedidos'}
+              {displayMode === 'table'
+                ? `${filtered.length} de ${visible.length} ${view === 'cotizaciones' ? 'cotizaciones' : 'pedidos'}`
+                : `${kanbanFiltered.length} de ${quotations.length} documentos`}
             </Badge>
           </div>
         </CardContent>
       </Card>
 
-      {/* ================= Tabla ================= */}
-      <div
-        className={cn(
-          'max-h-[65vh] overflow-auto rounded-xl border border-stone-200 bg-white shadow-sm',
-          SCROLL_XS
-        )}
-      >
-        <Table className="min-w-[980px]">
+      {/* ================= Contenido: Tabla o Tablero Kanban ================= */}
+      {displayMode === 'kanban' ? (
+        <QuotesKanban
+          quotations={kanbanFiltered}
+          onOpenDetail={(qt) => setDetailId(qt.id)}
+          onStatusChange={updateStatus}
+          onConvertToOrder={generateOrder}
+          onDuplicate={duplicate}
+          onWhatsApp={(qt) => setWaQuotation(qt)}
+          onEdit={(qt) => {
+            setEditingQuotation(qt);
+            onNavigate?.(qt.kind === 'MAQUILA' ? 'maquila' : 'cotizador');
+          }}
+        />
+      ) : (
+        <div className="max-h-[65vh] overflow-auto rounded-xl border border-stone-200 bg-white shadow-sm">
+        <Table className="min-w-[1060px]">
           <TableHeader className="sticky top-0 z-10 bg-stone-100">
             <TableRow className="hover:bg-stone-100 border-b border-stone-200">
               <TableHead className="text-stone-600">Folio</TableHead>
               <TableHead className="text-stone-600">Fecha</TableHead>
               <TableHead className="text-stone-600">Cliente</TableHead>
-              <TableHead className="text-stone-600">Acabado</TableHead>
+              <TableHead className="text-stone-600">Tipo</TableHead>
               <TableHead className="text-stone-600">Estado</TableHead>
+              <TableHead className="text-stone-600">Entrega est.</TableHead>
               <TableHead className="text-stone-600 text-center">Items</TableHead>
               <TableHead className="text-stone-600 text-right">Total con IVA</TableHead>
               <TableHead className="text-stone-600 text-right">Acciones</TableHead>
@@ -402,7 +542,7 @@ export default function QuotesTab({ onNavigate }: TabProps) {
           <TableBody>
             {filtered.length === 0 && (
               <TableRow>
-                <TableCell colSpan={8} className="py-12 text-center text-stone-500">
+                <TableCell colSpan={9} className="py-12 text-center text-stone-500">
                   {view === 'pedidos'
                     ? 'Aún no hay pedidos. Convierte una cotización aceptada con «Convertir en pedido».'
                     : 'Sin resultados para tu búsqueda.'}
@@ -411,6 +551,11 @@ export default function QuotesTab({ onNavigate }: TabProps) {
             )}
             {filtered.map((qt) => {
               const units = qt.items.reduce((acc, it) => acc + it.qty, 0);
+              const entrega = qt.estimatedDeliveryAt ? new Date(qt.estimatedDeliveryAt) : null;
+              const entregaVencida =
+                entrega &&
+                entrega.getTime() < Date.now() &&
+                !['ENTREGADA', 'CANCELADA'].includes(qt.status);
               return (
                 <TableRow key={qt.id} className="border-b border-stone-100 hover:bg-stone-50/60">
                   <TableCell>
@@ -442,7 +587,7 @@ export default function QuotesTab({ onNavigate }: TabProps) {
                     </span>
                   </TableCell>
                   <TableCell>
-                    <FinishBadge finish={qt.finish} />
+                    {qt.kind === 'MAQUILA' ? <MaquilaBadge /> : <FinishBadge finish={qt.finish} />}
                   </TableCell>
                   <TableCell>
                     <Select
@@ -477,9 +622,37 @@ export default function QuotesTab({ onNavigate }: TabProps) {
                       </SelectContent>
                     </Select>
                   </TableCell>
+                  <TableCell className="whitespace-nowrap">
+                    {entrega ? (
+                      <span
+                        className={cn(
+                          'text-xs font-medium',
+                          entregaVencida ? 'text-red-600' : 'text-stone-600'
+                        )}
+                        title={entregaVencida ? 'Fecha estimada vencida' : 'Fecha estimada de entrega'}
+                      >
+                        {formatDate(qt.estimatedDeliveryAt!)}
+                        {entregaVencida && ' · vencida'}
+                      </span>
+                    ) : (
+                      <span className="text-xs text-stone-400">—</span>
+                    )}
+                  </TableCell>
                   <TableCell className="text-center text-sm tabular-nums">
-                    <span className="font-semibold">{qt.items.length}</span>
-                    <span className="text-stone-400 text-xs"> · {units} u</span>
+                    {qt.kind === 'MAQUILA' ? (
+                      <>
+                        <span className="font-semibold">{qt.maquilaLines.length}</span>
+                        <span className="text-stone-400 text-xs">
+                          {' '}
+                          · {qt.maquilaLines.reduce((a, l) => a + l.sheetsQty, 0)} tab
+                        </span>
+                      </>
+                    ) : (
+                      <>
+                        <span className="font-semibold">{qt.items.length}</span>
+                        <span className="text-stone-400 text-xs"> · {units} u</span>
+                      </>
+                    )}
                   </TableCell>
                   <TableCell className="text-right">
                     <span className="block font-bold tabular-nums">{money(qt.totalWithIva)}</span>
@@ -514,17 +687,19 @@ export default function QuotesTab({ onNavigate }: TabProps) {
                         </DropdownMenuItem>
                         <DropdownMenuItem onSelect={() => openPdf(qt.id, false)}>
                           <FileText className="text-stone-400" aria-hidden />
-                          PDF sin precios
+                          {qt.kind === 'MAQUILA' ? 'PDF hoja de corte (sin precios)' : 'PDF sin precios'}
                         </DropdownMenuItem>
-                        <DropdownMenuItem onSelect={() => openExcel(qt.id)}>
-                          <FileSpreadsheet className="text-emerald-600" aria-hidden />
-                          Excel producción
-                        </DropdownMenuItem>
-                        {['BORRADOR', 'ENVIADA', 'ACEPTADA', 'PRODUCCION', 'TERMINADO'].includes(qt.status) && (
+                        {qt.kind !== 'MAQUILA' && (
+                          <DropdownMenuItem onSelect={() => openExcel(qt.id)}>
+                            <FileSpreadsheet className="text-emerald-600" aria-hidden />
+                            Excel producción
+                          </DropdownMenuItem>
+                        )}
+                        {['SOLICITUD', 'BORRADOR', 'ENVIADA', 'ACEPTADA', 'PRODUCCION', 'EN_CORTE', 'TERMINADO'].includes(qt.status) && (
                           <DropdownMenuItem
                             onSelect={() => {
                               setEditingQuotation(qt);
-                              onNavigate?.('cotizador');
+                              onNavigate?.(qt.kind === 'MAQUILA' ? 'maquila' : 'cotizador');
                             }}
                           >
                             <Pencil className="text-stone-500" aria-hidden />
@@ -573,10 +748,11 @@ export default function QuotesTab({ onNavigate }: TabProps) {
           </TableBody>
         </Table>
       </div>
+    )}
 
       {/* ================= Dialog de detalle ================= */}
       <Dialog open={!!detailId} onOpenChange={(o) => !o && setDetailId(null)}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-white">
+        <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-y-auto">
           {detail && (
             <>
               <DialogHeader>
@@ -589,7 +765,13 @@ export default function QuotesTab({ onNavigate }: TabProps) {
                       {detail.orderCode}
                     </span>
                   )}
-                  <FinishBadge finish={detail.finish} />
+                  {detail.kind === 'MAQUILA' ? <MaquilaBadge /> : <FinishBadge finish={detail.finish} />}
+                  {detail.source === 'PORTAL' && (
+                    <span className="inline-flex items-center gap-1 rounded-full bg-indigo-50 border border-indigo-200 px-2.5 py-0.5 text-xs font-medium text-indigo-800">
+                      <Inbox className="w-3 h-3" aria-hidden />
+                      Portal
+                    </span>
+                  )}
                   <span className="inline-flex items-center gap-1.5 rounded-full bg-stone-100 border border-stone-200 px-2.5 py-0.5 text-xs font-medium text-stone-700">
                     <span
                       className={cn('h-2 w-2 rounded-full', STATUS_DOT[detail.status])}
@@ -605,6 +787,18 @@ export default function QuotesTab({ onNavigate }: TabProps) {
                 </DialogDescription>
               </DialogHeader>
 
+              {/* Pre-cotización del portal con cortes estimados */}
+              {detail.cutsEstimated && (
+                <div className="flex items-start gap-2 rounded-lg border border-amber-300 bg-amber-50 px-3 py-2.5 text-xs text-amber-900">
+                  <TriangleAlert className="w-4 h-4 shrink-0 text-amber-600 mt-0.5" aria-hidden />
+                  <p>
+                    <strong>Pre-cotización con cortes estimados.</strong> Las pasadas de sierra se calcularon con el
+                    promedio por hoja de Configuración. Abre el documento en el cotizador de maquila, captura las
+                    pasadas reales y guarda antes de enviarla al cliente.
+                  </p>
+                </div>
+              )}
+
               {/* Datos del cliente */}
               <div className="grid gap-2 sm:grid-cols-2 rounded-lg border border-stone-200 bg-stone-50 p-3 text-sm">
                 <div>
@@ -615,12 +809,92 @@ export default function QuotesTab({ onNavigate }: TabProps) {
                   {detail.clientPhone && <p>Tel: {detail.clientPhone}</p>}
                   {detail.clientEmail && <p>Correo: {detail.clientEmail}</p>}
                 </div>
+                <div className="sm:col-span-2 flex flex-wrap items-center gap-2 border-t border-stone-200 pt-2">
+                  <Label htmlFor="delivery-date" className="text-[11px] uppercase tracking-wide text-stone-400">
+                    Entrega estimada
+                  </Label>
+                  <Input
+                    id="delivery-date"
+                    type="date"
+                    value={deliveryDraft}
+                    onChange={(e) => void updateDelivery(e.target.value)}
+                    className="h-8 w-[170px] bg-white border-stone-200 text-xs"
+                    aria-label="Fecha estimada de entrega"
+                  />
+                  <span className="text-[11px] text-stone-400">
+                    {detail.kind === 'MAQUILA' ? 'default maquila' : 'default cocina'} · editable
+                  </span>
+                </div>
                 {detail.notes && (
                   <p className="sm:col-span-2 text-xs text-stone-500 italic border-t border-stone-200 pt-2">
                     «{detail.notes}»
                   </p>
                 )}
               </div>
+
+              {/* Despiece del cliente (maquila) */}
+              {detail.kind === 'MAQUILA' && !!detail.maquilaPieces?.length && (
+                <div className="rounded-lg border border-stone-200 overflow-x-auto">
+                  <Table>
+                    <TableHeader className="bg-stone-100">
+                      <TableRow className="hover:bg-stone-100 border-b border-stone-200">
+                        <TableHead className="text-stone-600 text-center w-12">Cant</TableHead>
+                        <TableHead className="text-stone-600">Pieza</TableHead>
+                        <TableHead className="text-stone-600 text-right">Medidas (mm)</TableHead>
+                        <TableHead className="text-stone-600">Material</TableHead>
+                        <TableHead className="text-stone-600 text-center">Veta</TableHead>
+                        <TableHead className="text-stone-600">Cantos</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {detail.maquilaPieces.map((p) => {
+                        const cantos = [
+                          p.bandL1 && 'L1',
+                          p.bandL2 && 'L2',
+                          p.bandA1 && 'A1',
+                          p.bandA2 && 'A2',
+                        ].filter((x): x is string => !!x);
+                        return (
+                          <TableRow key={p.id} className="border-b border-stone-100">
+                            <TableCell className="text-center tabular-nums font-medium">{p.qty}</TableCell>
+                            <TableCell className="max-w-[200px]">
+                              <span className="block truncate font-medium" title={p.name}>{p.name}</span>
+                              {p.notes && <span className="block text-[11px] text-stone-500 italic">{p.notes}</span>}
+                            </TableCell>
+                            <TableCell className="text-right text-xs text-stone-600 whitespace-nowrap tabular-nums">
+                              {num(p.length, 0)} × {num(p.width, 0)}
+                            </TableCell>
+                            <TableCell className="max-w-[170px]">
+                              <span className="block truncate text-xs" title={p.material?.name}>
+                                {p.material?.name ?? '—'}
+                              </span>
+                            </TableCell>
+                            <TableCell className="text-center text-xs text-stone-500">
+                              {p.grain ? '≡' : '—'}
+                            </TableCell>
+                            <TableCell>
+                              {cantos.length ? (
+                                <span className="flex flex-wrap gap-1">
+                                  {cantos.map((c) => (
+                                    <span
+                                      key={c}
+                                      className="inline-flex items-center rounded bg-brand-50 border border-brand-200 px-1.5 py-px text-[10px] font-bold text-brand-700"
+                                    >
+                                      {c}
+                                    </span>
+                                  ))}
+                                </span>
+                              ) : (
+                                <span className="text-xs text-stone-400">Sin cantos</span>
+                              )}
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })}
+                    </TableBody>
+                  </Table>
+                </div>
+              )}
 
               {/* Bitácora de revisiones (solo pedidos) */}
               {detail.orderCode && (
@@ -645,13 +919,30 @@ export default function QuotesTab({ onNavigate }: TabProps) {
                               {r.note && <span className="text-stone-500"> — {r.note}</span>}
                             </summary>
                             <ul className="mt-1 ml-4 border-l border-stone-200 pl-3 space-y-0.5">
-                              {(JSON.parse(r.itemsJson) as { code: string; name: string; qty: number; unitPrice: number }[]).map(
-                                (it, i) => (
-                                  <li key={i}>
-                                    {it.qty}× {it.name} — {money(it.unitPrice)} c/u
-                                  </li>
-                                )
-                              )}
+                              {detail.kind === 'MAQUILA'
+                                ? (
+                                    JSON.parse(r.itemsJson) as {
+                                      material: string;
+                                      sheetsQty: number;
+                                      edgeBandMl: number;
+                                    }[]
+                                  ).map((it, i) => (
+                                    <li key={i}>
+                                      {it.sheetsQty}× tablero {it.material} + {num(it.edgeBandMl)} m cintilla
+                                    </li>
+                                  ))
+                                : (
+                                    JSON.parse(r.itemsJson) as {
+                                      code: string;
+                                      name: string;
+                                      qty: number;
+                                      unitPrice: number;
+                                    }[]
+                                  ).map((it, i) => (
+                                    <li key={i}>
+                                      {it.qty}× {it.name} — {money(it.unitPrice)} c/u
+                                    </li>
+                                  ))}
                             </ul>
                           </details>
                         </li>
@@ -662,6 +953,50 @@ export default function QuotesTab({ onNavigate }: TabProps) {
               )}
 
               {/* Items */}
+              {detail.kind === 'MAQUILA' ? (
+                <div className="space-y-1.5">
+                  {detail.sheetsEstimated && (
+                    <p className="text-[11px] text-amber-700">
+                      Hojas estimadas desde el despiece — ajústalas a las reales del optimizador al editar (pestaña Maquila → Tableros).
+                    </p>
+                  )}
+                  <div className="rounded-lg border border-stone-200 overflow-x-auto">
+                  <Table>
+                    <TableHeader className="bg-stone-100">
+                      <TableRow className="hover:bg-stone-100 border-b border-stone-200">
+                        <TableHead className="text-stone-600">Material</TableHead>
+                        <TableHead className="text-stone-600 text-center">Tableros</TableHead>
+                        <TableHead className="text-stone-600 text-right">Costo hoja</TableHead>
+                        <TableHead className="text-stone-600 text-right">Cintilla (m)</TableHead>
+                        <TableHead className="text-stone-600 text-right">Cintilla/m</TableHead>
+                        <TableHead className="text-stone-600 text-right">Total</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {detail.maquilaLines.map((ln) => (
+                        <TableRow key={ln.id} className="border-b border-stone-100">
+                          <TableCell className="font-medium max-w-[220px]">
+                            <span className="block truncate" title={ln.material?.name}>
+                              {ln.material?.name ?? '—'}
+                            </span>
+                            {ln.notes && (
+                              <span className="block text-[11px] text-stone-500 italic">{ln.notes}</span>
+                            )}
+                          </TableCell>
+                          <TableCell className="text-center tabular-nums">{ln.sheetsQty}</TableCell>
+                          <TableCell className="text-right tabular-nums">{money(ln.unitSheetCost)}</TableCell>
+                          <TableCell className="text-right tabular-nums">{num(ln.edgeBandMl)}</TableCell>
+                          <TableCell className="text-right tabular-nums">{money(ln.unitBandCostMl)}</TableCell>
+                          <TableCell className="text-right font-medium tabular-nums">
+                            {money(ln.sheetsQty * ln.unitSheetCost + ln.edgeBandMl * ln.unitBandCostMl)}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+                </div>
+              ) : (
               <div className="rounded-lg border border-stone-200 overflow-hidden">
                 <Table>
                   <TableHeader className="bg-stone-100">
@@ -725,8 +1060,46 @@ export default function QuotesTab({ onNavigate }: TabProps) {
                   </TableBody>
                 </Table>
               </div>
+              )}
 
               {/* Totales */}
+              {detail.kind === 'MAQUILA' && maquilaSplit ? (
+                <div className="flex justify-end">
+                  <div className="w-full sm:max-w-xs space-y-1">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-stone-500">Tableros (al costo)</span>
+                      <span className="tabular-nums">{money(maquilaSplit.sheets)}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-stone-500">Cintilla (material)</span>
+                      <span className="tabular-nums">{money(maquilaSplit.bandMat)}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-stone-500">Corte ({detail.cutQty} pasadas)</span>
+                      <span className="tabular-nums">{money(maquilaSplit.cut)}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-stone-500">Encintado ({num(detail.edgeBandMl)} m)</span>
+                      <span className="tabular-nums">{money(maquilaSplit.edge)}</span>
+                    </div>
+                    <Separator />
+                    <div className="flex justify-between text-sm">
+                      <span className="text-stone-500">Subtotal</span>
+                      <span className="tabular-nums">{money(detail.materialsTotal + detail.servicesTotal)}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-stone-500">IVA ({pctLabel(ivaPct)})</span>
+                      <span className="tabular-nums">{money(detail.ivaAmount)}</span>
+                    </div>
+                    <div className="flex justify-between items-baseline py-1">
+                      <span className="text-sm font-bold text-stone-900">TOTAL (CON IVA)</span>
+                      <span className="text-lg font-bold text-amber-700 tabular-nums">
+                        {money(detail.totalWithIva)}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              ) : (
               <div className="flex justify-end">
                 <div className="w-full sm:max-w-xs space-y-1">
                   <div className="flex justify-between text-sm">
@@ -793,6 +1166,7 @@ export default function QuotesTab({ onNavigate }: TabProps) {
                   )}
                 </div>
               </div>
+              )}
 
               {/* Exports */}
               <DialogFooter className="flex-col sm:flex-row gap-2 sm:justify-between sm:items-center">
@@ -809,7 +1183,7 @@ export default function QuotesTab({ onNavigate }: TabProps) {
                     variant="outline"
                     size="sm"
                     onClick={() => openPdf(detail.id, true)}
-                    className="border-stone-300"
+                    className="border-stone-200"
                   >
                     <FileText className="w-4 h-4 text-amber-600" aria-hidden />
                     PDF con precios
@@ -818,25 +1192,27 @@ export default function QuotesTab({ onNavigate }: TabProps) {
                     variant="outline"
                     size="sm"
                     onClick={() => openPdf(detail.id, false)}
-                    className="border-stone-300"
+                    className="border-stone-200"
                   >
                     <FileText className="w-4 h-4 text-stone-400" aria-hidden />
-                    PDF sin precios
+                    {detail.kind === 'MAQUILA' ? 'Hoja de corte (sin precios)' : 'PDF sin precios'}
                   </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => openExcel(detail.id)}
-                    className="border-stone-300"
-                  >
-                    <FileSpreadsheet className="w-4 h-4 text-emerald-600" aria-hidden />
-                    Excel producción
-                  </Button>
+                  {detail.kind !== 'MAQUILA' && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => openExcel(detail.id)}
+                      className="border-stone-200"
+                    >
+                      <FileSpreadsheet className="w-4 h-4 text-emerald-600" aria-hidden />
+                      Excel producción
+                    </Button>
+                  )}
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={() => window.print()}
-                    className="border-stone-300"
+                    className="border-stone-200"
                   >
                     <Printer className="w-4 h-4" aria-hidden />
                     Imprimir
@@ -850,7 +1226,7 @@ export default function QuotesTab({ onNavigate }: TabProps) {
 
       {/* ================= Confirmar eliminación ================= */}
       <AlertDialog open={!!deleteTarget} onOpenChange={(o) => !o && setDeleteTarget(null)}>
-        <AlertDialogContent className="bg-white">
+        <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>
               ¿Eliminar la cotización {deleteTarget?.folio}?
@@ -862,7 +1238,7 @@ export default function QuotesTab({ onNavigate }: TabProps) {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={deleting} className="border-stone-300">
+            <AlertDialogCancel disabled={deleting} className="border-stone-200">
               Cancelar
             </AlertDialogCancel>
             <AlertDialogAction
@@ -895,10 +1271,10 @@ export default function QuotesTab({ onNavigate }: TabProps) {
           variant="outline"
           size="sm"
           onClick={() => onNavigate?.('cotizador')}
-          className="border-stone-300 text-stone-600"
+          className="border-stone-200 text-stone-600"
         >
-          <Eye className="w-4 h-4 text-amber-600" aria-hidden />
-          Crear nueva cotización
+          <Calculator className="w-4 h-4 text-amber-600" aria-hidden />
+          Cotizar una cocina
         </Button>
       </div>
 

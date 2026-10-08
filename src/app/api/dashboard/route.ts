@@ -1,8 +1,11 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
+import { requireRole } from '@/lib/server/auth';
 import { db } from '@/lib/db';
 import { getAuditAlerts, getSettings } from '@/lib/server/queries';
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  const denied = await requireRole(req, 'ADMIN', 'TIENDA');
+  if (denied) return denied;
   const [furnitureCount, piecesCount, materialsCount, hardwareCount, quotationsCount, alerts, settings] =
     await Promise.all([
       db.furniture.count(),

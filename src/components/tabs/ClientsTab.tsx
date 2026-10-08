@@ -33,6 +33,7 @@ import {
   AlertTriangle,
   CheckCircle2,
   BarChart3,
+  Columns3,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -71,6 +72,8 @@ import ClientDetail from '@/components/crm/client-detail';
 import { followUpStatus, overdueFollowUps, sortClients, type ClientSort } from '@/lib/crm';
 import ReportsView from '@/components/crm/reports-view';
 import WhatsAppTemplateDialog, { waPhone } from '@/components/crm/whatsapp-template-dialog';
+import CrmPipelineKanban from '@/components/crm/crm-pipeline-kanban';
+import TasksKanban from '@/components/crm/tasks-kanban';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
 
@@ -81,9 +84,6 @@ function norm(s: string): string {
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '');
 }
-
-const SCROLL_XS =
-  '[&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-stone-300 hover:[&::-webkit-scrollbar-thumb]:bg-stone-400';
 
 const STAGE_BADGE: Record<ClientStage, string> = {
   NUEVO: 'bg-stone-100 text-stone-600 border-stone-200',
@@ -148,6 +148,8 @@ export default function ClientsTab({ onNavigate }: TabProps) {
   const [waFor, setWaFor] = useState<ClientDTO | null>(null);
   const [detail, setDetail] = useState<DetailView>(null);
   const [detailClient, setDetailClient] = useState<ClientDTO | null>(null);
+  // Se incrementa al registrar una interacción; la ficha abierta recarga su historial
+  const [historyVersion, setHistoryVersion] = useState(0);
   const [deleting, setDeleting] = useState<ClientDTO | null>(null);
   const [deleteBusy, setDeleteBusy] = useState(false);
 
@@ -241,7 +243,7 @@ export default function ClientsTab({ onNavigate }: TabProps) {
     <div className="space-y-5">
       {/* ================= KPIs de seguimiento ================= */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        <Card className="bg-white rounded-xl border border-stone-200 shadow-sm">
+        <Card>
           <CardContent className="pt-4 pb-3 px-4">
             <div className="flex items-center justify-between">
               <div>
@@ -259,10 +261,7 @@ export default function ClientsTab({ onNavigate }: TabProps) {
         </Card>
 
         <Card
-          className={cn(
-            'rounded-xl border shadow-sm bg-white',
-            stats.toContactToday > 0 ? 'border-amber-300 bg-amber-50/40' : 'border-stone-200'
-          )}
+          className={cn(stats.toContactToday > 0 && 'border-amber-300 bg-amber-50/40')}
         >
           <CardContent className="pt-4 pb-3 px-4">
             <div className="flex items-center justify-between">
@@ -280,7 +279,7 @@ export default function ClientsTab({ onNavigate }: TabProps) {
           </CardContent>
         </Card>
 
-        <Card className="bg-white rounded-xl border border-stone-200 shadow-sm">
+        <Card>
           <CardContent className="pt-4 pb-3 px-4">
             <div className="flex items-center justify-between">
               <div>
@@ -295,7 +294,7 @@ export default function ClientsTab({ onNavigate }: TabProps) {
           </CardContent>
         </Card>
 
-        <Card className="bg-white rounded-xl border border-stone-200 shadow-sm">
+        <Card>
           <CardContent className="pt-4 pb-3 px-4">
             <div className="flex items-center justify-between">
               <div>
@@ -313,19 +312,33 @@ export default function ClientsTab({ onNavigate }: TabProps) {
         </Card>
       </div>
 
-      {/* ================= Sub-pestañas: Clientes / Reportes ================= */}
+      {/* ================= Sub-pestañas: Clientes / Pipeline / Seguimientos / Reportes ================= */}
       <Tabs defaultValue="clientes">
-        <TabsList className="bg-white border border-stone-200 h-10 p-1">
+        <TabsList className="bg-white border border-stone-200 h-10 p-1 max-w-full overflow-x-auto no-scrollbar">
           <TabsTrigger
             value="clientes"
-            className="data-[state=active]:bg-stone-800 data-[state=active]:text-white px-4 gap-1.5"
+            className="data-[state=active]:bg-brand-600 data-[state=active]:text-white px-4 gap-1.5 shrink-0"
           >
             <Users className="w-4 h-4" aria-hidden />
-            Clientes
+            Lista
+          </TabsTrigger>
+          <TabsTrigger
+            value="pipeline"
+            className="data-[state=active]:bg-brand-600 data-[state=active]:text-white px-4 gap-1.5 shrink-0"
+          >
+            <Columns3 className="w-4 h-4" aria-hidden />
+            Pipeline
+          </TabsTrigger>
+          <TabsTrigger
+            value="tareas"
+            className="data-[state=active]:bg-brand-600 data-[state=active]:text-white px-4 gap-1.5 shrink-0"
+          >
+            <CalendarClock className="w-4 h-4" aria-hidden />
+            Seguimientos
           </TabsTrigger>
           <TabsTrigger
             value="reportes"
-            className="data-[state=active]:bg-brand-600 data-[state=active]:text-white px-4 gap-1.5"
+            className="data-[state=active]:bg-brand-600 data-[state=active]:text-white px-4 gap-1.5 shrink-0"
           >
             <BarChart3 className="w-4 h-4" aria-hidden />
             Reportes
@@ -334,7 +347,7 @@ export default function ClientsTab({ onNavigate }: TabProps) {
 
         <TabsContent value="clientes" className="mt-4">
       {/* ================= Lista de clientes ================= */}
-      <Card className="bg-white rounded-xl border border-stone-200 shadow-sm">
+      <Card>
         <CardHeader className="pb-3">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="min-w-0">
@@ -366,13 +379,13 @@ export default function ClientsTab({ onNavigate }: TabProps) {
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Buscar por nombre, empresa, teléfono, correo…"
                 aria-label="Buscar clientes"
-                className="pl-8 h-9 bg-white border-stone-300"
+                className="pl-8 h-9 bg-white border-stone-200"
               />
             </div>
             <Select value={stageFilter} onValueChange={setStageFilter}>
               <SelectTrigger
                 size="sm"
-                className="w-full lg:w-[170px] bg-white border-stone-300 h-9"
+                className="w-full lg:w-[170px] bg-white border-stone-200 h-9"
                 aria-label="Filtrar por etapa"
               >
                 <SelectValue placeholder="Etapa" />
@@ -389,7 +402,7 @@ export default function ClientsTab({ onNavigate }: TabProps) {
             <Select value={kindFilter} onValueChange={setKindFilter}>
               <SelectTrigger
                 size="sm"
-                className="w-full lg:w-[160px] bg-white border-stone-300 h-9"
+                className="w-full lg:w-[160px] bg-white border-stone-200 h-9"
                 aria-label="Filtrar por tipo"
               >
                 <SelectValue placeholder="Tipo" />
@@ -420,7 +433,7 @@ export default function ClientsTab({ onNavigate }: TabProps) {
             <Select value={sort} onValueChange={(v) => setSort(v as ClientSort)}>
               <SelectTrigger
                 size="sm"
-                className="w-full lg:w-[170px] bg-white border-stone-300 h-9"
+                className="w-full lg:w-[170px] bg-white border-stone-200 h-9"
                 aria-label="Ordenar clientes"
               >
                 <SelectValue placeholder="Orden" />
@@ -481,7 +494,7 @@ export default function ClientsTab({ onNavigate }: TabProps) {
               )}
             </div>
           ) : (
-            <div className={cn('max-h-[62vh] overflow-auto -mx-1 px-1', SCROLL_XS)}>
+            <div className={cn('max-h-[62vh] overflow-auto -mx-1 px-1')}>
               <Table>
                 <TableHeader className="sticky top-0 z-10 bg-white">
                   <TableRow className="hover:bg-white">
@@ -649,6 +662,45 @@ export default function ClientsTab({ onNavigate }: TabProps) {
       </Card>
         </TabsContent>
 
+        <TabsContent value="pipeline" className="mt-4">
+          <CrmPipelineKanban
+            clients={clients}
+            quotations={quotations}
+            onOpenDetail={(c) => {
+              setDetailClient(c);
+              setDetail({ mode: 'detail' });
+            }}
+            onLogInteraction={(c) => setLogFor(c)}
+            onWhatsApp={(c) => setWaFor(c)}
+            onNewQuotation={(_c) => {
+              onNavigate?.('cotizador');
+            }}
+            onNewClient={openCreate}
+            onRefresh={async () => {
+              await Promise.all([fetchClients(), fetchQuotations()]);
+            }}
+          />
+        </TabsContent>
+
+        <TabsContent value="tareas" className="mt-4">
+          <TasksKanban
+            clients={clients}
+            quotations={quotations}
+            onOpenDetail={(c) => {
+              setDetailClient(c);
+              setDetail({ mode: 'detail' });
+            }}
+            onLogInteraction={(c) => setLogFor(c)}
+            onWhatsApp={(c) => setWaFor(c)}
+            onNewQuotation={(_c) => {
+              onNavigate?.('cotizador');
+            }}
+            onRefresh={async () => {
+              await Promise.all([fetchClients(), fetchQuotations()]);
+            }}
+          />
+        </TabsContent>
+
         <TabsContent value="reportes" className="mt-4">
           <ReportsView clients={clients} onClientUpdated={upsertClient} />
         </TabsContent>
@@ -672,6 +724,7 @@ export default function ClientsTab({ onNavigate }: TabProps) {
           client={logFor}
           onLogged={(_it, client) => {
             upsertClient(client);
+            setHistoryVersion((v) => v + 1);
             void afterMutation();
           }}
         />
@@ -685,6 +738,7 @@ export default function ClientsTab({ onNavigate }: TabProps) {
           quotations={quotations}
           onLogged={(_it, client) => {
             upsertClient(client);
+            setHistoryVersion((v) => v + 1);
             void afterMutation();
           }}
         />
@@ -707,6 +761,7 @@ export default function ClientsTab({ onNavigate }: TabProps) {
             onNavigate?.('cotizador');
           }}
           onWhatsApp={waPhone(detailClient.phone) ? () => setWaFor(detailClient) : undefined}
+          historyVersion={historyVersion}
         />
       )}
 

@@ -1,12 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { requireRole } from '@/lib/server/auth';
 import { db } from '@/lib/db';
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  const denied = await requireRole(req, 'ADMIN', 'TIENDA');
+  if (denied) return denied;
   const materials = await db.material.findMany({ orderBy: [{ type: 'asc' }, { name: 'asc' }] });
   return NextResponse.json(materials);
 }
 
 export async function POST(req: NextRequest) {
+  const denied = await requireRole(req, 'ADMIN');
+  if (denied) return denied;
   try {
     const body = await req.json();
     if (!body.name?.trim()) {

@@ -42,7 +42,6 @@ import {
   emptyPiece,
   hardwareById,
   materialsById,
-  thinScrollbar,
   uid,
   type DraftHardware,
   type DraftPiece,
@@ -249,8 +248,8 @@ export function FurnitureEditor({ furniture, catalog, categories, onSaved, onCan
         <h3 id="ed-general" className={sectionTitle}>
           Datos generales
         </h3>
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          <div className="space-y-1.5">
+        <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+          <div className="order-1 space-y-1.5 lg:order-none">
             <Label htmlFor="ed-code">Código *</Label>
             <Input
               id="ed-code"
@@ -261,7 +260,7 @@ export function FurnitureEditor({ furniture, catalog, categories, onSaved, onCan
               required
             />
           </div>
-          <div className="col-span-2 space-y-1.5">
+          <div className="order-3 col-span-2 space-y-1.5 lg:order-none">
             <Label htmlFor="ed-name">Nombre *</Label>
             <Input
               id="ed-name"
@@ -271,7 +270,7 @@ export function FurnitureEditor({ furniture, catalog, categories, onSaved, onCan
               required
             />
           </div>
-          <div className="space-y-1.5">
+          <div className="order-2 space-y-1.5 lg:order-none">
             <Label htmlFor="ed-cat">Categoría</Label>
             <Input
               id="ed-cat"
@@ -286,7 +285,7 @@ export function FurnitureEditor({ furniture, catalog, categories, onSaved, onCan
               ))}
             </datalist>
           </div>
-          <div className="grid grid-cols-3 gap-2">
+          <div className="order-4 col-span-2 grid grid-cols-3 gap-2 lg:order-none lg:col-span-2">
             <div className="space-y-1.5">
               <Label htmlFor="ed-w">Ancho</Label>
               <Input
@@ -455,7 +454,7 @@ export function FurnitureEditor({ furniture, catalog, categories, onSaved, onCan
             </Button>
           </div>
         </div>
-        <div className={`rounded-lg border border-stone-200 max-h-80 overflow-y-auto overflow-x-auto ${thinScrollbar}`}>
+        <div className="rounded-lg border border-stone-200 max-h-80 overflow-y-auto overflow-x-auto">
           <Table>
             <TableHeader className="[&_th]:sticky [&_th]:top-0 [&_th]:z-10 [&_th]:bg-white">
               <TableRow>

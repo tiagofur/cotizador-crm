@@ -1,9 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { requireRole } from '@/lib/server/auth';
 import { db } from '@/lib/db';
 
 type Params = { params: Promise<{ id: string }> };
 
 export async function PUT(req: NextRequest, { params }: Params) {
+  const denied = await requireRole(req, 'ADMIN');
+  if (denied) return denied;
   const { id } = await params;
   try {
     const body = await req.json();
@@ -33,6 +36,8 @@ export async function PUT(req: NextRequest, { params }: Params) {
 }
 
 export async function DELETE(_req: NextRequest, { params }: Params) {
+  const denied = await requireRole(_req, 'ADMIN');
+  if (denied) return denied;
   const { id } = await params;
   try {
     // Verificar uso en piezas

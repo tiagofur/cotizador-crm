@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { requireRole } from '@/lib/server/auth';
 import { db } from '@/lib/db';
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  const denied = await requireRole(req, 'ADMIN', 'TIENDA');
+  if (denied) return denied;
   let settings = await db.settings.findUnique({ where: { id: 'default' } });
   if (!settings) {
     settings = await db.settings.create({ data: { id: 'default' } });
@@ -10,6 +13,8 @@ export async function GET() {
 }
 
 export async function PUT(req: NextRequest) {
+  const denied = await requireRole(req, 'ADMIN');
+  if (denied) return denied;
   try {
     const body = await req.json();
     const settings = await db.settings.update({
@@ -39,6 +44,19 @@ export async function PUT(req: NextRequest) {
             ? Math.max(1, Math.min(3, Number(body.wasteFactorMaderado) || 1))
             : undefined,
         maderadoMaterialId: body.maderadoMaterialId !== undefined ? body.maderadoMaterialId : undefined,
+        cutCostPerPass: body.cutCostPerPass !== undefined ? Math.max(0, Number(body.cutCostPerPass) || 0) : undefined,
+        edgeBandServiceCostMl:
+          body.edgeBandServiceCostMl !== undefined ? Math.max(0, Number(body.edgeBandServiceCostMl) || 0) : undefined,
+        avgCutsPerSheet:
+          body.avgCutsPerSheet !== undefined ? Math.max(0, Number(body.avgCutsPerSheet) || 0) : undefined,
+        deliveryDaysCocina:
+          body.deliveryDaysCocina !== undefined
+            ? Math.max(0, Math.min(365, Math.round(Number(body.deliveryDaysCocina) || 0)))
+            : undefined,
+        deliveryDaysMaquila:
+          body.deliveryDaysMaquila !== undefined
+            ? Math.max(0, Math.min(365, Math.round(Number(body.deliveryDaysMaquila) || 0)))
+            : undefined,
       },
     });
     return NextResponse.json(settings);

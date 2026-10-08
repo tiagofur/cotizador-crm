@@ -104,6 +104,10 @@ export function settingsLike(catalog: CatalogData | null): SettingsLike {
     stalledThresholdDays: s?.stalledThresholdDays ?? 21,
     wasteFactorStandard: s?.wasteFactorStandard ?? 1,
     wasteFactorMaderado: s?.wasteFactorMaderado ?? 1,
+    cutCostPerPass: s?.cutCostPerPass ?? 0,
+    edgeBandServiceCostMl: s?.edgeBandServiceCostMl ?? 0,
+    deliveryDaysCocina: s?.deliveryDaysCocina ?? 30,
+    deliveryDaysMaquila: s?.deliveryDaysMaquila ?? 7,
   };
 }
 

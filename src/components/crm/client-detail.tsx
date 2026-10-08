@@ -62,6 +62,7 @@ import {
 } from '@/lib/types';
 import { formatDate } from '@/lib/format';
 import { cn } from '@/lib/utils';
+import LogInteractionDialog from '@/components/crm/log-interaction-dialog';
 
 interface Props {
   open: boolean;
@@ -73,6 +74,8 @@ interface Props {
   onNewQuotation: () => void;
   /** Si existe, muestra el botón «WhatsApp» con plantillas */
   onWhatsApp?: () => void;
+  /** Cambia cuando se registra/elimina una interacción desde fuera; recarga el historial */
+  historyVersion?: number;
 }
 
 const TYPE_ICON: Record<InteractionType, React.ElementType> = {
@@ -122,9 +125,11 @@ export default function ClientDetail({
   onEdit,
   onNewQuotation,
   onWhatsApp,
+  historyVersion = 0,
 }: Props) {
   const [history, setHistory] = useState<InteractionDTO[]>([]);
   const [loading, setLoading] = useState(false);
+  const [editing, setEditing] = useState<InteractionDTO | null>(null);
   const [deleting, setDeleting] = useState<InteractionDTO | null>(null);
   const [deletingBusy, setDeletingBusy] = useState(false);
 
@@ -142,9 +147,14 @@ export default function ClientDetail({
     }
   }, [client.id]);
 
+  // Al cambiar de cliente, limpia el historial del anterior mientras carga
+  useEffect(() => {
+    setHistory([]);
+  }, [client.id]);
+
   useEffect(() => {
     if (open) loadHistory();
-  }, [open, loadHistory]);
+  }, [open, loadHistory, historyVersion]);
 
   async function changeStage(stage: string) {
     try {
@@ -179,6 +189,17 @@ export default function ClientDetail({
       setDeletingBusy(false);
       setDeleting(null);
     }
+  }
+
+  function handleEdited(it: InteractionDTO, c: ClientDTO) {
+    setHistory((h) =>
+      [...h.filter((x) => x.id !== it.id), it].sort(
+        (a, b) =>
+          new Date(b.occurredAt).getTime() - new Date(a.occurredAt).getTime() ||
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+      ),
+    );
+    onClientUpdated(c);
   }
 
   return (
@@ -227,7 +248,7 @@ export default function ClientDetail({
             <button
               type="button"
               onClick={onWhatsApp}
-              className="flex items-center gap-2 rounded-lg border border-stone-200 bg-stone-50 px-3 py-2 hover:border-emerald-300 hover:bg-emerald-50 transition-colors outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
+              className="flex items-center gap-2 min-w-0 rounded-lg border border-stone-200 bg-stone-50 px-3 py-2 hover:border-emerald-300 hover:bg-emerald-50 transition-colors outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
             >
               <MessageCircle className="w-4 h-4 text-emerald-600 shrink-0" aria-hidden />
               <span className="truncate">{client.phone}</span>
@@ -238,7 +259,7 @@ export default function ClientDetail({
               href={`https://wa.me/52${client.phone.replace(/\D/g, '')}`}
               target="_blank"
               rel="noreferrer"
-              className="flex items-center gap-2 rounded-lg border border-stone-200 bg-stone-50 px-3 py-2 hover:border-emerald-300 hover:bg-emerald-50 transition-colors"
+              className="flex items-center gap-2 min-w-0 rounded-lg border border-stone-200 bg-stone-50 px-3 py-2 hover:border-emerald-300 hover:bg-emerald-50 transition-colors"
             >
               <MessageCircle className="w-4 h-4 text-emerald-600 shrink-0" aria-hidden />
               <span className="truncate">{client.phone}</span>
@@ -247,14 +268,14 @@ export default function ClientDetail({
           {client.email && (
             <a
               href={`mailto:${client.email}`}
-              className="flex items-center gap-2 rounded-lg border border-stone-200 bg-stone-50 px-3 py-2 hover:border-amber-300 hover:bg-amber-50 transition-colors"
+              className="flex items-center gap-2 min-w-0 rounded-lg border border-stone-200 bg-stone-50 px-3 py-2 hover:border-amber-300 hover:bg-amber-50 transition-colors"
             >
               <Mail className="w-4 h-4 text-amber-600 shrink-0" aria-hidden />
               <span className="truncate">{client.email}</span>
             </a>
           )}
           {client.address && (
-            <div className="flex items-center gap-2 rounded-lg border border-stone-200 bg-stone-50 px-3 py-2 sm:col-span-2">
+            <div className="flex items-center gap-2 min-w-0 rounded-lg border border-stone-200 bg-stone-50 px-3 py-2 sm:col-span-2">
               <MapPin className="w-4 h-4 text-stone-400 shrink-0" aria-hidden />
               <span className="truncate text-stone-600">{client.address}</span>
             </div>
@@ -299,7 +320,7 @@ export default function ClientDetail({
         </div>
 
         <div className="flex-1 min-h-0 overflow-y-auto -mx-1 px-1 space-y-2 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-stone-300">
-          {loading ? (
+          {loading && history.length === 0 ? (
             <div className="flex items-center justify-center py-10 text-stone-500">
               <Loader2 className="w-5 h-5 animate-spin text-amber-600" aria-hidden />
             </div>
@@ -339,15 +360,26 @@ export default function ClientDetail({
                       {it.content}
                     </p>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => setDeleting(it)}
-                    aria-label="Eliminar interacción"
-                    title="Eliminar interacción"
-                    className="self-start h-7 w-7 flex items-center justify-center rounded-md text-stone-300 hover:text-red-600 hover:bg-red-50 opacity-0 group-hover:opacity-100 focus-visible:opacity-100 outline-none focus-visible:ring-2 focus-visible:ring-amber-500 transition-opacity"
-                  >
-                    <Trash2 className="w-3.5 h-3.5" aria-hidden />
-                  </button>
+                  <div className="flex flex-col gap-1 self-start shrink-0">
+                    <button
+                      type="button"
+                      onClick={() => setDeleting(it)}
+                      aria-label="Eliminar interacción"
+                      title="Eliminar interacción"
+                      className="h-7 w-7 flex items-center justify-center rounded-md text-red-400 hover:text-red-600 hover:bg-red-50 opacity-0 group-hover:opacity-100 focus-visible:opacity-100 outline-none focus-visible:ring-2 focus-visible:ring-red-500 transition-opacity"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" aria-hidden />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setEditing(it)}
+                      aria-label="Editar interacción"
+                      title="Editar interacción"
+                      className="h-7 w-7 flex items-center justify-center rounded-md text-stone-300 hover:text-amber-600 hover:bg-amber-50 opacity-0 group-hover:opacity-100 focus-visible:opacity-100 outline-none focus-visible:ring-2 focus-visible:ring-amber-500 transition-opacity"
+                    >
+                      <Pencil className="w-3.5 h-3.5" aria-hidden />
+                    </button>
+                  </div>
                 </div>
               );
             })
@@ -383,6 +415,16 @@ export default function ClientDetail({
           </Button>
         </div>
       </DialogContent>
+
+      {editing && (
+        <LogInteractionDialog
+          open
+          onOpenChange={(o) => !o && setEditing(null)}
+          client={client}
+          interaction={editing}
+          onSaved={handleEdited}
+        />
+      )}
 
       <AlertDialog open={!!deleting} onOpenChange={(o) => !o && setDeleting(null)}>
         <AlertDialogContent>

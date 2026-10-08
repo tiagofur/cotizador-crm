@@ -1,16 +1,19 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
+import { requireRole } from '@/lib/server/auth';
 import { db } from '@/lib/db';
 import { furnitureInclude, getSettings } from '@/lib/server/queries';
 import { sanitizeNums } from '@/lib/num';
 import { effectiveCostPerM2 } from '@/lib/pricing';
 
-const SETTINGS_NUM_KEYS = ['saleFactor', 'ivaRate', 'distributorDiscount', 'laborPerUnit', 'countertopMultipleM', 'countertopFactor', 'wasteFactorStandard', 'wasteFactorMaderado'];
+const SETTINGS_NUM_KEYS = ['saleFactor', 'ivaRate', 'distributorDiscount', 'laborPerUnit', 'countertopMultipleM', 'countertopFactor', 'wasteFactorStandard', 'wasteFactorMaderado', 'cutCostPerPass', 'edgeBandServiceCostMl', 'avgCutsPerSheet', 'deliveryDaysCocina', 'deliveryDaysMaquila'];
 const MATERIAL_NUM_KEYS = ['costPerM2', 'costPerMl', 'edgeBandCostMl', 'sheetWidth', 'sheetLength', 'sheetCost'];
 const HARDWARE_NUM_KEYS = ['unitCost'];
 const PIECE_NUM_KEYS = ['length', 'width'];
 const FURNITURE_NUM_KEYS = ['width', 'height', 'depth', 'countertopWidthM'];
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  const denied = await requireRole(req, 'ADMIN', 'TIENDA');
+  if (denied) return denied;
   const [furniture, materials, hardware, finishProfiles, settingsRaw] = await Promise.all([
     db.furniture.findMany({ include: furnitureInclude, orderBy: { order: 'asc' } }),
     db.material.findMany({ orderBy: [{ type: 'asc' }, { name: 'asc' }] }),

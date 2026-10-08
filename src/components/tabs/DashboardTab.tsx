@@ -71,6 +71,7 @@ const IMPROVEMENTS: string[] = [
 ];
 
 const STATUS_BADGE_CLASS: Record<QuotationStatus, string> = {
+  SOLICITUD: 'bg-indigo-100 text-indigo-800 border-indigo-200',
   BORRADOR: 'bg-stone-100 text-stone-700 border-stone-200',
   ENVIADA: 'bg-amber-100 text-amber-800 border-amber-200',
   ACEPTADA: 'bg-emerald-100 text-emerald-800 border-emerald-200',
@@ -164,7 +165,7 @@ export default function DashboardTab({ onNavigate }: TabProps) {
             return (
               <Card
                 key={kpi.key}
-                className="bg-white rounded-xl border border-stone-200 shadow-sm py-4"
+                className="py-4"
               >
                 <CardContent className="px-4">
                   <div className="flex items-center gap-3">
@@ -175,7 +176,7 @@ export default function DashboardTab({ onNavigate }: TabProps) {
                       <Icon className="w-5 h-5" />
                     </div>
                     <div className="min-w-0">
-                      <p className="truncate text-[11px] font-medium uppercase tracking-wide text-stone-500">
+                      <p className="text-[11px] font-medium uppercase leading-tight tracking-wide text-stone-500">
                         {kpi.label}
                       </p>
                       {loading ? (
@@ -196,7 +197,7 @@ export default function DashboardTab({ onNavigate }: TabProps) {
 
       {/* Auditoría + Mejoras */}
       <section aria-label="Estado de los datos y mejoras" className="grid gap-4 lg:grid-cols-5">
-        <Card className="bg-white rounded-xl border border-stone-200 shadow-sm lg:col-span-2">
+        <Card className="lg:col-span-2">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
               <ListChecks className="w-4 h-4 text-amber-600" aria-hidden="true" />
@@ -286,7 +287,7 @@ export default function DashboardTab({ onNavigate }: TabProps) {
           </CardContent>
         </Card>
 
-        <Card className="bg-white rounded-xl border border-stone-200 shadow-sm lg:col-span-3">
+        <Card className="lg:col-span-3">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
               <Sparkles className="w-4 h-4 text-amber-600" aria-hidden="true" />
@@ -316,7 +317,7 @@ export default function DashboardTab({ onNavigate }: TabProps) {
 
       {/* CRM: seguimiento de clientes */}
       <section aria-label="Seguimiento de clientes">
-        <Card className="bg-white rounded-xl border border-stone-200 shadow-sm">
+        <Card>
           <CardHeader>
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div className="min-w-0">
@@ -366,7 +367,7 @@ export default function DashboardTab({ onNavigate }: TabProps) {
                       aria-label={`Seguimiento pendiente de ${c.name}`}
                     >
                       <div className="flex items-center justify-between gap-2">
-                        <span className="text-sm font-medium text-stone-900 truncate">{c.name}</span>
+                        <span className="min-w-0 truncate text-sm font-medium text-stone-900">{c.name}</span>
                         <span className="inline-flex items-center gap-1 text-xs font-semibold text-amber-700 shrink-0">
                           <CalendarClock className="w-3.5 h-3.5" aria-hidden="true" />
                           {formatDate(c.nextFollowUpAt!)}
@@ -384,7 +385,7 @@ export default function DashboardTab({ onNavigate }: TabProps) {
 
       {/* Cotizaciones recientes + Acciones rápidas */}
       <section aria-label="Actividad reciente y acciones" className="grid gap-4 lg:grid-cols-3">
-        <Card className="bg-white rounded-xl border border-stone-200 shadow-sm lg:col-span-2">
+        <Card className="lg:col-span-2">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
               <FileText className="w-4 h-4 text-amber-600" aria-hidden="true" />
@@ -399,7 +400,7 @@ export default function DashboardTab({ onNavigate }: TabProps) {
                 <div>
                   <p className="text-sm font-medium text-stone-700">Aún no hay cotizaciones</p>
                   <p className="text-sm text-stone-500">
-                    Crea tu primera cotización desde el cotizador.
+                    Crea tu primera cotización de cocina armada.
                   </p>
                 </div>
                 <Button
@@ -408,7 +409,7 @@ export default function DashboardTab({ onNavigate }: TabProps) {
                   className="bg-brand-600 text-white hover:bg-brand-700"
                 >
                   <Calculator className="w-4 h-4" aria-hidden="true" />
-                  Ir al cotizador
+                  Cotizar una cocina
                 </Button>
               </div>
             ) : (
@@ -422,13 +423,13 @@ export default function DashboardTab({ onNavigate }: TabProps) {
                       aria-label={`Ver cotización ${q.folio} de ${q.clientName}`}
                     >
                       <div className="flex items-center justify-between gap-2">
-                        <span className="text-sm font-bold text-stone-900">{q.folio}</span>
-                        <Badge variant="outline" className={STATUS_BADGE_CLASS[q.status]}>
+                        <span className="min-w-0 text-sm font-bold text-stone-900">{q.folio}</span>
+                        <Badge variant="outline" className={cn('shrink-0', STATUS_BADGE_CLASS[q.status])}>
                           {STATUS_LABELS[q.status]}
                         </Badge>
                       </div>
                       <div className="mt-1 flex flex-wrap items-center justify-between gap-x-3 gap-y-0.5">
-                        <span className="truncate text-sm text-stone-500">
+                        <span className="min-w-0 text-sm text-stone-500">
                           {q.clientName} · {formatDate(q.createdAt)} ·{' '}
                           {q.items.length === 1 ? '1 mueble' : `${q.items.length} muebles`}
                         </span>
@@ -445,7 +446,7 @@ export default function DashboardTab({ onNavigate }: TabProps) {
           </CardContent>
         </Card>
 
-        <Card className="bg-white rounded-xl border border-stone-200 shadow-sm">
+        <Card>
           <CardHeader>
             <CardTitle className="text-base">Acciones rápidas</CardTitle>
             <CardDescription>Atajos a las secciones más usadas.</CardDescription>
@@ -456,7 +457,7 @@ export default function DashboardTab({ onNavigate }: TabProps) {
               onClick={() => onNavigate?.('cotizador')}
             >
               <Calculator className="w-4 h-4" aria-hidden="true" />
-              Ir al cotizador
+              Cotizar una cocina
             </Button>
             <Button variant="outline" className="w-full" onClick={() => onNavigate?.('muebles')}>
               <Armchair className="w-4 h-4" aria-hidden="true" />

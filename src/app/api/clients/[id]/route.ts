@@ -1,10 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { requireRole } from '@/lib/server/auth';
 import { db } from '@/lib/db';
 import { clientInclude, serializeClient, parseStage, parseKind, parseDateInput } from '@/lib/server/crm';
 
 type Params = { params: Promise<{ id: string }> };
 
 export async function GET(_req: NextRequest, { params }: Params) {
+  const denied = await requireRole(_req, 'ADMIN', 'TIENDA');
+  if (denied) return denied;
   const { id } = await params;
   const client = await db.client.findUnique({ where: { id }, include: clientInclude });
   if (!client) return NextResponse.json({ error: 'Cliente no encontrado' }, { status: 404 });
@@ -12,6 +15,8 @@ export async function GET(_req: NextRequest, { params }: Params) {
 }
 
 export async function PATCH(req: NextRequest, { params }: Params) {
+  const denied = await requireRole(req, 'ADMIN', 'TIENDA');
+  if (denied) return denied;
   const { id } = await params;
   try {
     const body = await req.json();
@@ -51,6 +56,8 @@ export async function PATCH(req: NextRequest, { params }: Params) {
 }
 
 export async function DELETE(_req: NextRequest, { params }: Params) {
+  const denied = await requireRole(_req, 'ADMIN');
+  if (denied) return denied;
   const { id } = await params;
   try {
     const quotations = await db.quotation.count({ where: { clientId: id } });

@@ -1,10 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { requireRole } from '@/lib/server/auth';
 import { db } from '@/lib/db';
 import { clientInclude, serializeClient, parseStage, parseInteractionType, parseDateInput } from '@/lib/server/crm';
 
 type Params = { params: Promise<{ id: string }> };
 
 export async function GET(_req: NextRequest, { params }: Params) {
+  const denied = await requireRole(_req, 'ADMIN', 'TIENDA');
+  if (denied) return denied;
   const { id } = await params;
   const client = await db.client.findUnique({ where: { id } });
   if (!client) return NextResponse.json({ error: 'Cliente no encontrado' }, { status: 404 });
@@ -16,6 +19,8 @@ export async function GET(_req: NextRequest, { params }: Params) {
 }
 
 export async function POST(req: NextRequest, { params }: Params) {
+  const denied = await requireRole(req, 'ADMIN', 'TIENDA');
+  if (denied) return denied;
   const { id } = await params;
   try {
     const body = await req.json();
@@ -28,6 +33,10 @@ export async function POST(req: NextRequest, { params }: Params) {
     }
     const type = parseInteractionType(body.type) ?? 'NOTA';
     const stage = parseStage(body.stage);
+    const occurredAt = parseDateInput(body.occurredAt, 'create') ?? new Date();
+    // El último contacto no retrocede al registrar una interacción con fecha pasada
+    const lastContactAt =
+      client.lastContactAt && client.lastContactAt > occurredAt ? client.lastContactAt : occurredAt;
 
     const [interaction] = await db.$transaction([
       db.interaction.create({
@@ -36,13 +45,13 @@ export async function POST(req: NextRequest, { params }: Params) {
           type,
           subject: body.subject ? String(body.subject).trim() || null : null,
           content,
-          occurredAt: parseDateInput(body.occurredAt, 'create') ?? new Date(),
+          occurredAt,
         },
       }),
       db.client.update({
         where: { id },
         data: {
-          lastContactAt: new Date(),
+          lastContactAt,
           ...(stage ? { stage } : {}),
           nextFollowUpAt: body.nextFollowUpAt !== undefined ? parseDateInput(body.nextFollowUpAt, 'create') ?? null : undefined,
         },

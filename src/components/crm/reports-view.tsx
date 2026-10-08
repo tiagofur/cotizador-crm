@@ -105,7 +105,7 @@ export default function ReportsView({
 
   if (clients.length === 0) {
     return (
-      <Card className="bg-white rounded-xl border border-stone-200 shadow-sm">
+      <Card>
         <CardContent className="flex flex-col items-center justify-center gap-2 py-16 text-center">
           <BarChart3 className="w-10 h-10 text-stone-300" aria-hidden />
           <p className="text-sm text-stone-500 max-w-sm">
@@ -130,7 +130,7 @@ export default function ReportsView({
         <Select value={period} onValueChange={(v) => setPeriod(v as ReportPeriod)}>
           <SelectTrigger
             size="sm"
-            className="w-[210px] bg-white border-stone-300 h-9"
+            className="w-[210px] bg-white border-stone-200 h-9"
             aria-label="Elegir periodo del reporte"
           >
             <SelectValue />
@@ -147,14 +147,14 @@ export default function ReportsView({
 
       {/* ================= Resumen ================= */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        <Card className="bg-white rounded-xl border border-stone-200 shadow-sm">
+        <Card>
           <CardContent className="pt-4 pb-3 px-4">
             <p className="text-xs text-stone-500">Clientes en CRM</p>
             <p className="text-2xl font-bold tabular-nums">{total}</p>
             <p className="text-[11px] text-stone-400 mt-1">{activeStagesCount} en proceso activo</p>
           </CardContent>
         </Card>
-        <Card className="bg-white rounded-xl border border-stone-200 shadow-sm">
+        <Card>
           <CardContent className="pt-4 pb-3 px-4">
             <div className="flex items-center justify-between">
               <div>
@@ -166,7 +166,7 @@ export default function ReportsView({
             <p className="text-[11px] text-stone-400 mt-1">{money(moneyStats.won)} en cotizaciones cerradas</p>
           </CardContent>
         </Card>
-        <Card className="bg-white rounded-xl border border-stone-200 shadow-sm">
+        <Card>
           <CardContent className="pt-4 pb-3 px-4">
             <div className="flex items-center justify-between">
               <div>
@@ -180,7 +180,7 @@ export default function ReportsView({
             </p>
           </CardContent>
         </Card>
-        <Card className="bg-white rounded-xl border border-stone-200 shadow-sm">
+        <Card>
           <CardContent className="pt-4 pb-3 px-4">
             <div className="flex items-center justify-between">
               <div>
@@ -207,7 +207,7 @@ export default function ReportsView({
       />
 
       {/* ================= Embudo por etapa ================= */}
-      <Card className="bg-white rounded-xl border border-stone-200 shadow-sm">
+      <Card>
         <CardHeader className="pb-3">
           <CardTitle className="text-base flex items-center gap-2">
             <TrendingUp className="w-4 h-4 text-amber-600" aria-hidden />
@@ -238,7 +238,7 @@ export default function ReportsView({
 
       {/* ================= Ganados vs Perdidos + Respuesta por tipo ================= */}
       <div className="grid gap-5 lg:grid-cols-[1fr_1.6fr] items-start">
-        <Card className="bg-white rounded-xl border border-stone-200 shadow-sm">
+        <Card>
           <CardHeader className="pb-3">
             <CardTitle className="text-base flex items-center gap-2">
               <Scale className="w-4 h-4 text-amber-600" aria-hidden />
@@ -277,7 +277,7 @@ export default function ReportsView({
           </CardContent>
         </Card>
 
-        <Card className="bg-white rounded-xl border border-stone-200 shadow-sm">
+        <Card>
           <CardHeader className="pb-3">
             <CardTitle className="text-base flex items-center gap-2">
               <Users className="w-4 h-4 text-amber-600" aria-hidden />
@@ -366,7 +366,7 @@ export default function ReportsView({
       </div>
 
       {/* ================= Cotizaciones recientes por cliente (apoyo) ================= */}
-      <Card className="bg-white rounded-xl border border-stone-200 shadow-sm">
+      <Card>
         <CardHeader className="pb-3">
           <CardTitle className="text-base flex items-center gap-2">
             <BarChart3 className="w-4 h-4 text-amber-600" aria-hidden />

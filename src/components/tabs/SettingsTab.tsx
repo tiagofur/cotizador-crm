@@ -21,11 +21,14 @@ import {
 import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
 import { FinishProfilesCard } from '@/components/settings/finish-profiles-card';
+import { BackupManagementCard } from '@/components/settings/backup-management-card';
 import {
   Building2,
+  CalendarClock,
   SlidersHorizontal,
   TreePine,
   Calculator,
+  Scissors,
   Info,
   Save,
   Loader2,
@@ -47,6 +50,11 @@ interface FormState {
   wastePercentStandard: string;
   wastePercentMaderado: string;
   maderadoMaterialId: string;
+  cutCostPerPass: string;
+  edgeBandServiceCostMl: string;
+  avgCutsPerSheet: string;
+  deliveryDaysCocina: string;
+  deliveryDaysMaquila: string;
 }
 
 function toForm(s: SettingsDTO): FormState {
@@ -65,6 +73,11 @@ function toForm(s: SettingsDTO): FormState {
     wastePercentStandard: String(Math.round(((s.wasteFactorStandard ?? 1) - 1) * 1000) / 10),
     wastePercentMaderado: String(Math.round(((s.wasteFactorMaderado ?? 1) - 1) * 1000) / 10),
     maderadoMaterialId: s.maderadoMaterialId ?? '',
+    cutCostPerPass: String(s.cutCostPerPass ?? 0),
+    edgeBandServiceCostMl: String(s.edgeBandServiceCostMl ?? 0),
+    avgCutsPerSheet: String(s.avgCutsPerSheet ?? 25),
+    deliveryDaysCocina: String(s.deliveryDaysCocina ?? 30),
+    deliveryDaysMaquila: String(s.deliveryDaysMaquila ?? 7),
   };
 }
 
@@ -92,6 +105,11 @@ const FORMULAS: { label: string; formula: string }[] = [
   { label: 'Subtotal', formula: 'Venta de muebles + venta de cubierta' },
   { label: 'Total con IVA', formula: 'Subtotal × (1 + IVA)' },
   { label: 'Precio distribuidor', formula: 'Total × (1 − descuento distribuidor)' },
+  // Maquila
+  { label: 'Maquila · tableros', formula: 'Σ tableros × costo de hoja (al costo, sin factor)' },
+  { label: 'Maquila · cintilla', formula: 'Σ ML de cintilla × costo de cintilla/ml del material' },
+  { label: 'Maquila · corte', formula: 'Pasadas de sierra × tarifa por pasada' },
+  { label: 'Maquila · encintado', formula: 'Σ ML de cintilla de todas las líneas × tarifa por ML' },
 ];
 
 export default function SettingsTab({ onNavigate }: TabProps) {
@@ -135,6 +153,11 @@ export default function SettingsTab({ onNavigate }: TabProps) {
     const stalledThresholdDays = parseNum(form.stalledThresholdDays, 21);
     const wasteStandard = parseNum(form.wastePercentStandard, 0);
     const wasteMaderado = parseNum(form.wastePercentMaderado, 0);
+    const cutCostPerPass = parseNum(form.cutCostPerPass, 0);
+    const edgeBandServiceCostMl = parseNum(form.edgeBandServiceCostMl, 0);
+    const avgCutsPerSheet = parseNum(form.avgCutsPerSheet, 25);
+    const deliveryDaysCocina = parseNum(form.deliveryDaysCocina, 30);
+    const deliveryDaysMaquila = parseNum(form.deliveryDaysMaquila, 7);
 
     if (!(saleFactor > 0)) {
       toast.error('El factor de venta debe ser mayor a 0.');
@@ -159,6 +182,16 @@ export default function SettingsTab({ onNavigate }: TabProps) {
     for (const [label, v] of [['merma estándar', wasteStandard], ['merma maderado', wasteMaderado]] as const) {
       if (v < 0 || v > 200) {
         toast.error(`La ${label} debe estar entre 0% y 200%.`);
+        return;
+      }
+    }
+    if (cutCostPerPass < 0 || edgeBandServiceCostMl < 0) {
+      toast.error('Las tarifas de maquila no pueden ser negativas.');
+      return;
+    }
+    for (const [label, v] of [['plazo de maquila', deliveryDaysMaquila], ['plazo de cocinas', deliveryDaysCocina]] as const) {
+      if (v < 0 || v > 365) {
+        toast.error(`El ${label} debe estar entre 0 y 365 días.`);
         return;
       }
     }
@@ -187,6 +220,11 @@ export default function SettingsTab({ onNavigate }: TabProps) {
           wasteFactorStandard: 1 + wasteStandard / 100,
           wasteFactorMaderado: 1 + wasteMaderado / 100,
           maderadoMaterialId: form.maderadoMaterialId || null,
+          cutCostPerPass,
+          edgeBandServiceCostMl,
+          avgCutsPerSheet,
+          deliveryDaysCocina: Math.round(deliveryDaysCocina),
+          deliveryDaysMaquila: Math.round(deliveryDaysMaquila),
         }),
       });
       if (!res.ok) throw new Error('No se pudo guardar la configuración.');
@@ -241,12 +279,15 @@ export default function SettingsTab({ onNavigate }: TabProps) {
 
       <div className="grid items-start gap-4 lg:grid-cols-3 lg:gap-6">
         {/* Columna de formularios */}
-        <div className="space-y-4 lg:col-span-2 lg:space-y-6">
+        <div className="min-w-0 space-y-4 lg:col-span-2 lg:space-y-6">
+          {/* Seguridad y respaldo de datos */}
+          <BackupManagementCard />
+
           {/* Acabados y colores */}
           <FinishProfilesCard />
 
           {/* Datos de la empresa */}
-          <Card className="bg-white rounded-xl border border-stone-200 shadow-sm">
+          <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
                 <Building2 className="w-4 h-4 text-amber-600" aria-hidden="true" />
@@ -305,7 +346,7 @@ export default function SettingsTab({ onNavigate }: TabProps) {
           </Card>
 
           {/* Parámetros de precio */}
-          <Card className="bg-white rounded-xl border border-stone-200 shadow-sm">
+          <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
                 <SlidersHorizontal className="w-4 h-4 text-amber-600" aria-hidden="true" />
@@ -441,8 +482,118 @@ export default function SettingsTab({ onNavigate }: TabProps) {
             </CardContent>
           </Card>
 
+          {/* Tarifario de maquila */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-base">
+                <Scissors className="w-4 h-4 text-amber-600" aria-hidden="true" />
+                Tarifario de maquila
+              </CardTitle>
+              <CardDescription>
+                Servicios que se cobran a carpinteros. Los tableros y la cintilla se venden al costo
+                capturado en el Catálogo.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-1.5">
+                <Label htmlFor="cutCostPerPass">Corte por pasada de sierra (MXN)</Label>
+                <Input
+                  id="cutCostPerPass"
+                  type="number"
+                  inputMode="decimal"
+                  min="0"
+                  step="1"
+                  value={form.cutCostPerPass}
+                  onChange={(e) => set('cutCostPerPass', e.target.value)}
+                  className="bg-white"
+                />
+                <p className="text-xs text-stone-500">
+                  Se cobra por cada pasada de la escuadradora (cantidad capturada en el cotizador)
+                </p>
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="edgeBandServiceCostMl">Encintado por metro (MXN/ml)</Label>
+                <Input
+                  id="edgeBandServiceCostMl"
+                  type="number"
+                  inputMode="decimal"
+                  min="0"
+                  step="1"
+                  value={form.edgeBandServiceCostMl}
+                  onChange={(e) => set('edgeBandServiceCostMl', e.target.value)}
+                  className="bg-white"
+                />
+                <p className="text-xs text-stone-500">
+                  Servicio de canteado; se aplica a la suma de metros de cintilla de todas las líneas
+                </p>
+              </div>
+              <div className="space-y-1.5 sm:col-span-2">
+                <Label htmlFor="avgCutsPerSheet">Pasadas promedio por tablero (solicitudes del portal)</Label>
+                <Input
+                  id="avgCutsPerSheet"
+                  type="number"
+                  inputMode="decimal"
+                  min="0"
+                  step="1"
+                  value={form.avgCutsPerSheet}
+                  onChange={(e) => set('avgCutsPerSheet', e.target.value)}
+                  className="bg-white sm:max-w-40"
+                />
+                <p className="text-xs text-stone-500">
+                  Estima los cortes de una solicitud del portal (Σ tableros × promedio) hasta que la tienda capture
+                  las pasadas reales
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Plazos de entrega */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-base">
+                <CalendarClock className="w-4 h-4 text-amber-600" aria-hidden="true" />
+                Plazos de entrega
+              </CardTitle>
+              <CardDescription>
+                Fecha estimada que se asigna a cada documento nuevo; puedes cambiarla por documento.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-1.5">
+                <Label htmlFor="deliveryDaysMaquila">Maquila (días)</Label>
+                <Input
+                  id="deliveryDaysMaquila"
+                  type="number"
+                  inputMode="numeric"
+                  min="0"
+                  max="365"
+                  step="1"
+                  value={form.deliveryDaysMaquila}
+                  onChange={(e) => set('deliveryDaysMaquila', e.target.value)}
+                  className="bg-white"
+                />
+                <p className="text-xs text-stone-500">Predeterminado 7 días naturales</p>
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="deliveryDaysCocina">Cocinas armadas (días)</Label>
+                <Input
+                  id="deliveryDaysCocina"
+                  type="number"
+                  inputMode="numeric"
+                  min="0"
+                  max="365"
+                  step="1"
+                  value={form.deliveryDaysCocina}
+                  onChange={(e) => set('deliveryDaysCocina', e.target.value)}
+                  className="bg-white"
+                />
+                <p className="text-xs text-stone-500">Predeterminado 30 días naturales</p>
+              </div>
+            </CardContent>
+          </Card>
+
           {/* CRM: seguimiento */}
-          <Card className="bg-white rounded-xl border border-stone-200 shadow-sm">
+          <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
                 <Users className="w-4 h-4 text-amber-600" aria-hidden="true" />
@@ -475,7 +626,7 @@ export default function SettingsTab({ onNavigate }: TabProps) {
           </Card>
 
           {/* Acabado maderado */}
-          <Card className="bg-white rounded-xl border border-stone-200 shadow-sm">
+          <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
                 <TreePine className="w-4 h-4 text-amber-600" aria-hidden="true" />
@@ -530,7 +681,7 @@ export default function SettingsTab({ onNavigate }: TabProps) {
         </div>
 
         {/* Lateral: cómo se calcula */}
-        <Card className="h-fit bg-white rounded-xl border border-stone-200 shadow-sm lg:sticky lg:top-24 lg:self-start">
+        <Card className="h-fit min-w-0 lg:sticky lg:top-24 lg:self-start">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
               <Calculator className="w-4 h-4 text-amber-600" aria-hidden="true" />

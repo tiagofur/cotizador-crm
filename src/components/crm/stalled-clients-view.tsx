@@ -61,7 +61,7 @@ export default function StalledClientsView({ clients, onClientUpdated }: Props) 
   }
 
   return (
-    <Card className="bg-white rounded-xl border border-stone-200 shadow-sm">
+    <Card>
       <CardHeader className="pb-3">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div className="min-w-0">

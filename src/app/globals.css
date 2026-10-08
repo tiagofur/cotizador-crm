@@ -45,24 +45,27 @@
 
 :root {
   --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
+  /* Tokens alineados al mundo de marca Nahú Cocinas: crema, verde bosque y dorado.
+     Las escalas amber/stone/brand de @theme siguen siendo la referencia; estos
+     valores alimentan los defaults de shadcn (Card, Button, input, diálogos). */
+  --background: #faf9f6;
+  --foreground: #26241f;
+  --card: #ffffff;
+  --card-foreground: #26241f;
+  --popover: #ffffff;
+  --popover-foreground: #26241f;
+  --primary: #2f5d46;
+  --primary-foreground: #ffffff;
+  --secondary: #f1efe8;
+  --secondary-foreground: #35322a;
+  --muted: #f1efe8;
+  --muted-foreground: #615847;
+  --accent: #f1efe8;
+  --accent-foreground: #35322a;
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
+  --border: #e2ded2;
+  --input: #e2ded2;
+  --ring: #8f6f31;
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
@@ -118,6 +121,43 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+  /* Superficies del navegador con el mundo de la marca */
+  ::selection {
+    background: var(--color-amber-200);
+    color: var(--color-stone-900);
+  }
+  input,
+  textarea {
+    caret-color: var(--color-amber-600);
+  }
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-stone-300) transparent;
+  }
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-stone-300);
+    border-radius: 999px;
+    border: 3px solid transparent;
+    background-clip: content-box;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-stone-400);
+    background-clip: content-box;
+  }
+}
+
+@utility no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
   }
 }
 
